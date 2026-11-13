@@ -16,7 +16,13 @@ Fluxo atual (antes da migração para `joao:arma_fogo` + tags). Detalhes técnic
 
 A lista de armas está repetida em vários lugares, então siga a lista inteira:
 
-1. `tools/modelos.py`: função do modelo (`def nome()`) e entrada em `ARMAS` com o tipo (`"pistola"` ou `"fuzil"`). Modele **peça por peça**, sem teto de cubos: a M4A4 da v1.4 (~150 cubos) é a referência de nível. Use `dentes_z()` para trilhos Picatinny e dois cubos cruzados para peças "redondas" (tubos). O `info` precisa de:
+1. `tools/modelos.py`: função do modelo (`def nome()`) e entrada em `ARMAS` com o tipo (`"pistola"` ou `"fuzil"`). Modele **peça por peça**, sem teto de cubos: a M4A4 da v1.4 (~150 cubos) é a referência de nível. Ajudantes:
+   - `dentes_z()`: trilhos Picatinny;
+   - `chain()` + `nervuras_carregador()` + `base_carregador()`: carregador curvo completo;
+   - dois cubos cruzados: peças "redondas" (tubos);
+   - dois cubos sobrepostos girando no mesmo pivô com ângulos diferentes: peça que afina, como a coronha da AK.
+
+   Peças finas e salientes (janelas, chapas) precisam de pelo menos 0,1 de espessura, senão cintilam (z-fighting). O `info` precisa de:
    - `grip`: ponto do punho;
    - `muzzle`: boca do cano;
    - `visada`: (ponto de trás, ponto da frente) da linha de mira (veja as regras abaixo);

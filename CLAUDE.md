@@ -138,7 +138,7 @@ tools/
 
 ### Estado atual × alvo (migração)
 
-- **Hoje** (v1.4.2): só existe o domínio armas. O `main.js` ainda guarda o objeto `ARMAS` por ID, e os geradores estão em arquivos únicos (`modelos.py`, `gerar.py`, `geometria.py`, `sons.py`).
+- **Hoje** (v1.5.0): só existe o domínio armas. O `main.js` ainda guarda o objeto `ARMAS` por ID, e os geradores estão em arquivos únicos (`modelos.py`, `gerar.py`, `geometria.py`, `sons.py`).
 - **Quando**: migre para a estrutura acima **ao entrar a segunda categoria** (provavelmente o primeiro dinossauro), ou antes, se uma mudança em armas já pedir isso.
 - **Como**: faça a migração em commit próprio, **sem mudar comportamento**. Verifique que `--gerar` produz arquivos idênticos aos de antes (exceto `.ogg`) e que `npm run check` passa. Só então comece o conteúdo novo.
 - Na migração das armas para `joao:arma_fogo` + tags, **mantenha os IDs dos itens** (`joao:glock`, `joao:ak47`, `joao:m4a4`, munições). Mudar ID apaga os itens do inventário do João.
@@ -219,7 +219,7 @@ Detalhamento (helpers de `modelos.py`, atlas, pintura 3D, recuo, clarão, mira e
 - No attachable, `q.*` são as queries do **jogador** e `v.*` são variáveis do próprio attachable, que persistem entre quadros. Variável do jogador só é legível se for pública (`c.owning_entity->v.joao_mira`).
 - Rotação no Bedrock **não** é a convenção matemática comum. Use `tools/bt.py`; não chute sinais.
 
-## Estado (v1.4.2)
+## Estado (v1.5.0)
 
 Histórico completo no `CHANGELOG.md`. Resumo do que importa para continuar:
 
@@ -230,7 +230,9 @@ Histórico completo no `CHANGELOG.md`. Resumo do que importa para continuar:
   - câmera calibrada (`CALIB` + `AGACHADO`, encaixe ~0 na v1.3.1);
   - `v.ads` persiste e `q.is_sneaking` funciona no attachable.
 - **Entregue e ainda não visto no aparelho:**
-  - M4A4 detalhada (~150 cubos), paleta clara e estilo limpo com luz pintada nas três armas (v1.4.0/v1.4.1), alça da M4 que se recolhe na mira (v1.4.2): é o piloto do padrão novo. Se o João aprovar, detalhar a AK e a Glock do mesmo jeito;
+  - as três armas no padrão novo, peça por peça: M4A4 com 142 cubos (v1.4.0), AK com 88 e Glock com 55 (v1.5.0);
+  - paleta clara e estilo limpo com luz pintada (v1.4.0/v1.4.1);
+  - alça da M4 que se recolhe na mira (v1.4.2);
   - pintura 3D das texturas (v1.3.0): julgar contraste no jogo;
   - puxão ao atirar em pé (v1.3.1);
   - AK com alça e massa mais altas e Glock mais perto na mira (v1.3.2).
@@ -242,7 +244,6 @@ Histórico completo no `CHANGELOG.md`. Resumo do que importa para continuar:
   - como fica no PC (16:9).
 - **Pendências e ideias:**
   - mãos visíveis segurando a Glock na mira (hoje parece uma coluna solta);
-  - AK e Glock no nível de detalhe da M4 v1.4 (geometria peça por peça);
   - marcações gravadas (seletor, inscrições);
   - amostras de material geradas por IA (Nano Banana) lidas pela `paint()`;
   - coice de câmera no tiro (`camerashake`), se o João sentir falta;

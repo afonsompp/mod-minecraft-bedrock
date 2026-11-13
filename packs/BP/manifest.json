@@ -1,13 +1,13 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Armas do João v1.4.2",
+    "name": "Armas do João v1.5.0",
     "description": "Glock, AK-47 e M4A4 em 3D — feito pelo tio Afonso",
     "uuid": "8d098544-ec90-414d-a6ef-3ff5ee980b69",
     "version": [
       1,
-      4,
-      2
+      5,
+      0
     ],
     "min_engine_version": [
       1,
@@ -21,8 +21,8 @@
       "uuid": "b0a29f39-5067-4954-b273-8786a81db8c3",
       "version": [
         1,
-        4,
-        2
+        5,
+        0
       ]
     },
     {
@@ -31,8 +31,8 @@
       "uuid": "f6da460a-dfc6-4ef2-b417-87f44d0faf4c",
       "version": [
         1,
-        4,
-        2
+        5,
+        0
       ],
       "entry": "scripts/main.js"
     }
@@ -42,8 +42,8 @@
       "uuid": "9a6f74fc-e14c-485f-9f0d-d2934347d6c6",
       "version": [
         1,
-        4,
-        2
+        5,
+        0
       ]
     },
     {

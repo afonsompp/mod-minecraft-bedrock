@@ -2,6 +2,24 @@
 
 Formato: versão — data — o que mudou. Marque **[testado no celular]** quando o Afonso confirmar no aparelho do João.
 
+## 1.5.0 — 2026-11-13
+- **AK-47 refeita peça por peça** (padrão AKM):
+  - tampa com nervuras e botão de trava;
+  - alça tangente com cursor de distância;
+  - guarda-mãos com abraçadeiras de aço e abaulamento para a mão;
+  - bloco de gás em dois níveis;
+  - massa com orelhas e ressalto de baioneta;
+  - freio de boca inclinado;
+  - seletor grande do lado direito, retém do carregador, rebites e pinos;
+  - coronha que engrossa para trás, com chapa da soleira e argola;
+  - carregador com nervuras e base.
+- **Glock refeita peça por peça** (Glock 17):
+  - ferrolho chanfrado com serrilhas de trás e da frente, janela de ejeção com o cano aparecendo, extrator e placa traseira;
+  - trilho com ranhuras;
+  - gatilho com a trava no meio;
+  - alavanca de desmontagem, retém do ferrolho e do carregador;
+  - empunhadura com ressaltos para os dedos e base do carregador.
+
 ## 1.4.2 — 2026-11-13
 - M4A4: ao mirar, a **alça traseira se recolhe** e não tapa mais a visão. Mira-se pela massa da frente, com o centro da tela livre. No quadril e em 3ª pessoa ela continua lá.
 
