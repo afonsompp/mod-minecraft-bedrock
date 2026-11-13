@@ -1,0 +1,21 @@
+{
+  "resource_pack_name": "armas_do_joao",
+  "texture_name": "atlas.items",
+  "texture_data": {
+    "joao_glock": {
+      "textures": "textures/items/glock"
+    },
+    "joao_ak47": {
+      "textures": "textures/items/ak47"
+    },
+    "joao_m4a4": {
+      "textures": "textures/items/m4a4"
+    },
+    "joao_municao_pistola": {
+      "textures": "textures/items/municao_pistola"
+    },
+    "joao_municao_fuzil": {
+      "textures": "textures/items/municao_fuzil"
+    }
+  }
+}

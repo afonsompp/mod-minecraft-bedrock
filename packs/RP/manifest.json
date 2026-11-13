@@ -1,0 +1,39 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "Armas do João v1.4.2 (texturas)",
+    "description": "Modelos 3D, texturas e sons das armas do João",
+    "uuid": "9a6f74fc-e14c-485f-9f0d-d2934347d6c6",
+    "version": [
+      1,
+      4,
+      2
+    ],
+    "min_engine_version": [
+      1,
+      21,
+      90
+    ]
+  },
+  "modules": [
+    {
+      "type": "resources",
+      "uuid": "f5082fb4-19d1-426e-a932-fbc70611e3e2",
+      "version": [
+        1,
+        4,
+        2
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "uuid": "8d098544-ec90-414d-a6ef-3ff5ee980b69",
+      "version": [
+        1,
+        4,
+        2
+      ]
+    }
+  ]
+}

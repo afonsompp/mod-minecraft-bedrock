@@ -1,0 +1,43 @@
+{
+  "format_version": "1.10.0",
+  "animations": {
+    "animation.joao.mira_fuzil": {
+      "loop": true,
+      "bones": {
+        "rightarm": {
+          "rotation": [
+            "query.target_x_rotation - 90.0 - this",
+            "query.target_y_rotation - 5.73 - this",
+            "-this"
+          ]
+        },
+        "leftarm": {
+          "rotation": [
+            "query.target_x_rotation - 90.0 - this",
+            "query.target_y_rotation + 40.0 - this",
+            "-this"
+          ]
+        }
+      }
+    },
+    "animation.joao.mira_pistola": {
+      "loop": true,
+      "bones": {
+        "rightarm": {
+          "rotation": [
+            "query.target_x_rotation - 90.0 - this",
+            "query.target_y_rotation - 5.73 - this",
+            "-this"
+          ]
+        },
+        "leftarm": {
+          "rotation": [
+            "query.target_x_rotation - 90.0 - this",
+            "query.target_y_rotation + 28.65 - this",
+            "-this"
+          ]
+        }
+      }
+    }
+  }
+}

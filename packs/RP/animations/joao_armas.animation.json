@@ -1,0 +1,444 @@
+{
+ "format_version": "1.10.0",
+ "animations": {
+  "animation.joao.glock.primeira_pessoa": {
+   "loop": true,
+   "animation_length": 1.05,
+   "anim_time_update": "v.ads",
+   "bones": {
+    "arma": {
+     "rotation": {
+      "0.0000": [
+       101.383,
+       -59.811,
+       118.911
+      ],
+      "0.1250": [
+       100.952,
+       -59.981,
+       119.346
+      ],
+      "0.2500": [
+       99.795,
+       -60.422,
+       120.515
+      ],
+      "0.3750": [
+       98.105,
+       -61.028,
+       122.228
+      ],
+      "0.5000": [
+       96.088,
+       -61.695,
+       124.281
+      ],
+      "0.6250": [
+       93.983,
+       -62.329,
+       126.43
+      ],
+      "0.7500": [
+       92.075,
+       -62.854,
+       128.386
+      ],
+      "0.8750": [
+       90.685,
+       -63.208,
+       129.816
+      ],
+      "1.0000": [
+       90.149,
+       -63.339,
+       130.367
+      ]
+     },
+     "position": {
+      "0.0000": [
+       "-11.548 + v.kick * (-0.380 + v.ads * 0.228) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "7.360 + v.kick * (0.325 + v.ads * -0.195) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-9.900 + v.kick * (0.001 + v.ads * -0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+      ],
+      "0.1250": [
+       "-11.633 + v.kick * (-0.380 + v.ads * 0.228) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "7.464 + v.kick * (0.325 + v.ads * -0.195) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-10.114 + v.kick * (0.001 + v.ads * -0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+      ],
+      "0.2500": [
+       "-11.858 + v.kick * (-0.380 + v.ads * 0.228) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "7.738 + v.kick * (0.325 + v.ads * -0.195) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-10.678 + v.kick * (0.001 + v.ads * -0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+      ],
+      "0.3750": [
+       "-12.127 + v.kick * (-0.380 + v.ads * 0.228) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "8.096 + v.kick * (0.325 + v.ads * -0.195) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-11.422 + v.kick * (0.001 + v.ads * -0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+      ],
+      "0.5000": [
+       "-12.237 + v.kick * (-0.380 + v.ads * 0.228) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "8.389 + v.kick * (0.325 + v.ads * -0.195) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-12.061 + v.kick * (0.001 + v.ads * -0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+      ],
+      "0.6250": [
+       "-12.221 + v.kick * (-0.380 + v.ads * 0.228) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "8.606 + v.kick * (0.325 + v.ads * -0.195) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-12.565 + v.kick * (0.001 + v.ads * -0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+      ],
+      "0.7500": [
+       "-12.138 + v.kick * (-0.380 + v.ads * 0.228) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "8.754 + v.kick * (0.325 + v.ads * -0.195) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-12.929 + v.kick * (0.001 + v.ads * -0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+      ],
+      "0.8750": [
+       "-12.046 + v.kick * (-0.380 + v.ads * 0.228) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "8.838 + v.kick * (0.325 + v.ads * -0.195) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-13.150 + v.kick * (0.001 + v.ads * -0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+      ],
+      "1.0000": [
+       "-12.002 + v.kick * (-0.380 + v.ads * 0.228) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "8.865 + v.kick * (0.325 + v.ads * -0.195) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-13.225 + v.kick * (0.001 + v.ads * -0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+      ]
+     },
+     "scale": 0.25
+    }
+   }
+  },
+  "animation.joao.glock.terceira_mira": {
+   "loop": true,
+   "bones": {
+    "arma": {
+     "rotation": [
+      90.0,
+      -0.0,
+      -174.27
+     ],
+     "position": [
+      -0.0,
+      -1.0,
+      0.0
+     ],
+     "scale": 0.25
+    }
+   }
+  },
+  "animation.joao.glock.terceira_baixo": {
+   "loop": true,
+   "bones": {
+    "arma": {
+     "rotation": [
+      162.0,
+      -0.0,
+      -180.0
+     ],
+     "position": [
+      -0.0,
+      -1.0,
+      0.0
+     ],
+     "scale": 0.25
+    }
+   }
+  },
+  "animation.joao.ak47.primeira_pessoa": {
+   "loop": true,
+   "animation_length": 1.05,
+   "anim_time_update": "v.ads",
+   "bones": {
+    "arma": {
+     "rotation": {
+      "0.0000": [
+       100.886,
+       -58.847,
+       119.482
+      ],
+      "0.1250": [
+       100.485,
+       -59.057,
+       119.882
+      ],
+      "0.2500": [
+       99.403,
+       -59.603,
+       120.963
+      ],
+      "0.3750": [
+       97.813,
+       -60.36,
+       122.56
+      ],
+      "0.5000": [
+       95.899,
+       -61.202,
+       124.494
+      ],
+      "0.6250": [
+       93.882,
+       -62.015,
+       126.545
+      ],
+      "0.7500": [
+       92.034,
+       -62.698,
+       128.433
+      ],
+      "0.8750": [
+       90.676,
+       -63.165,
+       129.826
+      ],
+      "1.0000": [
+       90.149,
+       -63.339,
+       130.367
+      ]
+     },
+     "position": {
+      "0.0000": [
+       "-9.861 + v.kick * (-0.266 + v.ads * 0.160) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "6.433 + v.kick * (0.227 + v.ads * -0.136) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-5.800 + v.kick * (0.000 + v.ads * -0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+      ],
+      "0.1250": [
+       "-9.961 + v.kick * (-0.266 + v.ads * 0.160) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "6.597 + v.kick * (0.227 + v.ads * -0.136) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-6.164 + v.kick * (0.000 + v.ads * -0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+      ],
+      "0.2500": [
+       "-10.224 + v.kick * (-0.266 + v.ads * 0.160) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "7.029 + v.kick * (0.227 + v.ads * -0.136) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-7.123 + v.kick * (0.000 + v.ads * -0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+      ],
+      "0.3750": [
+       "-10.597 + v.kick * (-0.266 + v.ads * 0.160) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "7.640 + v.kick * (0.227 + v.ads * -0.136) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-8.478 + v.kick * (0.000 + v.ads * -0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+      ],
+      "0.5000": [
+       "-10.989 + v.kick * (-0.266 + v.ads * 0.160) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "8.319 + v.kick * (0.227 + v.ads * -0.136) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-9.993 + v.kick * (0.000 + v.ads * -0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+      ],
+      "0.6250": [
+       "-11.085 + v.kick * (-0.266 + v.ads * 0.160) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "8.822 + v.kick * (0.227 + v.ads * -0.136) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-11.189 + v.kick * (0.000 + v.ads * -0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+      ],
+      "0.7500": [
+       "-10.955 + v.kick * (-0.266 + v.ads * 0.160) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "9.132 + v.kick * (0.227 + v.ads * -0.136) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-12.001 + v.kick * (0.000 + v.ads * -0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+      ],
+      "0.8750": [
+       "-10.758 + v.kick * (-0.266 + v.ads * 0.160) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "9.288 + v.kick * (0.227 + v.ads * -0.136) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-12.463 + v.kick * (0.000 + v.ads * -0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+      ],
+      "1.0000": [
+       "-10.657 + v.kick * (-0.266 + v.ads * 0.160) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "9.332 + v.kick * (0.227 + v.ads * -0.136) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-12.609 + v.kick * (0.000 + v.ads * -0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+      ]
+     },
+     "scale": 0.25
+    }
+   }
+  },
+  "animation.joao.ak47.terceira_mira": {
+   "loop": true,
+   "bones": {
+    "arma": {
+     "rotation": [
+      90.0,
+      -0.0,
+      -174.27
+     ],
+     "position": [
+      -0.0,
+      -1.0,
+      0.0
+     ],
+     "scale": 0.25
+    }
+   }
+  },
+  "animation.joao.ak47.terceira_baixo": {
+   "loop": true,
+   "bones": {
+    "arma": {
+     "rotation": [
+      162.0,
+      -0.0,
+      -180.0
+     ],
+     "position": [
+      -0.0,
+      -1.0,
+      0.0
+     ],
+     "scale": 0.25
+    }
+   }
+  },
+  "animation.joao.m4a4.primeira_pessoa": {
+   "loop": true,
+   "animation_length": 1.05,
+   "anim_time_update": "v.ads",
+   "bones": {
+    "arma": {
+     "rotation": {
+      "0.0000": [
+       100.886,
+       -58.847,
+       119.482
+      ],
+      "0.1250": [
+       100.459,
+       -59.056,
+       119.878
+      ],
+      "0.2500": [
+       99.309,
+       -59.602,
+       120.951
+      ],
+      "0.3750": [
+       97.62,
+       -60.358,
+       122.539
+      ],
+      "0.5000": [
+       95.587,
+       -61.201,
+       124.47
+      ],
+      "0.6250": [
+       93.446,
+       -62.015,
+       126.523
+      ],
+      "0.7500": [
+       91.484,
+       -62.698,
+       128.419
+      ],
+      "0.8750": [
+       90.042,
+       -63.165,
+       129.822
+      ],
+      "1.0000": [
+       89.483,
+       -63.339,
+       130.367
+      ]
+     },
+     "position": {
+      "0.0000": [
+       "-10.121 + v.kick * (-0.266 + v.ads * 0.160) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "6.868 + v.kick * (0.227 + v.ads * -0.136) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-6.189 + v.kick * (0.000 + v.ads * -0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+      ],
+      "0.1250": [
+       "-10.186 + v.kick * (-0.266 + v.ads * 0.160) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "7.004 + v.kick * (0.227 + v.ads * -0.136) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-6.531 + v.kick * (0.000 + v.ads * -0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+      ],
+      "0.2500": [
+       "-10.359 + v.kick * (-0.266 + v.ads * 0.160) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "7.364 + v.kick * (0.227 + v.ads * -0.136) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-7.435 + v.kick * (0.000 + v.ads * -0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+      ],
+      "0.3750": [
+       "-10.602 + v.kick * (-0.266 + v.ads * 0.160) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "7.872 + v.kick * (0.227 + v.ads * -0.136) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-8.712 + v.kick * (0.000 + v.ads * -0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+      ],
+      "0.5000": [
+       "-10.846 + v.kick * (-0.266 + v.ads * 0.160) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "8.433 + v.kick * (0.227 + v.ads * -0.136) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-10.138 + v.kick * (0.000 + v.ads * -0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+      ],
+      "0.6250": [
+       "-10.794 + v.kick * (-0.266 + v.ads * 0.160) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "8.817 + v.kick * (0.227 + v.ads * -0.136) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-11.245 + v.kick * (0.000 + v.ads * -0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+      ],
+      "0.7500": [
+       "-10.535 + v.kick * (-0.266 + v.ads * 0.160) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "9.025 + v.kick * (0.227 + v.ads * -0.136) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-11.979 + v.kick * (0.000 + v.ads * -0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+      ],
+      "0.8750": [
+       "-10.247 + v.kick * (-0.266 + v.ads * 0.160) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "9.109 + v.kick * (0.227 + v.ads * -0.136) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-12.385 + v.kick * (0.000 + v.ads * -0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+      ],
+      "1.0000": [
+       "-10.111 + v.kick * (-0.266 + v.ads * 0.160) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "9.125 + v.kick * (0.227 + v.ads * -0.136) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-12.511 + v.kick * (0.000 + v.ads * -0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+      ]
+     },
+     "scale": 0.25
+    },
+    "alca": {
+     "scale": "math.clamp(1.0 - (v.ads - 0.55) * 5.0, 0.0, 1.0)"
+    }
+   }
+  },
+  "animation.joao.m4a4.terceira_mira": {
+   "loop": true,
+   "bones": {
+    "arma": {
+     "rotation": [
+      90.0,
+      -0.0,
+      -174.27
+     ],
+     "position": [
+      -0.0,
+      -1.0,
+      0.0
+     ],
+     "scale": 0.25
+    }
+   }
+  },
+  "animation.joao.m4a4.terceira_baixo": {
+   "loop": true,
+   "bones": {
+    "arma": {
+     "rotation": [
+      162.0,
+      -0.0,
+      -180.0
+     ],
+     "position": [
+      -0.0,
+      -1.0,
+      0.0
+     ],
+     "scale": 0.25
+    }
+   }
+  },
+  "animation.joao.sem_maos": {
+   "loop": true,
+   "bones": {
+    "maos": {
+     "scale": 0
+    }
+   }
+  },
+  "animation.joao.clarao": {
+   "loop": true,
+   "bones": {
+    "flash": {
+     "scale": "v.mostra_clarao ? 1.0 : 0.0"
+    }
+   }
+  }
+ }
+}

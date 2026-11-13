@@ -1,0 +1,71 @@
+{
+  "format_version": "1.20.20",
+  "sound_definitions": {
+    "joao.ak47.tiro": {
+      "category": "player",
+      "min_distance": 4.0,
+      "max_distance": 96.0,
+      "sounds": [
+        {
+          "name": "sounds/joao/ak47_0",
+          "volume": 1.0
+        },
+        {
+          "name": "sounds/joao/ak47_1",
+          "volume": 1.0
+        },
+        {
+          "name": "sounds/joao/ak47_2",
+          "volume": 1.0
+        }
+      ]
+    },
+    "joao.m4a4.tiro": {
+      "category": "player",
+      "min_distance": 4.0,
+      "max_distance": 96.0,
+      "sounds": [
+        {
+          "name": "sounds/joao/m4a4_0",
+          "volume": 1.0
+        },
+        {
+          "name": "sounds/joao/m4a4_1",
+          "volume": 1.0
+        },
+        {
+          "name": "sounds/joao/m4a4_2",
+          "volume": 1.0
+        }
+      ]
+    },
+    "joao.glock.tiro": {
+      "category": "player",
+      "min_distance": 4.0,
+      "max_distance": 64.0,
+      "sounds": [
+        {
+          "name": "sounds/joao/glock_0",
+          "volume": 1.0
+        },
+        {
+          "name": "sounds/joao/glock_1",
+          "volume": 1.0
+        },
+        {
+          "name": "sounds/joao/glock_2",
+          "volume": 1.0
+        }
+      ]
+    },
+    "joao.vazio": {
+      "category": "player",
+      "sounds": [
+        {
+          "name": "sounds/joao/vazio",
+          "volume": 0.8
+        }
+      ]
+    }
+  }
+}

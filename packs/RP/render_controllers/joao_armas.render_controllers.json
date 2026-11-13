@@ -1,0 +1,19 @@
+{
+ "format_version": "1.10.0",
+ "render_controllers": {
+  "controller.render.joao_arma": {
+   "geometry": "Geometry.default",
+   "materials": [
+    {
+     "*": "Material.default"
+    },
+    {
+     "flash": "Material.flash"
+    }
+   ],
+   "textures": [
+    "Texture.default"
+   ]
+  }
+ }
+}
