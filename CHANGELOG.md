@@ -2,6 +2,16 @@
 
 Formato: versão — data — o que mudou. Marque **[testado no celular]** quando o Afonso confirmar no aparelho do João.
 
+## 1.6.0 — 2026-11-13
+- **AWP**: sniper de ferrolho com luneta, no estilo do CS.
+  - **Mira igual à do CS**: a tela fica preta com um círculo grande no meio e o retículo em cruz. A arma some enquanto você está na luneta.
+  - Um tiro derruba zumbi, esqueleto e a maioria dos bichos; empurra forte.
+  - Ferrolho lento: ~1,2 s entre tiros, um tiro por toque.
+  - Sem a luneta o tiro é bem impreciso; mirando, acerta longe.
+  - Munição de Sniper nova (ferro + pólvora, 4 por vez), com cartucho próprio.
+  - Modelo verde da Accuracy International: cano longo canelado, freio de boca, coronha vazada, carregador reto e luneta com torres de ajuste.
+- **Armas carregam mais rápido**: as texturas das quatro armas usam 4x menos memória, com o mesmo visual.
+
 ## 1.5.0 — 2026-11-13
 - **AK-47 refeita peça por peça** (padrão AKM):
   - tampa com nervuras e botão de trava;

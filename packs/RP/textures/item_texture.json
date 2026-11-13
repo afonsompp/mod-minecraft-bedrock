@@ -16,6 +16,12 @@
     },
     "joao_municao_fuzil": {
       "textures": "textures/items/municao_fuzil"
+    },
+    "joao_awp": {
+      "textures": "textures/items/awp"
+    },
+    "joao_municao_sniper": {
+      "textures": "textures/items/municao_sniper"
     }
   }
 }

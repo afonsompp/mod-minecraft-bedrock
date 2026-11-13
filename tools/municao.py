@@ -69,8 +69,16 @@ for cx in (195, 317):
     r = cartucho(r, cx, 40, 78, 300, 140, neck=1)
 r = contorno(r)
 r.resize((64, 64), Image.LANCZOS).save(f"{OUT}/municao_fuzil.png")
-prev = Image.new("RGBA", (260, 130), (139, 139, 139, 255))
+# Munição de sniper: 2 cartuchos .338 (mais longos e grossos, ogiva comprida)
+sn = Image.new("RGBA", (S, S), (0, 0, 0, 0))
+for cx in (190, 322):
+    sn = cartucho(sn, cx, 18, 96, 336, 158, neck=1)
+sn = contorno(sn)
+sn.resize((64, 64), Image.LANCZOS).save(f"{OUT}/municao_sniper.png")
+
+prev = Image.new("RGBA", (390, 130), (139, 139, 139, 255))
 prev.alpha_composite(p.resize((128, 128), Image.LANCZOS), (0, 1)); prev.alpha_composite(r.resize((128, 128), Image.LANCZOS), (130, 1))
+prev.alpha_composite(sn.resize((128, 128), Image.LANCZOS), (260, 1))
 if PREV:
     prev.save(f"{PREV}/municao.png")
 print("ok")

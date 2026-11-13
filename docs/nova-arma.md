@@ -40,13 +40,13 @@ A lista de armas está repetida em vários lugares, então siga a lista inteira:
 
 ## Valores de referência
 
-| Parâmetro | Fuzil com alça no meio (AK) | Fuzil com alça atrás (M4) | Pistola (Glock) |
-|---|---|---|---|
-| `olho` (un. de câmera, 1/16 bloco) | 7,5 | 3,5 | 2,5 |
-| `atirando` (fração do caminho até a mira) | 0,45 | 0,45 | 0,3 |
-| `intervalo` (ticks entre tiros) | 3 | 3 | 5 |
-| `mira.fov` / `mira.dispersao` | 52 / 0,3 | 52 / 0,3 | 58 / 0,4 |
-| `yaw` / `pitch` / `roll` no quadril | 5,7 / 1 / −4 | 5,7 / 1 / −4 | 5,8 / 1 / −3 |
+| Parâmetro | Fuzil com alça no meio (AK) | Fuzil com alça atrás (M4) | Pistola (Glock) | Sniper (AWP) |
+|---|---|---|---|---|
+| `olho` (un. de câmera, 1/16 bloco) | 7,5 | 3,5 | 2,5 | 2,0 |
+| `atirando` (fração do caminho até a mira) | 0,45 | 0,45 | 0,3 | 0,3 |
+| `intervalo` (ticks entre tiros) | 3 | 3 | 5 | 25 |
+| `mira.fov` / `mira.dispersao` | 52 / 0,3 | 52 / 0,3 | 58 / 0,4 | 18 / 0,04 |
+| `yaw` / `pitch` / `roll` no quadril | 5,7 / 1 / −4 | 5,7 / 1 / −4 | 5,8 / 1 / −3 | 5,7 / 1 / −4 |
 
 - `olho` é a distância do olho ao ponto de trás da visada na mira. A alça no meio da arma pede olho mais longe, senão o olho entra na caixa. Alça traseira e pistola ficam perto; com olho grande, a pistola parece pequena e distante (v1.3.1).
 - `atirando` alto na pistola faz ela tapar a tela (v1.2.1).
@@ -57,6 +57,24 @@ A lista de armas está repetida em vários lugares, então siga a lista inteira:
 - Referência: add-ons de arma do mercado com 150 a 300 cubos por arma. O realismo vem da **geometria**: cada peça real que se vê de 1 m vira cubo (reténs, pinos, seletor, dobradiças, anéis, orelhas, dentes de trilho). Textura limpa, sem ruído fino. A luz é pintada automaticamente (degradê, reflexo, quinas) pelo `acabamento()`.
 - Medidas reais: defina a escala (cm por unidade) a partir do comprimento total e confira as proporções principais (cano, caixa, carregador, coronha). A M4A4 usa ~1,3 cm/un.
 - Cores: use os materiais existentes. Eles estão em cinzas médios de propósito, porque preto de verdade vira silhueta no jogo. Diferencie peças por material (ex.: `aco` na massa e nos pinos, `anodizado` no receptor, `carregador_m4` mais claro).
+
+## Tipos de arma
+
+`modelos.ARMAS[id] = (função, tipo)`. O tipo decide a animação de disparo e as mãos:
+
+| Tipo | Disparo | Mãos |
+|---|---|---|
+| `"fuzil"` | cicla enquanto o dedo está na tela (rajada) | duas mãos, a esquerda no guarda-mão |
+| `"pistola"` | 1 ciclo por toque | duas mãos juntas na empunhadura |
+| `"sniper"` | 1 ciclo por toque, com recuo bem maior | igual ao fuzil |
+
+## Arma com luneta
+
+- Ponha `luneta=True` no `info` e a `visada` no **eixo óptico** (centro da ocular → centro da objetiva).
+- Na mira completa (`v.ads` > 0,93), o gerador faz a **arma sumir** e mostra o osso `luneta`: um painel preto com furo circular e retículo em cruz, como nos FPS. Sem isso, o tubo da luneta taparia a visão.
+- O painel é **geometria** (faixas pretas), não textura: em textura precisaria de ~512x256 e estourava o atlas.
+- Ele é dimensionado para `FOV_MIRA` (`gerar.py`), que tem de ser **igual** ao `mira.fov` do `main.js`. Se o zoom não funcionar no aparelho, o painel aparece pequeno no meio da tela.
+- A luneta em si pode ser modelada sólida e realista: na mira ela não aparece.
 
 ## Regras de desenho da mira (lições das versões anteriores)
 

@@ -138,7 +138,7 @@ tools/
 
 ### Estado atual × alvo (migração)
 
-- **Hoje** (v1.5.0): só existe o domínio armas. O `main.js` ainda guarda o objeto `ARMAS` por ID, e os geradores estão em arquivos únicos (`modelos.py`, `gerar.py`, `geometria.py`, `sons.py`).
+- **Hoje** (v1.6.0): só existe o domínio armas. O `main.js` ainda guarda o objeto `ARMAS` por ID, e os geradores estão em arquivos únicos (`modelos.py`, `gerar.py`, `geometria.py`, `sons.py`).
 - **Quando**: migre para a estrutura acima **ao entrar a segunda categoria** (provavelmente o primeiro dinossauro), ou antes, se uma mudança em armas já pedir isso.
 - **Como**: faça a migração em commit próprio, **sem mudar comportamento**. Verifique que `--gerar` produz arquivos idênticos aos de antes (exceto `.ogg`) e que `npm run check` passa. Só então comece o conteúdo novo.
 - Na migração das armas para `joao:arma_fogo` + tags, **mantenha os IDs dos itens** (`joao:glock`, `joao:ak47`, `joao:m4a4`, munições). Mudar ID apaga os itens do inventário do João.
@@ -187,6 +187,7 @@ tools/
   - recuo só para trás, no eixo da câmera, para não tirar a mira;
   - pistola anima 1 tiro por toque, fuzil cicla enquanto segura;
   - alça perto do olho (peep da M4) fica no osso `alca` e se recolhe na mira, porque senão tapa o centro da tela;
+  - arma com luneta (`info["luneta"]`): na mira completa a **arma some** e entra o osso `luneta`, um painel preto com furo circular e retículo, como nos FPS. Ele é dimensionado para `FOV_MIRA`, então **depende do zoom funcionar**;
   - zoom via `/camera fov_set` no script;
   - luneta futura = mesma coisa, com `visada` no eixo do tubo e `fov` menor.
 
@@ -219,7 +220,7 @@ Detalhamento (helpers de `modelos.py`, atlas, pintura 3D, recuo, clarão, mira e
 - No attachable, `q.*` são as queries do **jogador** e `v.*` são variáveis do próprio attachable, que persistem entre quadros. Variável do jogador só é legível se for pública (`c.owning_entity->v.joao_mira`).
 - Rotação no Bedrock **não** é a convenção matemática comum. Use `tools/bt.py`; não chute sinais.
 
-## Estado (v1.5.0)
+## Estado (v1.6.0)
 
 Histórico completo no `CHANGELOG.md`. Resumo do que importa para continuar:
 
@@ -230,7 +231,9 @@ Histórico completo no `CHANGELOG.md`. Resumo do que importa para continuar:
   - câmera calibrada (`CALIB` + `AGACHADO`, encaixe ~0 na v1.3.1);
   - `v.ads` persiste e `q.is_sneaking` funciona no attachable.
 - **Entregue e ainda não visto no aparelho:**
-  - as três armas no padrão novo, peça por peça: M4A4 com 142 cubos (v1.4.0), AK com 88 e Glock com 55 (v1.5.0);
+  - as quatro armas no padrão novo, peça por peça: M4A4 com 142 cubos (v1.4.0), AK com 88, Glock com 55 (v1.5.0) e AWP com 89 + 74 do painel da luneta (v1.6.0);
+  - AWP: sniper de ferrolho com mira estilo CS (painel preto com furo circular), dano 30, munição própria;
+  - atlas 4x menor em todas as armas (empacotamento por altura, v1.6.0);
   - paleta clara e estilo limpo com luz pintada (v1.4.0/v1.4.1);
   - alça da M4 que se recolhe na mira (v1.4.2);
   - pintura 3D das texturas (v1.3.0): julgar contraste no jogo;
@@ -239,11 +242,12 @@ Histórico completo no `CHANGELOG.md`. Resumo do que importa para continuar:
 
   Pedir prints mirando (AK e Glock), em pé e atirando em pé.
 - **A confirmar:**
-  - se o zoom (`/camera fov_set`) funciona sem cheats;
+  - **o zoom (`/camera fov_set`) — agora é crítico**: o painel da luneta da AWP é dimensionado para `FOV_MIRA` (18°). Se o zoom não funcionar, ele aparece como um disco pequeno no meio da tela em vez de cobrir tudo. É o primeiro teste a fazer com a AWP;
   - se a compensação de balanço faz a arma balançar com o "balanço da visão" desligado;
   - como fica no PC (16:9).
 - **Pendências e ideias:**
   - mãos visíveis segurando a Glock na mira (hoje parece uma coluna solta);
+  - som de ferrolho da AWP entre os tiros (hoje só o estampido);
   - marcações gravadas (seletor, inscrições);
   - amostras de material geradas por IA (Nano Banana) lidas pela `paint()`;
   - coice de câmera no tiro (`camerashake`), se o João sentir falta;

@@ -16,6 +16,7 @@ import { world, system, GameMode, EntityDamageCause } from "@minecraft/server";
  * @property {number} tom
  * @property {number} dispersao   imprecisão do tiro
  * @property {Mira} mira          mira (agachar): zoom e precisão
+ * @property {number} [empurrao]  força do empurrão no alvo (padrão 0.4; sniper empurra mais)
  */
 
 /**
@@ -43,12 +44,20 @@ const ARMAS = {
     municao: "joao:municao_fuzil", som: "joao.m4a4.tiro", tom: 1.0, dispersao: 0.02,
     mira: { fov: 52, dispersao: 0.3 },
   },
+  // Sniper de ferrolho: 1 tiro por toque, ciclo longo, derruba a maioria dos bichos num tiro.
+  // Sem luneta (de quadril) é muito imprecisa; na luneta vira um laser, como no CS.
+  "joao:awp": {
+    nome: "AWP", dano: 30, alcance: 160, intervalo: 25, automatica: false,
+    municao: "joao:municao_sniper", som: "joao.awp.tiro", tom: 1.0, dispersao: 0.12,
+    mira: { fov: 18, dispersao: 0.04 }, empurrao: 1.0,
+  },
 };
 
 /** @type {Record<string, string>} */
 const NOME_MUNICAO = {
   "joao:municao_pistola": "Munição de Pistola",
   "joao:municao_fuzil": "Munição de Fuzil",
+  "joao:municao_sniper": "Munição de Sniper",
 };
 
 // Entidades que o tiro deve atravessar
@@ -172,7 +181,8 @@ function atirar(p, id) {
     distancia = alvo.distance;
     try {
       alvo.entity.applyDamage(arma.dano, { cause: EntityDamageCause.entityAttack, damagingEntity: p });
-      alvo.entity.applyKnockback({ x: dir.x * 0.4, z: dir.z * 0.4 }, 0.1);
+      const emp = arma.empurrao ?? 0.4;
+      alvo.entity.applyKnockback({ x: dir.x * emp, z: dir.z * emp }, 0.1 * emp / 0.4);
     } catch {
       // algumas entidades não aceitam empurrão — tudo bem
     }

@@ -131,7 +131,8 @@ def contexto_face(c, f, w, h, caixas):
 METAIS = {"aco": "#56595e", "aco_claro": "#74787e", "aco_escuro": "#404246", "ferrolho": "#505357",
           "quebra_chama": "#3d3f42", "ferrolho_serrilha": "#505357", "carregador": "#424448",
           "carregador_m4": "#63666a", "anodizado": "#4c4f53", "guarda_mao": "#484b4f", "trilho": "#45484c"}
-POLIMEROS = {"polimero": "#3a3c3f", "polimero_grip": "#36383b", "borracha": "#2b2b2c"}
+POLIMEROS = {"polimero": "#3a3c3f", "polimero_grip": "#36383b", "borracha": "#2b2b2c",
+             "chassi": "#4a523c"}   # verde-oliva da AWP (chassi Accuracy International)
 
 
 def base_3d(mat, cx):
@@ -272,7 +273,7 @@ def acabamento(mat, img, cx):
 def paint(mat, w, h, cx=None):
     """RGBA (h, w, 4) do material. Com contexto 3D (cx), pinta contínuo no espaço; sem, usa uma face plana."""
     if cx is None:
-        cx = dict(P=np.dstack(np.meshgrid(np.arange(w) / R, np.arange(h) / R) + [np.zeros((h, w))]),
+        cx = dict(P=np.dstack(list(np.meshgrid(np.arange(w) / R, np.arange(h) / R)) + [np.zeros((h, w))]),
                   n=np.array([0.0, 0.0, 1.0]), E=np.full((h, w), 9.0), ao=np.ones((h, w)),
                   eixo=np.array([1.0, 0, 0]) if w >= h else np.array([0, 1.0, 0]),
                   alt=np.repeat(1 - (np.arange(h) + 0.5)[:, None] / h, w, axis=1),
@@ -282,6 +283,25 @@ def paint(mat, w, h, cx=None):
     img = acabamento(mat, img, cx)
     rgba = np.concatenate([img.clip(0, 255), np.full((h, w, 1), 255.0)], axis=2)
     return rgba.astype(np.uint8)
+
+
+def painel_luneta_cubos(y, z, hw, hh, raio, faixas=34, linha=0.022, vao=0.05, m="boca"):
+    """Máscara da luneta (estilo CS) feita de GEOMETRIA, não de textura: faixas pretas que deixam um furo
+    circular e um retículo em cruz. Em textura, o painel precisaria de ~512x256 e estourava o atlas; em
+    cubos planos, as faces são de 1 px e o círculo fica liso e o retículo bem fino."""
+    def quad(x0, x1, y0, y1):
+        return dict(o=(x0, y + y0, z), s=(x1 - x0, y1 - y0, 0), m=m)
+
+    c = [quad(-hw, hw, raio, hh), quad(-hw, hw, -hh, -raio)]     # acima e abaixo do círculo
+    b = np.linspace(-raio, raio, faixas + 1)
+    for y0, y1 in zip(b[:-1], b[1:]):
+        dx = np.sqrt(max(raio ** 2 - max(abs(y0), abs(y1)) ** 2, 0.0))   # borda interna da faixa
+        c += [quad(-hw, -dx, y0, y1), quad(dx, hw, y0, y1)]
+    # retículo: cruz de ponta a ponta com um vão no centro
+    r9, v = raio * 0.995, raio * vao
+    c += [quad(-linha, linha, v, r9), quad(-linha, linha, -r9, -v),
+          quad(v, r9, -linha, linha), quad(-r9, -v, -linha, linha)]
+    return c
 
 
 def flash_texture(size):
@@ -299,40 +319,52 @@ def flash_texture(size):
 
 # ------------------------------------------------------------ atlas
 class Atlas:
+    """Empacota as faces numa textura. As faces entram em "prateleiras" ORDENADAS POR ALTURA: misturando
+    alturas na ordem de chegada, uma face alta esticava a prateleira inteira e o atlas da AWP ia a 2048 px
+    (8x a área necessária)."""
+
     def __init__(self, width_px=1024):
         self.W = width_px
-        self.x = self.y = self.row_h = 0
-        self.items = []  # (px, py, img)
+        self.pend = []        # imagens na ordem em que foram pedidas
+        self.pos = []         # posição final de cada uma (depois de empacotar)
 
     def add(self, img):
-        h, w = img.shape[:2]
-        pw, ph = w + 2 * PAD, h + 2 * PAD
-        if self.x + pw > self.W:
-            self.x = 0
-            self.y += self.row_h
-            self.row_h = 0
-        px, py = self.x + PAD, self.y + PAD
-        self.items.append((px, py, img))
-        self.x += pw
-        self.row_h = max(self.row_h, ph)
-        return px, py
+        self.pend.append(img)
+        return len(self.pend) - 1
+
+    def empacotar(self):
+        self.pos = [None] * len(self.pend)
+        x = y = linha_h = 0
+        ordem = sorted(range(len(self.pend)), key=lambda k: -self.pend[k].shape[0])
+        for k in ordem:
+            h, w = self.pend[k].shape[:2]
+            pw, ph = w + 2 * PAD, h + 2 * PAD
+            if x + pw > self.W:
+                x = 0
+                y += linha_h
+                linha_h = 0
+            self.pos[k] = (x + PAD, y + PAD)
+            x += pw
+            linha_h = max(linha_h, ph)
+        self.altura = y + linha_h
+        return self.pos
 
     def image(self):
-        H = self.y + self.row_h
-        H = 1 << (H - 1).bit_length()
+        H = 1 << (self.altura - 1).bit_length()
         out = np.zeros((H, self.W, 4), np.uint8)
-        for px, py, img in self.items:
+        for (px, py), img in zip(self.pos, self.pend):
             h, w = img.shape[:2]
             padded = np.pad(img, ((PAD, PAD), (PAD, PAD), (0, 0)), mode="edge")
             out[py - PAD:py + h + PAD, px - PAD:px + w + PAD] = padded
         return Image.fromarray(out, "RGBA")
 
 
-def build_geometry(identifier, bones_cubes, atlas_width=1024, flash_at=None):
+def build_geometry(identifier, bones_cubes, atlas_width=1024, flash_at=None, scope=None):
     """bones_cubes: lista de (nome_osso, pai, pivô, cubos). Retorna (geo_json, atlas_img, faces_render)."""
     atlas = Atlas(atlas_width)
     render_faces = []   # para o renderizador: (bone, cube, face, img)
     bones = []
+    pend_uv = []        # (dict do uv, face, índice no atlas) — resolvido depois de empacotar
     # oclusão: as peças da arma (todos os ossos menos "maos") sombreiam umas às outras; as mãos só a si mesmas,
     # porque somem fora da 1ª pessoa
     caixas_arma = [_caixa(c) for name, _, _, cs in bones_cubes if name != "maos" for c in cs]
@@ -345,8 +377,8 @@ def build_geometry(identifier, bones_cubes, atlas_width=1024, flash_at=None):
                 fw, fh = face_dims(c["s"], f)
                 pw, ph = max(1, int(round(fw * R))), max(1, int(round(fh * R)))
                 img = paint(c["m"], pw, ph, contexto_face(c, f, pw, ph, caixas))
-                px, py = atlas.add(img)
-                uv[f] = {"uv": [px / R, py / R], "uv_size": [fw, fh]}
+                uv[f] = {"uv": None, "uv_size": [fw, fh]}
+                pend_uv.append((uv, f, atlas.add(img)))
                 render_faces.append((name, c, f, img))
             jc = {"origin": [round(v, 4) for v in c["o"]], "size": [round(v, 4) for v in c["s"]], "uv": uv}
             if "r" in c:
@@ -360,12 +392,31 @@ def build_geometry(identifier, bones_cubes, atlas_width=1024, flash_at=None):
             b["parent"] = parent
         bones.append(b)
 
+    if scope is not None:
+        # painel da luneta: fica na frente do olho na mira, cobre a tela e tem o furo circular.
+        # Como a arma some na mira (ver gerar.py), o que se vê pelo furo é o mundo, não o modelo.
+        cubos = painel_luneta_cubos(scope["y"], scope["z"], scope["hw"], scope["hh"], scope["raio"])
+        jc = []
+        for c in cubos:
+            uv = {}
+            for f in FACES:
+                fw, fh = face_dims(c["s"], f)
+                pw, ph = max(1, int(round(fw * R))), max(1, int(round(fh * R)))
+                img = paint(c["m"], pw, ph)
+                uv[f] = {"uv": None, "uv_size": [fw, fh]}
+                pend_uv.append((uv, f, atlas.add(img)))
+                render_faces.append(("luneta", c, f, img))
+            jc.append({"origin": [round(v, 4) for v in c["o"]], "size": [round(v, 4) for v in c["s"]], "uv": uv})
+        bones.append({"name": "luneta", "parent": bones[0]["name"],
+                      "pivot": [0, scope["y"], scope["z"]], "cubes": jc})
+
     if flash_at is not None:
         fimg = flash_texture(64)
-        px, py = atlas.add(fimg)
+        kf = atlas.add(fimg)
         fx, fy, fz = flash_at
         size = 12
-        uvf = {"uv": [px / R, py / R], "uv_size": [16, 16]}
+        uvf = {"uv": None, "uv_size": [16, 16]}
+        pend_uv.append(({"flash": uvf}, "flash", kf))
         # dois planos cruzados + um de frente
         cubes = [
             {"origin": [fx - size / 2, fy - size / 2, fz], "size": [size, size, 0], "uv": {"north": uvf, "south": uvf}},
@@ -374,6 +425,8 @@ def build_geometry(identifier, bones_cubes, atlas_width=1024, flash_at=None):
         ]
         bones.append({"name": "flash", "parent": bones[0]["name"], "pivot": [fx, fy, fz], "cubes": cubes})
 
+    for (px, py), (d, f, k) in zip([atlas.empacotar()[k] for _, _, k in pend_uv], pend_uv):
+        d[f]["uv"] = [px / R, py / R]
     img = atlas.image()
     geo = {
         "format_version": "1.16.0",

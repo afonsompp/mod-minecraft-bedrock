@@ -71,5 +71,6 @@ for i in range(3):
     salvar(f"ak47_{i}", tiro(0.9, 2500, 900, 1.3, 0.22, 70 + i * 4, 10 + i))
     salvar(f"m4a4_{i}", tiro(0.8, 3500, 1300, 1.0, 0.18, 85 + i * 4, 20 + i))
     salvar(f"glock_{i}", tiro(0.6, 4000, 1600, 0.8, 0.12, 110 + i * 5, 30 + i))
+    salvar(f"awp_{i}", tiro(1.3, 2000, 700, 1.6, 0.35, 52 + i * 3, 40 + i))
 salvar("vazio", clique())
 print("ok")

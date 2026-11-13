@@ -17,7 +17,7 @@ MODELO = Path(__file__).resolve().parent / "site" / "modelo.html"
 MESES = "jan fev mar abr mai jun jul ago set out nov dez".split()
 
 # armas mostradas no topo (imagem gerada por gerar.py em previews/lado_t_<id>.png)
-ARMAS = [("m4a4", "M4A4"), ("ak47", "AK-47"), ("glock", "Glock")]
+ARMAS = [("awp", "AWP"), ("m4a4", "M4A4"), ("ak47", "AK-47"), ("glock", "Glock")]
 
 VERCEL = {
     "cleanUrls": True,

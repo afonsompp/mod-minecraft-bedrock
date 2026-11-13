@@ -33,7 +33,7 @@ def solve(nome, tm, tr, rear_z, x0):
 
 
 if __name__ == "__main__":
-    for nome, rear in (("ak47", -6), ("m4a4", -6), ("glock", -3)):
+    for nome, rear in (("ak47", -6), ("m4a4", -6), ("glock", -3), ("awp", -6)):
         corpo, maos, info, tipo = modelos.build(nome)
         rear_rel = rear - modelos.ARMAS[nome][0]()[1]["grip"][2]
         if tipo == "fuzil":

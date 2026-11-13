@@ -1,3 +1,8 @@
 # vínculo local com o projeto da Vercel (criado por "npx vercel link")
 .vercel/
 site/.vercel/
+
+# caches do Python e dependências do node
+__pycache__/
+*.pyc
+node_modules/

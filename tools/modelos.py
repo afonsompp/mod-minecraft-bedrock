@@ -382,10 +382,127 @@ def glock():
                    visada=((0, 7.25, -1.875), (0, 7.25, 12.25)))
 
 
+def anel(cx, cy, z0, z1, raio, esp, m):
+    """Anel vazado (4 paredes finas) em torno do eixo Z: sino da luneta. Olha-se pelo centro aberto."""
+    r, e = raio, esp
+    return [
+        box(cx - r, cx + r, cy + r - e, cy + r, z0, z1, m),          # topo
+        box(cx - r, cx + r, cy - r, cy - r + e, z0, z1, m),          # base
+        box(cx - r, cx - r + e, cy - r + e, cy + r - e, z0, z1, m),  # esquerda
+        box(cx + r - e, cx + r, cy - r + e, cy + r - e, z0, z1, m),  # direita
+    ]
+
+
+def awp():
+    """Sniper de ferrolho no padrão Accuracy International (chassi verde, cano flutuado, luneta grande).
+    ~1,36 cm por unidade (~86 un = ~1,17 m). Pontos calibrados: punho, visada (eixo da luneta), boca."""
+    c = []
+    V, S, D, P = "chassi", "aco", "aco_escuro", "polimero"
+    # ---------------- ação (caixa de aço) e ferrolho
+    c += [
+        sym(1.75, 1, 5.5, -9, 10, S),                    # corpo da ação
+        sym(1.5, 5.5, 6.25, -9, 10, S),                  # topo da ação (base do trilho)
+        sym(1.2, 6.25, 6.6, -8.5, 9.5, D),               # trilho
+        sym(0.9, 2.5, 4.75, -11.5, -9, S),               # cauda da ação
+        box(1.75, 2.5, 3.5, 5, -6, 3, S),                # corpo do ferrolho (direita)
+        box(2.5, 3, 3.9, 4.6, -5.5, -4, S),              # maçaneta: haste
+        box(2.9, 3.4, 3.6, 4.9, -5.6, -3.9, S),          # maçaneta: esfera
+        box(-2.1, -1.75, 2.5, 4, -8, -6.5, S),           # trava do ferrolho (esquerda)
+        box(1.75, 1.87, 3.6, 5, 2.5, 7.5, "boca"),       # janela de ejeção
+    ]
+    c += [sym(1.3, 6.6, 6.9, z, z + 0.4, D) for z in np.arange(-8, 9, 1.6)]   # dentes do trilho
+    # ---------------- chassi verde: corpo central, coronha vazada e apoio de rosto
+    c += [
+        sym(1.9, -1.5, 1, -11, 12, V),                   # corpo do chassi sob a ação
+        sym(2.1, -1.5, 2.5, 10, 12, V),                  # ombro de junção com o guarda-mão
+        sym(1.6, -2, -1.5, -8, 10, V),                   # quilha inferior
+        sym(2, 1, 4.5, -18, -11, V),                     # pescoço da coronha
+        sym(1.9, -1, 1, -24, -18, V),                    # barra inferior da coronha (vazada)
+        sym(1.9, 4.5, 7, -24, -17, V),                   # barra superior / apoio de rosto
+        sym(2.1, 7, 7.6, -23, -18, P),                   # almofada do apoio de rosto
+        sym(0.6, 1, 4.5, -23.5, -22, V),                 # montante traseiro (deixa o vão)
+        sym(2.2, -1.5, 7.5, -25.5, -24, P),              # soleira (borracha)
+        sym(1.1, -1.5, 1.5, -25.5, -24.5, S),            # espaçador da soleira
+        sym(0.3, -1.5, -1, -21, -20, S),                 # argola da bandoleira (coronha)
+    ]
+    # ---------------- empunhadura de pistola e gatilho
+    RG, PG = (-22, 0, 0), (0, -1, -5)
+    c += [
+        sym(1.5, -10, -1, -8, -3.5, V, r=RG, p=PG),      # empunhadura
+        sym(1.3, -10.5, -1, -8.6, -8, V, r=RG, p=PG),    # dorso
+        sym(1.6, -10.6, -10, -8.2, -3.7, P, r=RG, p=PG), # tampa da base
+        sym(0.5, -2.5, -2, -2.5, 3, S),                  # guarda-mato
+        sym(0.5, -2.5, -1.5, 2.5, 3, S),
+        sym(0.5, -2.25, -1.5, -3, -2.5, S),
+        sym(0.25, -2, -0.5, -0.75, 0, D),                # gatilho
+        sym(0.25, -2.4, -1.8, -1.1, -0.5, D),
+    ]
+    # ---------------- carregador reto destacado
+    c += [
+        sym(1.5, -6.5, -1, 1, 7, D),                     # corpo do carregador
+        sym(1.65, -7.2, -6.5, 0.8, 7.2, S),              # base
+        sym(1.55, -2.5, -1.2, 6.8, 7.6, S),              # lábio da frente
+        box(-1.8, -1.4, -1, 0.25, 7, 8.2, S),            # retém do carregador
+    ]
+    # ---------------- guarda-mão longo e cano flutuado (canelado) com freio de boca
+    c += [
+        sym(2.1, 0.5, 5, 12, 33, V),                     # guarda-mão (chassi)
+        sym(2.3, 1.5, 4, 14, 31, V),                     # abaulamento lateral
+        sym(1.9, 5, 5.6, 12, 33, V),                     # topo do guarda-mão
+        sym(2.2, 1.25, 4.25, 32.5, 33.5, S),             # anel da ponta do guarda-mão
+        sym(1.1, 1.6, 2, 25, 32, D),                     # trilho inferior (bipé)
+        sym(0.4, 0.6, 1.6, 27.5, 31, S),                 # pé do bipé recolhido
+        sym(0.3, 1.9, 2.4, 20, 21, S),                   # argola da bandoleira (frente)
+        sym(1, 2.6, 4.6, 10, 52, D),                     # cano (seção quadrada)
+        sym(0.8, 2.4, 4.8, 10, 52, D),                   # cano (seção cruzada: fica "redondo")
+        sym(1.3, 2.3, 4.9, 52, 57, D),                   # freio de boca
+        box(-1.35, 1.35, 4.9, 5.05, 53, 56.5, "boca"),   # rasgo de cima do freio
+        box(1.3, 1.45, 2.6, 4.6, 53, 54.5, "boca"),      # rasgos laterais
+        box(-1.45, -1.3, 2.6, 4.6, 53, 54.5, "boca"),
+        box(1.3, 1.45, 2.6, 4.6, 55.2, 56.5, "boca"),
+        box(-1.45, -1.3, 2.6, 4.6, 55.2, 56.5, "boca"),
+        sym(1.35, 2.25, 4.95, 56.6, 57, S),              # aro da boca
+        sym(0.45, 3.15, 4.05, 57, 57.2, "boca"),         # boca do cano
+    ]
+    # caneluras do cano (fluting): sulcos ao longo do cano exposto
+    c += [box(x, x + 0.25, 3.1, 4.1, 34, 50, "aco_escuro") for x in (-1.1, -0.15, 0.85)]
+    c += [sym(1.1, 2.5, 4.7, z, z + 0.6, S) for z in (34, 44, 50)]   # anéis do cano
+    # ---------------- luneta (sólida: na mira a arma some e o painel da luneta assume a tela)
+    EIXO_Y = 10.75                                       # altura do eixo óptico
+    RT = 1.5                                             # raio do tubo
+    c += [
+        sym(RT, EIXO_Y - RT, EIXO_Y + RT, -7.5, 12, D),          # tubo (seção quadrada)
+        sym(RT - 0.4, EIXO_Y - RT - 0.4, EIXO_Y + RT + 0.4, -7.5, 12, D),   # seção cruzada: fica "redondo"
+        sym(2.0, EIXO_Y - 2.0, EIXO_Y + 2.0, -9.75, -7.5, D),    # sino da ocular
+        sym(1.6, EIXO_Y - 2.4, EIXO_Y + 2.4, -9.75, -7.5, D),
+        sym(2.1, EIXO_Y - 2.1, EIXO_Y + 2.1, -10.1, -9.75, S),   # aro da ocular
+        sym(2.5, EIXO_Y - 2.5, EIXO_Y + 2.5, 12, 16.5, D),       # sino da objetiva
+        sym(2.0, EIXO_Y - 2.9, EIXO_Y + 2.9, 12, 16.5, D),
+        sym(2.6, EIXO_Y - 2.6, EIXO_Y + 2.6, 16.5, 16.9, S),     # aro da objetiva
+        box(-2.0, 2.0, EIXO_Y - 2.0, EIXO_Y + 2.0, 16.9, 17.0, "boca"),     # lente (escura)
+        sym(RT + 0.25, EIXO_Y - RT - 0.25, EIXO_Y + RT + 0.25, 7.5, 9.5, D),  # anel do aumento
+        box(-1.75, 1.75, EIXO_Y + RT + 0.25, EIXO_Y + RT + 0.45, 7.8, 9.2, S),
+        box(-0.7, 0.7, EIXO_Y + RT, EIXO_Y + RT + 1.3, -1.5, 1, D),          # torre de elevação
+        box(-0.85, 0.85, EIXO_Y + RT + 1.3, EIXO_Y + RT + 1.6, -1.6, 1.1, S),
+        box(RT, RT + 1.3, EIXO_Y - 0.7, EIXO_Y + 0.7, -1.5, 1, D),           # torre lateral
+        box(RT + 1.3, RT + 1.6, EIXO_Y - 0.85, EIXO_Y + 0.85, -1.6, 1.1, S),
+        # anéis de montagem: ligam o tubo ao trilho da ação
+        sym(1.5, 6.9, EIXO_Y - RT, -6.8, -4.2, S),       # pé traseiro
+        sym(1.5, 6.9, EIXO_Y - RT, 4.5, 7.1, S),         # pé dianteiro
+        sym(1.85, EIXO_Y - RT - 0.35, EIXO_Y - RT + 0.35, -7, -4, S),   # abraçadeira traseira
+        sym(1.85, EIXO_Y - RT - 0.35, EIXO_Y - RT + 0.35, 4.3, 7.3, S), # abraçadeira dianteira
+        box(-1.9, 1.9, EIXO_Y + RT - 0.35, EIXO_Y + RT + 0.35, -7, -4, S),
+        box(-1.9, 1.9, EIXO_Y + RT - 0.35, EIXO_Y + RT + 0.35, 4.3, 7.3, S),
+    ]
+    # visada: centro da ocular -> centro da objetiva (eixo óptico)
+    return c, dict(grip=(0, -3.5, -1.5), muzzle=(0, 3.6, 57.2), handguard=(0, 1, 22),
+                   visada=((0, EIXO_Y, -8.75), (0, EIXO_Y, 14.25)), luneta=True)
+
+
 def maos(info, tipo):
     """Mãos com luva + manga, só aparecem em primeira pessoa (coordenadas já relativas ao punho)."""
     c = []
-    if tipo == "fuzil":
+    if tipo in ("fuzil", "sniper"):
         # mão direita fechada na empunhadura
         c.append(sym(2.5, -7, -0.5, -6.5, 0.5, "luva", r=(-20, 0, 0), p=(0, -0.5, -3)))
         c.append(box(-2.5, -1.5, -1.5, 0.5, 0.5, 3, "luva"))     # dedo no guarda-mato
@@ -407,6 +524,7 @@ ARMAS = {
     "ak47": (ak47, "fuzil"),
     "m4a4": (m4a4, "fuzil"),
     "glock": (glock, "pistola"),
+    "awp": (awp, "sniper"),
 }
 
 

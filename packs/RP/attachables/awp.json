@@ -1,0 +1,67 @@
+{
+ "format_version": "1.10.0",
+ "minecraft:attachable": {
+  "description": {
+   "identifier": "joao:awp",
+   "materials": {
+    "default": "entity_alphatest",
+    "enchanted": "entity_alphatest_glint",
+    "flash": "entity_beam_additive"
+   },
+   "textures": {
+    "default": "textures/entity/joao/awp",
+    "enchanted": "textures/misc/enchanted_item_glint"
+   },
+   "geometry": {
+    "default": "geometry.joao.awp"
+   },
+   "animations": {
+    "primeira": "animation.joao.awp.primeira_pessoa",
+    "terceira_mira": "animation.joao.awp.terceira_mira",
+    "terceira_baixo": "animation.joao.awp.terceira_baixo",
+    "sem_maos": "animation.joao.sem_maos",
+    "clarao": "animation.joao.clarao"
+   },
+   "scripts": {
+    "pre_animation": [
+     "v.usando = q.main_hand_item_use_duration > 0.0;",
+     "v.t_tiro = (v.usando && !(v.usou ?? 0.0)) ? 0.0 : (v.t_tiro ?? 99.0) + q.delta_time;",
+     "v.usou = v.usando;",
+     "v.ciclo = math.min(v.t_tiro * 20.0 / 25.0, 1.0);",
+     "v.atirando = v.ciclo < 1.0;",
+     "v.kick = v.atirando ? (1.0 - v.ciclo) : 0.0;",
+     "v.mostra_clarao = v.atirando && v.ciclo < 0.34;",
+     "v.mira = c.owning_entity->v.joao_mira > 0.0;",
+     "v.ads = v.ads ?? 0.0;",
+     "v.uso = q.main_hand_item_use_duration > 0.0;",
+     "v.t_solto = v.uso ? 0.0 : (v.t_solto ?? 99.0) + q.delta_time;",
+     "v.alvo_ads = q.is_sneaking ? 1.0 : (v.t_solto < 0.5 ? 0.3 : 0.0);",
+     "v.ads = v.ads + (v.alvo_ads - v.ads) * math.min(1.0, q.delta_time * 12.0);",
+     "v.respira = math.sin(q.life_time * 45.0) * 0.5;",
+     "v.mao_bob = v.mao_bob ?? 0.0;",
+     "v.mao_bob = v.mao_bob + ((q.is_on_ground && q.is_alive ? math.clamp(math.sqrt(math.pow(q.position_delta(0), 2.0) + math.pow(q.position_delta(2), 2.0)), 0.0, 0.1) : 0.0) - v.mao_bob) * 0.02;",
+     "v.passo_x = math.sin(-q.walk_distance * 180.0) * v.mao_bob * 9.75;",
+     "v.passo_y = -math.abs(math.cos(-q.walk_distance * 180.0)) * v.mao_bob * 15.0;"
+    ],
+    "animate": [
+     {
+      "primeira": "c.is_first_person"
+     },
+     {
+      "terceira_mira": "!c.is_first_person && v.mira"
+     },
+     {
+      "terceira_baixo": "!c.is_first_person && !v.mira"
+     },
+     {
+      "sem_maos": "!c.is_first_person"
+     },
+     "clarao"
+    ]
+   },
+   "render_controllers": [
+    "controller.render.joao_arma"
+   ]
+  }
+ }
+}

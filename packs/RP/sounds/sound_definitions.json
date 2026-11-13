@@ -66,6 +66,25 @@
           "volume": 0.8
         }
       ]
+    },
+    "joao.awp.tiro": {
+      "category": "player",
+      "min_distance": 6.0,
+      "max_distance": 160.0,
+      "sounds": [
+        {
+          "name": "sounds/joao/awp_0",
+          "volume": 1.0
+        },
+        {
+          "name": "sounds/joao/awp_1",
+          "volume": 1.0
+        },
+        {
+          "name": "sounds/joao/awp_2",
+          "volume": 1.0
+        }
+      ]
     }
   }
 }

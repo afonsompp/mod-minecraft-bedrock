@@ -50,6 +50,7 @@ PLACE = {
     "ak47": dict(grip=(8.19, -6.12, 7.30), yaw=5.7, pitch=1.0, roll=-4, intervalo=3, olho=7.5, atirando=0.45),
     "m4a4": dict(grip=(7.77, -6.09, 6.82), yaw=5.7, pitch=1.0, roll=-4, intervalo=3, olho=3.5, atirando=0.45),
     "glock": dict(grip=(4.70, -3.93, 5.42), yaw=5.8, pitch=1.0, roll=-3, intervalo=5, olho=2.5, atirando=0.3),
+    "awp": dict(grip=(8.19, -6.12, 7.30), yaw=5.7, pitch=1.0, roll=-4, intervalo=25, olho=2.0, atirando=0.3),
 }
 # Mira (ADS): agachado = mira completa. Atirando em pé, a arma é puxada parte do caminho para o centro
 # (PLACE[...]["atirando"]: fração do caminho quadril -> mira; menor na Glock, que perto do olho ocupa a tela).
@@ -59,6 +60,24 @@ SOLTA_COMBATE = 0.5
 # Osso "alca" (alça com orifício, ex.: M4): encolhe para dentro da base entre v.ads 0,55 e 0,75. Atirando em pé
 # (v.ads 0,45) ela continua visível; na mira completa some e mira-se pela massa.
 ALCA_NA_MIRA = "math.clamp(1.0 - (v.ads - 0.55) * 5.0, 0.0, 1.0)"
+# Luneta (estilo CS): na mira completa a ARMA SOME e um painel preto com furo circular toma a tela.
+# É assim que os FPS fazem a mira de sniper; e resolve o tubo da luneta tapar a visão.
+FOV_MIRA = 18.0             # tem de ser igual ao ARMAS[...].mira.fov do main.js: dimensiona o painel
+NA_LUNETA = "(v.ads > 0.93 ? 1.0 : 0.0)"
+MIRA_CIRCULO = 0.86         # diâmetro do furo em fração da altura da tela
+
+
+def painel_luneta(cfg, info):
+    """Tamanho e posição do painel da luneta, no espaço do modelo. Ele fica logo atrás da ocular e é
+    dimensionado para cobrir a tela COM O FOV DA MIRA (se o zoom não funcionar no aparelho, aparece
+    pequeno no centro: é o sinal de que o /camera fov_set falhou)."""
+    y = info["visada"][0][1] - info["grip"][1]
+    z = info["visada_rel"][0][2] - 1.25                  # 1,25 un atrás da ocular
+    d = cfg["olho"] - 1.25 * ESCALA                      # distância do olho, em unidades de câmera
+    meia = d * np.tan(np.radians(FOV_MIRA / 2)) / ESCALA  # meia-altura da tela, em unidades de modelo
+    # o painel tem 1,5x a meia-altura da tela (folga para telas largas e FOV maior)
+    return dict(y=y, z=z, hw=round(meia * 2.4 * 1.5, 3), hh=round(meia * 1.5, 3),
+                raio=round(meia * MIRA_CIRCULO, 3))
 MIRA_VELOCIDADE = 12.0      # 1/s: ~0,25 s para chegar à mira
 # Balanços que o jogo aplica no braço/item em 1ª pessoa (player_firstperson.animation.json vanilla):
 #  - respiração (osso rightitem): y = v.bob_animation * sin(q.life_time * 45) * 0.5  -> ciclo de 8 s;
@@ -70,7 +89,7 @@ COMPENSA_RESPIRACAO = True
 COMPENSA_CAMINHADA = True
 RECUO_MIRA = 0.4            # recuo na mira, relativo ao recuo do quadril
 QUADROS_MIRA = 8            # segmentos do caminho quadril -> mira (quadros-chave dirigidos por v.ads)
-NOMES = {"ak47": "AK-47", "m4a4": "M4A4", "glock": "Glock"}
+NOMES = {"ak47": "AK-47", "m4a4": "M4A4", "glock": "Glock", "awp": "AWP"}
 
 
 def rot_axis(axis, ang):
@@ -158,10 +177,10 @@ def peso_agachado(a, atirando):
 
 def disparo_molang(tipo, intervalo):
     """Molang do recuo/clarão. Automática: cicla enquanto o gatilho está apertado (como a rajada do script).
-    Semiautomática (pistola): UM ciclo por aperto, mesmo segurando, igual ao script (itemUse = 1 tiro).
-    Antes a Glock ciclava enquanto o dedo ficava na tela, sem som nem tiro."""
+    Semiautomática (pistola) e ferrolho (sniper): UM ciclo por aperto, mesmo segurando, igual ao script
+    (itemUse = 1 tiro). Antes a Glock ciclava enquanto o dedo ficava na tela, sem som nem tiro."""
     I = f"{intervalo}.0"
-    if tipo != "pistola":
+    if tipo not in ("pistola", "sniper"):
         return [
             "v.atirando = q.main_hand_item_use_duration > 0.0;",
             f"v.ciclo = math.mod(q.life_time * 20.0, {I}) / {I};",
@@ -253,8 +272,9 @@ def main(RP, PREV):
         pass
 
     previews = []
-    for nome in ("glock", "ak47", "m4a4"):
+    for nome in ("glock", "ak47", "m4a4", "awp"):
         corpo, maos, info, tipo = modelos.build(nome)
+        cfg = cfg0 = PLACE[nome]
         corpo = offset(corpo, PIV)
         maos = offset(maos, PIV)
         muzzle = np.array(info["muzzle_rel"]) + PIV
@@ -265,15 +285,18 @@ def main(RP, PREV):
         if alca:
             ossos.append(("alca", "arma", PIV + np.array(info["alca_pivo_rel"]), alca))
         ossos.append(("maos", "arma", PIV, maos))
-        geo, atlas, faces = build_geometry(geo_id, ossos, flash_at=(muzzle[0], muzzle[1], muzzle[2] + 0.5))
+        luneta = painel_luneta(cfg0, info) if info.get("luneta") else None
+        if luneta:
+            luneta = dict(luneta, y=luneta["y"] + PIV[1], z=luneta["z"] + PIV[2])
+        geo, atlas, faces = build_geometry(geo_id, ossos, flash_at=(muzzle[0], muzzle[1], muzzle[2] + 0.5),
+                                           scope=luneta)
         (RP / f"models/entity/joao/{nome}.geo.json").write_text(json.dumps(geo, indent=1))
         atlas.save(RP / f"textures/entity/joao/{nome}.png")
 
-        cfg = PLACE[nome]
         fp = first_person(cfg)
         caminho = caminho_mira(cfg, pose_mira(cfg, info))
         ads = caminho[-1][1]
-        k = fp["kick"] * (0.5 if tipo == "pistola" else 0.35)
+        k = fp["kick"] * {"pistola": 0.5, "sniper": 0.9}.get(tipo, 0.35)   # sniper: coice bem maior
         dk = k * (RECUO_MIRA - 1.0)
         # recuo (aditivo) menor na mira
         recuo = [f" + v.kick * ({k[i]:.3f} + v.ads * {dk[i]:.3f})" for i in range(3)]
@@ -288,7 +311,11 @@ def main(RP, PREV):
             "animation_length": 1.05,
             "anim_time_update": "v.ads",
             "bones": {"arma": {"rotation": rot_kf, "position": pos_kf, "scale": ESCALA},
-                      **({"alca": {"scale": ALCA_NA_MIRA}} if alca else {})},
+                      **({"alca": {"scale": ALCA_NA_MIRA}} if alca else {}),
+                      # na luneta a arma some e só fica o painel (como no CS)
+                      **({"corpo": {"scale": f"1.0 - {NA_LUNETA}"},
+                          "maos": {"scale": f"1.0 - {NA_LUNETA}"},
+                          "luneta": {"scale": NA_LUNETA}} if luneta else {})},
         }
         for tag, tp in (("mira", TP_MIRA), ("baixo", TP_BAIXO)):
             animations[f"animation.joao.{nome}.terceira_{tag}"] = {
@@ -352,17 +379,23 @@ def main(RP, PREV):
             bgi = Image.new("RGBA", (W, H), (120, 160, 200, 255))
         fy = (H / 2) / np.tan(np.radians(VFOV / 2))
 
-        def proj(p):
+        def proj(p, fy=fy):
             return (W / 2 + p[0] / p[2] * fy, H / 2 - p[1] / p[2] * fy)
 
-        def render_fp(pose, rotulo=None, agachado=0.0, com_alca=True):
+        fy_mira = (H / 2) / np.tan(np.radians(FOV_MIRA / 2))
+
+        def render_fp(pose, rotulo=None, agachado=0.0, com_alca=True, na_luneta=False, zoom=False):
             def fp_world(q_bb):
                 # q_bb: pontos do modelo (bb). A(p) = P + T + R_g s (p - P); mundo = TB + R_BASE A
                 A = PIV + pose["T_bb"] + (pose["R_g"] @ (ESCALA * (q_bb - PIV).T)).T
                 Wd = TB + (R_BASE @ A.T).T
                 return ((Wd - CAM) @ BC) - agachado * AGACHADO   # coords de câmera (direita, cima, frente)
-            ossos_v = {"corpo": fp_world, "maos": fp_world, **({"alca": fp_world} if com_alca else {})}
-            im = render(faces, ossos_v, proj, (W, H), bg=bgi)
+            if na_luneta:                 # mira com luneta: a arma some, fica só o painel
+                ossos_v = {"luneta": fp_world}
+            else:
+                ossos_v = {"corpo": fp_world, "maos": fp_world, **({"alca": fp_world} if com_alca else {})}
+            pr = (lambda p: proj(p, fy_mira)) if zoom else proj
+            im = render(faces, ossos_v, pr, (W, H), bg=bgi.resize((W, H)) if not zoom else zoom_bg)
             from PIL import ImageDraw
             dr = ImageDraw.Draw(im)
             dr.line([(W / 2 - 8, H / 2), (W / 2 + 8, H / 2)], fill=(255, 255, 255, 255), width=2)
@@ -373,7 +406,12 @@ def main(RP, PREV):
 
         im_quadril = render_fp(fp)
         im_quadril.save(PREV / f"fp_{nome}.png")
-        im_mira = render_fp(mistura(caminho, 1.0), agachado=1.0, com_alca=False)      # pela mesma interpolação do jogo
+        # fundo "com zoom": o cenário da prévia ampliado, para simular o /camera fov_set
+        zoom_bg = bgi.resize((int(W * VFOV / FOV_MIRA), int(H * VFOV / FOV_MIRA)), Image.LANCZOS)
+        zx, zy = zoom_bg.width, zoom_bg.height
+        zoom_bg = zoom_bg.crop(((zx - W) // 2, (zy - H) // 2, (zx - W) // 2 + W, (zy - H) // 2 + H))
+        im_mira = render_fp(mistura(caminho, 1.0), agachado=1.0, com_alca=False,
+                            na_luneta=bool(luneta), zoom=bool(luneta))      # pela mesma interpolação do jogo
         im_mira.save(PREV / f"fp_mira_{nome}.png")
         quadros = [im_quadril, render_fp(mistura(caminho, cfg["atirando"])), im_mira]
         tira = Image.new("RGBA", (W // 2 * 3, H // 2))
@@ -447,7 +485,8 @@ def main(RP, PREV):
         previews.append((nome, tp_world, faces))
 
     anim = {"format_version": "1.10.0", "animations": animations}
-    anim["animations"]["animation.joao.sem_maos"] = {"loop": True, "bones": {"maos": {"scale": 0}}}
+    anim["animations"]["animation.joao.sem_maos"] = {"loop": True,
+        "bones": {"maos": {"scale": 0}, "luneta": {"scale": 0}}}
     anim["animations"]["animation.joao.clarao"] = {"loop": True, "bones": {"flash": {"scale": "v.mostra_clarao ? 1.0 : 0.0"}}}
     anim_json_path.write_text(json.dumps(anim, indent=1))
 
