@@ -2,6 +2,10 @@
 
 Formato: versão — data — o que mudou. Marque **[testado no celular]** quando o Afonso confirmar no aparelho do João.
 
+## 1.6.2 — 2026-11-13
+- Corrigido: **o tiro não saía no meio da mira da AWP** e a luneta parecia torta para um lado. O círculo estava 5° à direita e 8° acima do centro da tela, e o tiro sai sempre do centro. Agora o retículo fica no centro e o tiro sai nele.
+- A mesma correção deixa a mira das outras três armas um pouco mais certa.
+
 ## 1.6.1 — 2026-11-13
 - Corrigido: a **mira da AWP aparecia pequena e torta** no canto da tela, em vez de cobrir tudo. Eram duas coisas:
   - o zoom pedia um campo de visão que o jogo não aceita (o mínimo é 30), e era recusado em silêncio;

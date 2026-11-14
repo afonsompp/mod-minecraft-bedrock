@@ -35,9 +35,11 @@ CAM = CAM_BB + np.array(CALIB[:3])
 BC = rot_bb(CALIB[3:6]) @ BC_BB
 VFOV = CALIB[6]
 # Agachado, a câmera do jogo se desloca em relação ao braço (espaço da câmera: direita, cima, frente).
-# Medido com 3 prints de mira da v1.2.0 (celular): sem compensar, a arma ia para a esquerda, para cima e
-# encostava na câmera. O print de quadril rejeita esse deslocamento, então ele só vale agachado (FOV igual).
-AGACHADO = np.array([1.346, -1.009, 1.757])
+# Medido na v1.6.2 com o painel da luneta da AWP (`tools/calibrar_mira.py`), que fica a ~1,7 un do olho e
+# amplia o erro umas 4x em relação à AK: 6 quadros do vídeo com o jogador parado deram o mesmo valor.
+# Antes era (1,346, -1,009, 1,757), ajustado por silhueta na v1.2.1; o resíduo era pequeno demais para
+# aparecer nas outras armas, mas na luneta tirava o retículo 8° do centro — e o tiro sai do centro da tela.
+AGACHADO = np.array([1.187, -1.283, 1.521])
 
 # ---------------- terceira pessoa
 ARM_PIV = np.array([5.0, 22.0, 0.0])
