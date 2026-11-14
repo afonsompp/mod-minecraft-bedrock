@@ -73,7 +73,8 @@ A lista de armas está repetida em vários lugares, então siga a lista inteira:
 - Ponha `luneta=True` no `info` e a `visada` no **eixo óptico** (centro da ocular → centro da objetiva).
 - Na mira completa (`v.ads` > 0,93), o gerador faz a **arma sumir** e mostra o osso `luneta`: um painel preto com furo circular e retículo em cruz, como nos FPS. Sem isso, o tubo da luneta taparia a visão.
 - O painel é **geometria** (faixas pretas), não textura: em textura precisaria de ~512x256 e estourava o atlas.
-- Ele é dimensionado para `FOV_MIRA` (`gerar.py`), que tem de ser **igual** ao `mira.fov` do `main.js`. Se o zoom não funcionar no aparelho, o painel aparece pequeno no meio da tela.
+- Ele é dimensionado pelo FOV normal, então cobre a tela com zoom ou sem.
+- `mira.fov` no `main.js` só vale entre **30 e 110**: fora disso o jogo recusa o zoom em silêncio. E o `/camera fov_set` exige **Cheats ligados** no mundo.
 - A luneta em si pode ser modelada sólida e realista: na mira ela não aparece.
 
 ## Regras de desenho da mira (lições das versões anteriores)

@@ -138,7 +138,7 @@ tools/
 
 ### Estado atual × alvo (migração)
 
-- **Hoje** (v1.6.0): só existe o domínio armas. O `main.js` ainda guarda o objeto `ARMAS` por ID, e os geradores estão em arquivos únicos (`modelos.py`, `gerar.py`, `geometria.py`, `sons.py`).
+- **Hoje** (v1.6.1): só existe o domínio armas. O `main.js` ainda guarda o objeto `ARMAS` por ID, e os geradores estão em arquivos únicos (`modelos.py`, `gerar.py`, `geometria.py`, `sons.py`).
 - **Quando**: migre para a estrutura acima **ao entrar a segunda categoria** (provavelmente o primeiro dinossauro), ou antes, se uma mudança em armas já pedir isso.
 - **Como**: faça a migração em commit próprio, **sem mudar comportamento**. Verifique que `--gerar` produz arquivos idênticos aos de antes (exceto `.ogg`) e que `npm run check` passa. Só então comece o conteúdo novo.
 - Na migração das armas para `joao:arma_fogo` + tags, **mantenha os IDs dos itens** (`joao:glock`, `joao:ak47`, `joao:m4a4`, munições). Mudar ID apaga os itens do inventário do João.
@@ -220,7 +220,7 @@ Detalhamento (helpers de `modelos.py`, atlas, pintura 3D, recuo, clarão, mira e
 - No attachable, `q.*` são as queries do **jogador** e `v.*` são variáveis do próprio attachable, que persistem entre quadros. Variável do jogador só é legível se for pública (`c.owning_entity->v.joao_mira`).
 - Rotação no Bedrock **não** é a convenção matemática comum. Use `tools/bt.py`; não chute sinais.
 
-## Estado (v1.6.0)
+## Estado (v1.6.1)
 
 Histórico completo no `CHANGELOG.md`. Resumo do que importa para continuar:
 
@@ -232,7 +232,7 @@ Histórico completo no `CHANGELOG.md`. Resumo do que importa para continuar:
   - `v.ads` persiste e `q.is_sneaking` funciona no attachable.
 - **Entregue e ainda não visto no aparelho:**
   - as quatro armas no padrão novo, peça por peça: M4A4 com 142 cubos (v1.4.0), AK com 88, Glock com 55 (v1.5.0) e AWP com 89 + 74 do painel da luneta (v1.6.0);
-  - AWP: sniper de ferrolho com mira estilo CS (painel preto com furo circular), dano 30, munição própria;
+  - AWP: sniper de ferrolho com mira estilo CS (painel preto com furo circular), dano 30, munição própria. O vídeo da v1.6.0 confirmou que o painel, o furo e o retículo funcionam no jogo;
   - atlas 4x menor em todas as armas (empacotamento por altura, v1.6.0);
   - paleta clara e estilo limpo com luz pintada (v1.4.0/v1.4.1);
   - alça da M4 que se recolhe na mira (v1.4.2);
@@ -242,7 +242,8 @@ Histórico completo no `CHANGELOG.md`. Resumo do que importa para continuar:
 
   Pedir prints mirando (AK e Glock), em pé e atirando em pé.
 - **A confirmar:**
-  - **o zoom (`/camera fov_set`) — agora é crítico**: o painel da luneta da AWP é dimensionado para `FOV_MIRA` (18°). Se o zoom não funcionar, ele aparece como um disco pequeno no meio da tela em vez de cobrir tudo. É o primeiro teste a fazer com a AWP;
+  - **se o zoom funciona com Cheats ligados.** O `/camera fov_set` exige cheats e só aceita FOV de 30 a 110 (a v1.6.0 pedia 18 e era recusada em silêncio — foi o que apareceu no vídeo da AWP). `camera.setFov()` não existe na API 2.0.0, então o comando é o único caminho hoje;
+  - **se o zoom amplia também a arma.** O painel da luneta é dimensionado pelo FOV normal (`VFOV`), supondo que a arma em 1ª pessoa tem FOV próprio. Se um print mostrar a vinheta sumindo ao agachar, o zoom afeta a arma e o painel precisa ser dimensionado por `FOV_ZOOM`;
   - se a compensação de balanço faz a arma balançar com o "balanço da visão" desligado;
   - como fica no PC (16:9).
 - **Pendências e ideias:**

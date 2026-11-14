@@ -2,6 +2,12 @@
 
 Formato: versão — data — o que mudou. Marque **[testado no celular]** quando o Afonso confirmar no aparelho do João.
 
+## 1.6.1 — 2026-11-13
+- Corrigido: a **mira da AWP aparecia pequena e torta** no canto da tela, em vez de cobrir tudo. Eram duas coisas:
+  - o zoom pedia um campo de visão que o jogo não aceita (o mínimo é 30), e era recusado em silêncio;
+  - a mira ligava antes de a arma terminar de subir.
+- Agora a mira cobre a tela com ou sem zoom. Para ter a ampliação, o mundo precisa estar com **Cheats ligados**; se não estiver, aparece um aviso na tela e a mira funciona sem ampliar.
+
 ## 1.6.0 — 2026-11-13
 - **AWP**: sniper de ferrolho com luneta, no estilo do CS.
   - **Mira igual à do CS**: a tela fica preta com um círculo grande no meio e o retículo em cruz. A arma some enquanto você está na luneta.

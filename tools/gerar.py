@@ -62,8 +62,15 @@ SOLTA_COMBATE = 0.5
 ALCA_NA_MIRA = "math.clamp(1.0 - (v.ads - 0.55) * 5.0, 0.0, 1.0)"
 # Luneta (estilo CS): na mira completa a ARMA SOME e um painel preto com furo circular toma a tela.
 # É assim que os FPS fazem a mira de sniper; e resolve o tubo da luneta tapar a visão.
-FOV_MIRA = 18.0             # tem de ser igual ao ARMAS[...].mira.fov do main.js: dimensiona o painel
-NA_LUNETA = "(v.ads > 0.93 ? 1.0 : 0.0)"
+# O painel é dimensionado pelo FOV NORMAL (o da arma em 1ª pessoa, VFOV), não pelo FOV do zoom:
+# - o /camera fov_set precisa de cheats e só aceita de 30 a 110 (a v1.6.0 pedia 18 e era recusada);
+# - a arma em 1ª pessoa parece ter FOV próprio (a calibração deu 67,5, diferente do FOV do mundo),
+#   então o zoom amplia o mundo e não deve mexer no tamanho do painel.
+# Assim o painel cobre a tela com ou sem zoom. Se um print mostrar a vinheta sumindo quando agacha,
+# é porque o zoom TAMBÉM amplia a arma: aí é só dimensionar por FOV_ZOOM.
+FOV_ZOOM = 30.0             # igual ao ARMAS[...].mira.fov do main.js (mínimo que o jogo aceita)
+# só na mira completa: durante a aproximação a arma ainda está a caminho e o painel sairia torto
+NA_LUNETA = "(v.ads > 0.995 ? 1.0 : 0.0)"
 MIRA_CIRCULO = 0.86         # diâmetro do furo em fração da altura da tela
 
 
@@ -74,7 +81,7 @@ def painel_luneta(cfg, info):
     y = info["visada"][0][1] - info["grip"][1]
     z = info["visada_rel"][0][2] - 1.25                  # 1,25 un atrás da ocular
     d = cfg["olho"] - 1.25 * ESCALA                      # distância do olho, em unidades de câmera
-    meia = d * np.tan(np.radians(FOV_MIRA / 2)) / ESCALA  # meia-altura da tela, em unidades de modelo
+    meia = d * np.tan(np.radians(VFOV / 2)) / ESCALA      # meia-altura da tela, em unidades de modelo
     # o painel tem 1,5x a meia-altura da tela (folga para telas largas e FOV maior)
     return dict(y=y, z=z, hw=round(meia * 2.4 * 1.5, 3), hh=round(meia * 1.5, 3),
                 raio=round(meia * MIRA_CIRCULO, 3))
@@ -382,7 +389,7 @@ def main(RP, PREV):
         def proj(p, fy=fy):
             return (W / 2 + p[0] / p[2] * fy, H / 2 - p[1] / p[2] * fy)
 
-        fy_mira = (H / 2) / np.tan(np.radians(FOV_MIRA / 2))
+
 
         def render_fp(pose, rotulo=None, agachado=0.0, com_alca=True, na_luneta=False, zoom=False):
             def fp_world(q_bb):
@@ -394,8 +401,7 @@ def main(RP, PREV):
                 ossos_v = {"luneta": fp_world}
             else:
                 ossos_v = {"corpo": fp_world, "maos": fp_world, **({"alca": fp_world} if com_alca else {})}
-            pr = (lambda p: proj(p, fy_mira)) if zoom else proj
-            im = render(faces, ossos_v, pr, (W, H), bg=bgi.resize((W, H)) if not zoom else zoom_bg)
+            im = render(faces, ossos_v, proj, (W, H), bg=zoom_bg if zoom else bgi)
             from PIL import ImageDraw
             dr = ImageDraw.Draw(im)
             dr.line([(W / 2 - 8, H / 2), (W / 2 + 8, H / 2)], fill=(255, 255, 255, 255), width=2)
@@ -407,7 +413,7 @@ def main(RP, PREV):
         im_quadril = render_fp(fp)
         im_quadril.save(PREV / f"fp_{nome}.png")
         # fundo "com zoom": o cenário da prévia ampliado, para simular o /camera fov_set
-        zoom_bg = bgi.resize((int(W * VFOV / FOV_MIRA), int(H * VFOV / FOV_MIRA)), Image.LANCZOS)
+        zoom_bg = bgi.resize((int(W * VFOV / FOV_ZOOM), int(H * VFOV / FOV_ZOOM)), Image.LANCZOS)
         zx, zy = zoom_bg.width, zoom_bg.height
         zoom_bg = zoom_bg.crop(((zx - W) // 2, (zy - H) // 2, (zx - W) // 2 + W, (zy - H) // 2 + H))
         im_mira = render_fp(mistura(caminho, 1.0), agachado=1.0, com_alca=False,

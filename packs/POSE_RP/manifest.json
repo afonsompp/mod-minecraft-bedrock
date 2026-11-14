@@ -1,13 +1,13 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Armas do João v1.6.0 — pose de mira (3ª pessoa)",
+    "name": "Armas do João v1.6.1 — pose de mira (3ª pessoa)",
     "description": "Opcional: o personagem aponta a arma com os dois braços na visão de 3ª pessoa",
     "uuid": "3c1f6a52-7d0e-4c55-9a43-2f0d8b6e1a71",
     "version": [
       1,
       6,
-      0
+      1
     ],
     "min_engine_version": [
       1,
@@ -22,7 +22,7 @@
       "version": [
         1,
         6,
-        0
+        1
       ]
     }
   ]

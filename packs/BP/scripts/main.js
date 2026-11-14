@@ -2,7 +2,7 @@
 // Glock (semiautomática), AK-47 e M4A4 (automáticas: segure para atirar em rajada).
 // v1.1: modelos 3D (resource pack), sons próprios, sem chamas no chão.
 // v1.2: mira (agachar = mirar, com zoom e menos dispersão; a pose fica no resource pack).
-import { world, system, GameMode, EntityDamageCause } from "@minecraft/server";
+import { EasingType, EntityDamageCause, GameMode, system, world } from "@minecraft/server";
 
 /**
  * @typedef {Object} Arma
@@ -23,7 +23,8 @@ import { world, system, GameMode, EntityDamageCause } from "@minecraft/server";
  * Mira (ADS). A pose da arma na mira fica no resource pack (agachado = mira completa).
  * Fuzil com luneta: fov bem menor (ex.: 20) e dispersão ~0.
  * @typedef {Object} Mira
- * @property {number} fov         campo de visão ao mirar (graus, via /camera fov_set)
+ * @property {number} fov         campo de visão ao mirar, em graus. O jogo só aceita de 30 a 110:
+ *                                fora disso o zoom é recusado e a mira fica sem ampliação.
  * @property {number} dispersao   multiplicador da dispersão ao mirar
  */
 
@@ -49,7 +50,7 @@ const ARMAS = {
   "joao:awp": {
     nome: "AWP", dano: 30, alcance: 160, intervalo: 25, automatica: false,
     municao: "joao:municao_sniper", som: "joao.awp.tiro", tom: 1.0, dispersao: 0.12,
-    mira: { fov: 18, dispersao: 0.04 }, empurrao: 1.0,
+    mira: { fov: 30, dispersao: 0.04 }, empurrao: 1.0,
   },
 };
 
@@ -201,7 +202,8 @@ function atirar(p, id) {
   mostrarMunicao(p, id);
 }
 
-/** Zoom da mira: agachado segurando arma = FOV da arma; senão, FOV normal. Só manda comando quando muda.
+/** Zoom da mira: agachado segurando arma = FOV da arma; senão, FOV normal. Só age quando o estado muda.
+ * Usa a API da câmera (não precisa de cheats) e cai para o comando /camera se ela não existir.
  * @param {import("@minecraft/server").Player} p @param {string | undefined} id */
 function atualizarMira(p, id) {
   const arma = id ? ARMAS[id] : undefined;
@@ -209,11 +211,28 @@ function atualizarMira(p, id) {
   if (alvo === zoomAtual.get(p.id)) return;
   if (alvo === undefined) zoomAtual.delete(p.id);
   else zoomAtual.set(p.id, alvo);
+
+  // camera.setFov só existe em versões da API acima da 2.0.0; por isso o acesso é dinâmico
+  const cam = /** @type {any} */ (p.camera);
   try {
-    p.runCommand(alvo === undefined ? "camera @s fov_clear 0.2 in_out_sine" : `camera @s fov_set ${alvo} 0.2 in_out_sine`);
+    if (typeof cam.setFov === "function") {
+      if (alvo === undefined) cam.clear();
+      else cam.setFov({ fov: alvo, easeOptions: { easeTime: 0.2, easeType: EasingType.InOutSine } });
+      return;
+    }
+  } catch {
+    // cai para o comando
+  }
+  try {
+    p.runCommand(alvo === undefined
+      ? "camera @s fov_clear 0.2 in_out_sine"
+      : `camera @s fov_set ${alvo} 0.2 in_out_sine`);
   } catch (e) {
-    // versão do jogo sem /camera fov_set: a mira funciona, só sem zoom
-    if (!avisouCamera) /** @type {any} */ (globalThis).console?.warn(`[joao] zoom da mira indisponível: ${e}`);
+    // sem zoom: a mira continua centralizada, só não amplia. Avisa na tela, uma vez por sessão.
+    if (!avisouCamera) {
+      p.onScreenDisplay.setActionBar("§eZoom da mira indisponível (ligue os Cheats no mundo).");
+      /** @type {any} */ (globalThis).console?.warn(`[joao] zoom da mira indisponível: ${e}`);
+    }
     avisouCamera = true;
   }
 }
