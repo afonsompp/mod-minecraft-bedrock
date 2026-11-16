@@ -2,6 +2,10 @@
 
 Formato: versão — data — o que mudou. Marque **[testado no celular]** quando o Afonso confirmar no aparelho do João.
 
+## 1.6.5 — 2026-11-16
+- Corrigido: **a mira estava um pouco fora do centro em todas as armas** — o tiro saía um pouco à esquerda do que a alça e a massa mostravam, e na AWP o retículo ficava fora do meio. Faltava pouco mais de um grau, o bastante para errar de longe. A câmera do jogo foi medida de novo, em cinco prints.
+- Corrigido: **sem munição, a arma continuava dando coice e soltando clarão** a cada toque, como se estivesse atirando. Agora a animação só acontece quando o tiro sai mesmo, e de quebra o coice do fuzil bate certinho com a cadência dos tiros.
+
 ## 1.6.4 — 2026-11-16
 - **Um pacote de recursos só.** A pose de mira em 3ª pessoa era um segundo pacote para ativar no mundo; agora vem dentro do pacote principal. Se você tinha o **pose de mira (3ª pessoa)** instalado, pode apagar em Configurações > Armazenamento.
 - Corrigido: em 3ª pessoa, o personagem **não apontava a AWP** com os dois braços como faz com os outros fuzis.

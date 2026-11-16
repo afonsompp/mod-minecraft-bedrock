@@ -30,16 +30,22 @@ BC_BB = np.stack([_r, _u, _f], axis=1)      # colunas: direita, cima, frente (em
 # Câmera REAL do jogo: a do Blockbench não bate com o Bedrock (no celular a arma aparecia ~2x maior
 # e mais para baixo/direita, e a Glock saía da tela). Calibrada ajustando a silhueta da M4A4 renderizada
 # a um print do jogo (celular, 1600x738): [desloc. x, y, z da câmera, rotação bb rx, ry, rz, FOV vertical].
-# O 6º número (roll da câmera) é ZERO de propósito: o ajuste por silhueta da v1.1.1 tinha achado 1,963°,
-# mas a silhueta de um fuzil quase não restringe o roll, e era ruído do otimizador. Com ele, a arma saía
-# girada ~2° na tela do jogo — invisível nas miras de ferro, mas o retículo da luneta, que atravessa a
-# tela, ficava visivelmente torto (vídeo da v1.6.2). A prévia nunca mostrava, porque usa a mesma câmera.
-CALIB = [1.686, -0.153, 5.428, -1.187, 1.132, 0.0, 67.5]
+# OS TRÊS ÂNGULOS (4º, 5º e 6º números) NÃO SAEM MAIS DO AJUSTE POR SILHUETA. Uma silhueta de fuzil é
+# alongada e quase não muda quando a câmera gira um grau, então o otimizador da v1.1.1 punha ruído neles:
+# roll 1,963° (zerado na v1.6.3) e yaw 1,132° (corrigido para 0,220 na v1.6.5). Dá menos de um grau, que
+# some nas miras de ferro, mas o retículo da luneta atravessa a tela e denuncia.
+# Os valores de hoje vêm de MEDIR o retículo da AWP em dois prints do jogo (linhas de 1 px, erro ~0,07°):
+# ele caía ~1,2° à direita e ~1,1° acima do centro da tela, e as silhuetas da Glock, da M4A4 e da AK no
+# mesmo teste confirmaram o desvio horizontal. Um único par (rx, ry) explica as quatro armas, com resíduo
+# de 0,24° — dentro da precisão das silhuetas. Para repetir a medição: `tools/medir_mira.py`.
+# A PRÉVIA NUNCA MOSTRA ESSE TIPO DE ERRO: ela renderiza com a mesma câmera que posiciona a arma, então
+# câmera errada dá prévia certa e jogo errado. Só print ou vídeo do jogo serve.
+CALIB = [1.686, -0.153, 5.428, -1.821, 0.387, 0.0, 67.5]
 CAM = CAM_BB + np.array(CALIB[:3])
 BC = rot_bb(CALIB[3:6]) @ BC_BB
 VFOV = CALIB[6]
 # Agachado, a câmera do jogo se desloca em relação ao braço (espaço da câmera: direita, cima, frente).
-# Medido na v1.6.2 com o painel da luneta da AWP (`tools/calibrar_mira.py`), que fica a ~1,7 un do olho e
+# Medido na v1.6.2 com o painel da luneta da AWP (hoje `tools/medir_mira.py`), que fica a ~1,7 un do olho e
 # amplia o erro umas 4x em relação à AK: 6 quadros do vídeo com o jogador parado deram o mesmo valor.
 # Antes era (1,346, -1,009, 1,757), ajustado por silhueta na v1.2.1; o resíduo era pequeno demais para
 # aparecer nas outras armas, mas na luneta tirava o retículo 8° do centro — e o tiro sai do centro da tela.
@@ -63,6 +69,10 @@ PLACE = {
 # Ela continua puxada por SOLTA_COMBATE segundos depois de soltar, para não ir e voltar a cada toque.
 # (Na v1.2.2 isso saiu porque a arma "subia" ao atirar; a causa era a respiração vanilla, hoje compensada.)
 SOLTA_COMBATE = 0.5
+# Categoria de cooldown que o script liga a cada tiro (main.js) e que a animação lê para saber que o tiro
+# saiu mesmo. É um nome livre: nenhum item declara "minecraft:cooldown", então o jogo não bloqueia o uso
+# da arma (isso quebraria a rajada) — o cooldown serve só de sinal do script para o Molang.
+COOLDOWN = "joao_tiro"
 # Osso "alca" (alça com orifício, ex.: M4): encolhe para dentro da base entre v.ads 0,55 e 0,75. Atirando em pé
 # (v.ads 0,45) ela continua visível; na mira completa some e mira-se pela massa.
 ALCA_NA_MIRA = "math.clamp(1.0 - (v.ads - 0.55) * 5.0, 0.0, 1.0)"
@@ -189,23 +199,25 @@ def peso_agachado(a, atirando):
 
 
 def disparo_molang(tipo, intervalo):
-    """Molang do recuo/clarão. Automática: cicla enquanto o gatilho está apertado (como a rajada do script).
-    Semiautomática (pistola) e ferrolho (sniper): UM ciclo por aperto, mesmo segurando, igual ao script
-    (itemUse = 1 tiro). Antes a Glock ciclava enquanto o dedo ficava na tela, sem som nem tiro."""
-    I = f"{intervalo}.0"
-    if tipo not in ("pistola", "sniper"):
-        return [
-            "v.atirando = q.main_hand_item_use_duration > 0.0;",
-            f"v.ciclo = math.mod(q.life_time * 20.0, {I}) / {I};",
-            "v.kick = v.atirando ? (1.0 - v.ciclo) : 0.0;",
-            "v.mostra_clarao = v.atirando && v.ciclo < 0.34;",
-        ]
+    """Molang do recuo/clarão, disparado por TIRO DE VERDADE.
+
+    O gatilho é o cooldown que o script liga a cada tiro (`startItemCooldown(COOLDOWN, intervalo)` em
+    main.js), lido aqui com `q.cooldown_time_remaining`. Antes a animação seguia o dedo na tela
+    (`q.main_hand_item_use_duration`): sem munição, no sobrevivência, a arma continuava dando coice e
+    soltando clarão sem sair tiro nenhum. De quebra, o ciclo do fuzil agora bate com a cadência real,
+    em vez de correr solto no relógio do mundo.
+
+    O cooldown só anda de tick em tick, então o relógio liso (v.t_tiro, por quadro) vem daqui; o cooldown
+    só marca o instante do tiro (quando o tempo restante SOBE). `tipo` já não muda nada: automática e
+    semiautomática fazem um ciclo por tiro, que é o que o script faz."""
+    seg = f"{intervalo / 20.0:.4f}"
     return [
-        "v.usando = q.main_hand_item_use_duration > 0.0;",
-        # tempo desde o último aperto (borda de subida do "usando"); começa "longe" para não disparar ao equipar
-        "v.t_tiro = (v.usando && !(v.usou ?? 0.0)) ? 0.0 : (v.t_tiro ?? 99.0) + q.delta_time;",
-        "v.usou = v.usando;",
-        f"v.ciclo = math.min(v.t_tiro * 20.0 / {I}, 1.0);",
+        f"v.restante = q.cooldown_time_remaining('{COOLDOWN}');",
+        "v.tiro_novo = v.restante > (v.restante_ant ?? 0.0) + 0.001;",   # subiu = saiu tiro agora
+        "v.restante_ant = v.restante;",
+        # começa "longe" (99) para a arma não animar sozinha ao ser equipada
+        "v.t_tiro = v.tiro_novo ? 0.0 : (v.t_tiro ?? 99.0) + q.delta_time;",
+        f"v.ciclo = math.min(v.t_tiro / {seg}, 1.0);",
         "v.atirando = v.ciclo < 1.0;",
         "v.kick = v.atirando ? (1.0 - v.ciclo) : 0.0;",
         "v.mostra_clarao = v.atirando && v.ciclo < 0.34;",
@@ -360,8 +372,8 @@ def main(RP, PREV):
                             f"v.tem_luneta = {1.0 if info.get('luneta') else 0.0};",
                             # mira (ADS): agachado = 1, em pé = 0; suavizado por tempo real
                             "v.ads = v.ads ?? 0.0;",
-                            "v.uso = q.main_hand_item_use_duration > 0.0;",
-                            "v.t_solto = v.uso ? 0.0 : (v.t_solto ?? 99.0) + q.delta_time;",
+                            # tempo desde o último TIRO (não desde o último toque na tela)
+                            "v.t_solto = v.atirando ? 0.0 : (v.t_solto ?? 99.0) + q.delta_time;",
                             f"v.alvo_ads = q.is_sneaking ? 1.0 : (v.t_solto < {SOLTA_COMBATE} ? {cfg['atirando']} : 0.0);",
                             f"v.ads = v.ads + (v.alvo_ads - v.ads) * math.min(1.0, q.delta_time * {MIRA_VELOCIDADE});",
                             # balanços vanilla recalculados aqui (as queries do attachable são as do jogador)

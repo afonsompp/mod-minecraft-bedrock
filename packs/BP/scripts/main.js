@@ -61,6 +61,15 @@ const NOME_MUNICAO = {
   "joao:municao_sniper": "Munição de Sniper",
 };
 
+/**
+ * Categoria de cooldown ligada a cada tiro de verdade. A animação da arma (attachable) lê isso com
+ * `query.cooldown_time_remaining('joao_tiro')` para saber que o tiro saiu: antes ela seguia o dedo na
+ * tela, e sem munição a arma dava coice e soltava clarão à toa. Nenhum item declara
+ * `minecraft:cooldown` com essa categoria de propósito — assim o jogo não bloqueia o uso da arma,
+ * que pararia a rajada; o cooldown é só um recado do script para o Molang.
+ */
+const COOLDOWN = "joao_tiro";
+
 // Entidades que o tiro deve atravessar
 const IGNORAR = new Set(["minecraft:item", "minecraft:xp_orb", "minecraft:arrow", "minecraft:snowball"]);
 
@@ -173,6 +182,12 @@ function atirar(p, id) {
     p.onScreenDisplay.setActionBar(`§cSem ${NOME_MUNICAO[arma.municao]}! Faça mais na bancada.`);
     atirando.delete(p.id);
     return;
+  }
+  // a partir daqui o tiro sai: avisa a animação da arma
+  try {
+    p.startItemCooldown(COOLDOWN, arma.intervalo);
+  } catch {
+    /* mundo descarregado ou jogador saindo: a animação só perde um quadro */
   }
 
   const dim = p.dimension;

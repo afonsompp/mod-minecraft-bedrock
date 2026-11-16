@@ -38,7 +38,7 @@ python tools/build.py --site        # gera o site de downloads em site/ (dist/*.
 python tools/build.py --publicar    # gera o site e publica na Vercel (1ª vez: npx vercel login)
 python tools/ajuste.py              # resolve PLACE (posição em 1ª pessoa) a partir de alvos na tela
 python tools/calibrar.py print.png ...  # recalibra a câmera real (CALIB) a partir de um print da M4A4
-python tools/calibrar_mira.py quadro.png  # mede o AGACHADO pelo painel da luneta (o jeito mais preciso)
+python tools/medir_mira.py awp=a.png glock=b.png ...  # mede a mira em prints do jogo e corrige os ângulos do CALIB
 npm run check                       # tsc contra @minecraft/server 2.0.0
 ```
 
@@ -139,7 +139,7 @@ tools/
 
 ### Estado atual × alvo (migração)
 
-- **Hoje** (v1.6.4): só existe o domínio armas. O `main.js` ainda guarda o objeto `ARMAS` por ID, e os geradores estão em arquivos únicos (`modelos.py`, `gerar.py`, `geometria.py`, `sons.py`).
+- **Hoje** (v1.6.5): só existe o domínio armas. O `main.js` ainda guarda o objeto `ARMAS` por ID, e os geradores estão em arquivos únicos (`modelos.py`, `gerar.py`, `geometria.py`, `sons.py`).
 - **Quando**: migre para a estrutura acima **ao entrar a segunda categoria** (provavelmente o primeiro dinossauro), ou antes, se uma mudança em armas já pedir isso.
 - **Como**: faça a migração em commit próprio, **sem mudar comportamento**. Verifique que `--gerar` produz arquivos idênticos aos de antes (exceto `.ogg`) e que `npm run check` passa. Só então comece o conteúdo novo.
 - Na migração das armas para `joao:arma_fogo` + tags, **mantenha os IDs dos itens** (`joao:glock`, `joao:ak47`, `joao:m4a4`, munições). Mudar ID apaga os itens do inventário do João.
@@ -221,10 +221,11 @@ Detalhamento (helpers de `modelos.py`, atlas, pintura 3D, recuo, clarão, mira e
 
   Na mira, isso parece a arma "subindo sozinha". `compensacao_bob()` desconta os dois. Supõe o "balanço da visão" ligado, porque `v.bob_animation` não é legível.
 - No attachable, `q.*` são as queries do **jogador** e `v.*` são variáveis do próprio attachable, que persistem entre quadros. Variável do jogador só é legível se for pública (`c.owning_entity->v.joao_mira`).
-- O **roll do `CALIB` fica em zero**. O ajuste por silhueta não restringe bem o roll (a silhueta de um fuzil é alongada), e o 1,963° que ele achou na v1.1.1 era ruído: punha a arma girada ~2° na tela do jogo. Não dava para ver nas miras de ferro, mas o retículo da luneta, que atravessa a tela, ficava torto. **A prévia nunca mostra esse tipo de erro**, porque renderiza com a mesma câmera que posiciona a arma — câmera errada dá prévia certa e jogo errado.
+- **Os três ângulos do `CALIB` não saem de ajuste por silhueta.** A silhueta de um fuzil é alongada e quase não muda quando a câmera gira um grau, então o otimizador da v1.1.1 pôs ruído nos três: roll 1,963° (zerado na v1.6.3) e yaw 1,132° (medido em 0,387 na v1.6.5). Menos de um grau some nas miras de ferro, mas o retículo da luneta atravessa a tela e denuncia. Meça com `tools/medir_mira.py`, que lê o retículo da AWP (linhas de 1 px, ~0,07°) e confere nas outras armas. **A prévia nunca mostra esse tipo de erro**, porque renderiza com a mesma câmera que posiciona a arma — câmera errada dá prévia certa e jogo errado.
+- **Erro de ÂNGULO da câmera e erro de POSIÇÃO (`AGACHADO`) parecem a mesma coisa numa arma só.** O de ângulo desvia todas as armas igual; o de posição desvia proporcionalmente a 1/distância do olho, então a AWP (olho 2,0) erraria quase 4x mais que a AK (olho 7,5). Na v1.6.2 os dois foram confundidos e o `AGACHADO` absorveu um erro que era de ângulo. Meça sempre com duas armas ou mais.
 - Rotação no Bedrock **não** é a convenção matemática comum. Use `tools/bt.py`; não chute sinais.
 
-## Estado (v1.6.4)
+## Estado (v1.6.5)
 
 Histórico completo no `CHANGELOG.md`. Resumo do que importa para continuar:
 
@@ -248,7 +249,8 @@ Histórico completo no `CHANGELOG.md`. Resumo do que importa para continuar:
 - **A confirmar:**
   - **se o zoom funciona com Cheats ligados.** O `/camera fov_set` exige cheats e só aceita FOV de 30 a 110 (a v1.6.0 pedia 18 e era recusada em silêncio — foi o que apareceu no vídeo da AWP). `camera.setFov()` não existe na API 2.0.0, então o comando é o único caminho hoje;
   - **se o zoom amplia também a arma.** O painel da luneta é dimensionado pelo FOV normal (`VFOV`), supondo que a arma em 1ª pessoa tem FOV próprio. Se um print mostrar a vinheta sumindo ao agachar, o zoom afeta a arma e o painel precisa ser dimensionado por `FOV_ZOOM`;
-  - **se o retículo da AWP ficou reto e no centro.** O centro foi confirmado no vídeo da v1.6.2 (desvio < 1°, medido com `tools/calibrar_mira.py`); falta confirmar que o giro de 2° sumiu com o `CALIB` sem roll (v1.6.3). O tiro sai sempre do centro da tela, então retículo fora do lugar = tiro fora da mira;
+  - **se o retículo da AWP ficou reto e no centro.** O giro foi resolvido na v1.6.3 (os prints da v1.6.4 mediram 0,05°, contra ~2° antes). O centro foi corrigido na v1.6.5, com os ângulos do `CALIB` medidos em 5 prints (`tools/medir_mira.py`): faltava 1,2° à direita e 1,1° acima. O tiro sai sempre do centro da tela, então retículo fora do lugar = tiro fora da mira;
+  - **se a arma parou de animar sem munição** (v1.6.5) e se a rajada continua lisa: a animação agora segue o cooldown `joao_tiro` que o script liga a cada tiro, em vez do dedo na tela;
   - se a compensação de balanço faz a arma balançar com o "balanço da visão" desligado;
   - como fica no PC (16:9).
 - **Pendências e ideias:**

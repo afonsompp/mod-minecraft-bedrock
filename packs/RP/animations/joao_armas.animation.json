@@ -9,96 +9,96 @@
     "arma": {
      "rotation": {
       "0.0000": [
-       100.371,
-       -57.923,
-       119.898
+       100.983,
+       -57.781,
+       118.469
       ],
       "0.1250": [
-       99.963,
-       -58.089,
-       120.315
+       100.579,
+       -57.95,
+       118.881
       ],
       "0.2500": [
-       98.868,
-       -58.52,
-       121.435
+       99.497,
+       -58.388,
+       119.987
       ],
       "0.3750": [
-       97.272,
-       -59.113,
-       123.07
+       97.92,
+       -58.99,
+       121.604
       ],
       "0.5000": [
-       95.376,
-       -59.767,
-       125.023
+       96.043,
+       -59.655,
+       123.535
       ],
       "0.6250": [
-       93.404,
-       -60.389,
-       127.06
+       94.092,
+       -60.29,
+       125.55
       ],
       "0.7500": [
-       91.623,
-       -60.906,
-       128.906
+       92.329,
+       -60.817,
+       127.378
       ],
       "0.8750": [
-       90.329,
-       -61.256,
-       130.252
+       91.047,
+       -61.175,
+       128.711
       ],
       "1.0000": [
-       89.831,
-       -61.385,
-       130.77
+       90.553,
+       -61.308,
+       129.225
       ]
      },
      "position": {
       "0.0000": [
-       "-11.698 + v.kick * (-0.380 + v.ads * 0.228) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
-       "7.204 + v.kick * (0.326 + v.ads * -0.195) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
-       "-9.842 + v.kick * (-0.001 + v.ads * 0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+       "-11.634 + v.kick * (-0.385 + v.ads * 0.231) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "7.253 + v.kick * (0.319 + v.ads * -0.192) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-9.873 + v.kick * (0.002 + v.ads * -0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
       ],
       "0.1250": [
-       "-11.778 + v.kick * (-0.380 + v.ads * 0.228) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
-       "7.313 + v.kick * (0.326 + v.ads * -0.195) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
-       "-10.055 + v.kick * (-0.001 + v.ads * 0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+       "-11.716 + v.kick * (-0.385 + v.ads * 0.231) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "7.362 + v.kick * (0.319 + v.ads * -0.192) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-10.085 + v.kick * (0.002 + v.ads * -0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
       ],
       "0.2500": [
-       "-11.988 + v.kick * (-0.380 + v.ads * 0.228) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
-       "7.602 + v.kick * (0.326 + v.ads * -0.195) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
-       "-10.617 + v.kick * (-0.001 + v.ads * 0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+       "-11.934 + v.kick * (-0.385 + v.ads * 0.231) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "7.650 + v.kick * (0.319 + v.ads * -0.192) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-10.645 + v.kick * (0.002 + v.ads * -0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
       ],
       "0.3750": [
-       "-12.238 + v.kick * (-0.380 + v.ads * 0.228) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
-       "7.991 + v.kick * (0.326 + v.ads * -0.195) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
-       "-11.359 + v.kick * (-0.001 + v.ads * 0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+       "-12.192 + v.kick * (-0.385 + v.ads * 0.231) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "8.039 + v.kick * (0.319 + v.ads * -0.192) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-11.385 + v.kick * (0.002 + v.ads * -0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
       ],
       "0.5000": [
-       "-12.327 + v.kick * (-0.380 + v.ads * 0.228) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
-       "8.365 + v.kick * (0.326 + v.ads * -0.195) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
-       "-11.995 + v.kick * (-0.001 + v.ads * 0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+       "-12.290 + v.kick * (-0.385 + v.ads * 0.231) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "8.414 + v.kick * (0.319 + v.ads * -0.192) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-12.018 + v.kick * (0.002 + v.ads * -0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
       ],
       "0.6250": [
-       "-12.292 + v.kick * (-0.380 + v.ads * 0.228) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
-       "8.692 + v.kick * (0.326 + v.ads * -0.195) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
-       "-12.495 + v.kick * (-0.001 + v.ads * 0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+       "-12.262 + v.kick * (-0.385 + v.ads * 0.231) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "8.744 + v.kick * (0.319 + v.ads * -0.192) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-12.516 + v.kick * (0.002 + v.ads * -0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
       ],
       "0.7500": [
-       "-12.193 + v.kick * (-0.380 + v.ads * 0.228) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
-       "8.951 + v.kick * (0.326 + v.ads * -0.195) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
-       "-12.856 + v.kick * (-0.001 + v.ads * 0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+       "-12.169 + v.kick * (-0.385 + v.ads * 0.231) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "9.007 + v.kick * (0.319 + v.ads * -0.192) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-12.876 + v.kick * (0.002 + v.ads * -0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
       ],
       "0.8750": [
-       "-12.090 + v.kick * (-0.380 + v.ads * 0.228) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
-       "9.123 + v.kick * (0.326 + v.ads * -0.195) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
-       "-13.074 + v.kick * (-0.001 + v.ads * 0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+       "-12.069 + v.kick * (-0.385 + v.ads * 0.231) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "9.181 + v.kick * (0.319 + v.ads * -0.192) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-13.094 + v.kick * (0.002 + v.ads * -0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
       ],
       "1.0000": [
-       "-12.042 + v.kick * (-0.380 + v.ads * 0.228) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
-       "9.184 + v.kick * (0.326 + v.ads * -0.195) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
-       "-13.148 + v.kick * (-0.001 + v.ads * 0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+       "-12.022 + v.kick * (-0.385 + v.ads * 0.231) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "9.244 + v.kick * (0.319 + v.ads * -0.192) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-13.168 + v.kick * (0.002 + v.ads * -0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
       ]
      },
      "scale": 0.25
@@ -149,96 +149,96 @@
     "arma": {
      "rotation": {
       "0.0000": [
-       99.935,
-       -56.954,
-       120.409
+       100.533,
+       -56.816,
+       118.996
       ],
       "0.1250": [
-       99.553,
-       -57.16,
-       120.794
+       100.156,
+       -57.024,
+       119.376
       ],
       "0.2500": [
-       98.524,
-       -57.698,
-       121.834
+       99.141,
+       -57.568,
+       120.402
       ],
       "0.3750": [
-       97.017,
-       -58.443,
-       123.365
+       97.653,
+       -58.321,
+       121.912
       ],
       "0.5000": [
-       95.211,
-       -59.273,
-       125.212
+       95.87,
+       -59.162,
+       123.735
       ],
       "0.6250": [
-       93.316,
-       -60.075,
-       127.161
+       93.998,
+       -59.976,
+       125.659
       ],
       "0.7500": [
-       91.587,
-       -60.75,
-       128.947
+       92.29,
+       -60.662,
+       127.423
       ],
       "0.8750": [
-       90.321,
-       -61.213,
-       130.261
+       91.037,
+       -61.132,
+       128.722
       ],
       "1.0000": [
-       89.831,
-       -61.385,
-       130.77
+       90.553,
+       -61.308,
+       129.225
       ]
      },
      "position": {
       "0.0000": [
-       "-10.112 + v.kick * (-0.266 + v.ads * 0.159) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
-       "6.174 + v.kick * (0.228 + v.ads * -0.137) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
-       "-5.726 + v.kick * (-0.000 + v.ads * 0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+       "-10.016 + v.kick * (-0.269 + v.ads * 0.162) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "6.228 + v.kick * (0.224 + v.ads * -0.134) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-5.769 + v.kick * (0.002 + v.ads * -0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
       ],
       "0.1250": [
-       "-10.203 + v.kick * (-0.266 + v.ads * 0.159) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
-       "6.347 + v.kick * (0.228 + v.ads * -0.137) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
-       "-6.088 + v.kick * (-0.000 + v.ads * 0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+       "-10.111 + v.kick * (-0.269 + v.ads * 0.162) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "6.402 + v.kick * (0.224 + v.ads * -0.134) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-6.129 + v.kick * (0.002 + v.ads * -0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
       ],
       "0.2500": [
-       "-10.442 + v.kick * (-0.266 + v.ads * 0.159) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
-       "6.803 + v.kick * (0.228 + v.ads * -0.137) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
-       "-7.042 + v.kick * (-0.000 + v.ads * 0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+       "-10.362 + v.kick * (-0.269 + v.ads * 0.162) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "6.858 + v.kick * (0.224 + v.ads * -0.134) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-7.080 + v.kick * (0.002 + v.ads * -0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
       ],
       "0.3750": [
-       "-10.781 + v.kick * (-0.266 + v.ads * 0.159) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
-       "7.448 + v.kick * (0.228 + v.ads * -0.137) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
-       "-8.391 + v.kick * (-0.000 + v.ads * 0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+       "-10.716 + v.kick * (-0.269 + v.ads * 0.162) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "7.504 + v.kick * (0.224 + v.ads * -0.134) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-8.424 + v.kick * (0.002 + v.ads * -0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
       ],
       "0.5000": [
-       "-11.134 + v.kick * (-0.266 + v.ads * 0.159) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
-       "8.173 + v.kick * (0.228 + v.ads * -0.137) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
-       "-9.898 + v.kick * (-0.000 + v.ads * 0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+       "-11.086 + v.kick * (-0.269 + v.ads * 0.162) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "8.231 + v.kick * (0.224 + v.ads * -0.134) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-9.926 + v.kick * (0.002 + v.ads * -0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
       ],
       "0.6250": [
-       "-11.195 + v.kick * (-0.266 + v.ads * 0.159) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
-       "8.790 + v.kick * (0.228 + v.ads * -0.137) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
-       "-11.086 + v.kick * (-0.000 + v.ads * 0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+       "-11.161 + v.kick * (-0.269 + v.ads * 0.162) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "8.853 + v.kick * (0.224 + v.ads * -0.134) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-11.111 + v.kick * (0.002 + v.ads * -0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
       ],
       "0.7500": [
-       "-11.035 + v.kick * (-0.266 + v.ads * 0.159) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
-       "9.249 + v.kick * (0.228 + v.ads * -0.137) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
-       "-11.889 + v.kick * (-0.000 + v.ads * 0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+       "-11.012 + v.kick * (-0.269 + v.ads * 0.162) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "9.318 + v.kick * (0.224 + v.ads * -0.134) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-11.913 + v.kick * (0.002 + v.ads * -0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
       ],
       "0.8750": [
-       "-10.820 + v.kick * (-0.266 + v.ads * 0.159) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
-       "9.535 + v.kick * (0.228 + v.ads * -0.137) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
-       "-12.344 + v.kick * (-0.000 + v.ads * 0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+       "-10.802 + v.kick * (-0.269 + v.ads * 0.162) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "9.609 + v.kick * (0.224 + v.ads * -0.134) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-12.367 + v.kick * (0.002 + v.ads * -0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
       ],
       "1.0000": [
-       "-10.711 + v.kick * (-0.266 + v.ads * 0.159) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
-       "9.633 + v.kick * (0.228 + v.ads * -0.137) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
-       "-12.488 + v.kick * (-0.000 + v.ads * 0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+       "-10.696 + v.kick * (-0.269 + v.ads * 0.162) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "9.710 + v.kick * (0.224 + v.ads * -0.134) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-12.511 + v.kick * (0.002 + v.ads * -0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
       ]
      },
      "scale": 0.25
@@ -289,96 +289,96 @@
     "arma": {
      "rotation": {
       "0.0000": [
-       99.935,
-       -56.954,
-       120.409
+       100.533,
+       -56.816,
+       118.996
       ],
       "0.1250": [
-       99.527,
-       -57.16,
-       120.791
+       100.13,
+       -57.024,
+       119.373
       ],
       "0.2500": [
-       98.43,
-       -57.697,
-       121.823
+       99.047,
+       -57.567,
+       120.391
       ],
       "0.3750": [
-       96.824,
-       -58.442,
-       123.346
+       97.459,
+       -58.32,
+       121.893
       ],
       "0.5000": [
-       94.898,
-       -59.272,
-       125.189
+       95.557,
+       -59.161,
+       123.712
       ],
       "0.6250": [
-       92.878,
-       -60.075,
-       127.141
+       93.56,
+       -59.975,
+       125.638
       ],
       "0.7500": [
-       91.036,
-       -60.75,
-       128.935
+       91.738,
+       -60.662,
+       127.411
       ],
       "0.8750": [
-       89.687,
-       -61.213,
-       130.257
+       90.403,
+       -61.132,
+       128.718
       ],
       "1.0000": [
-       89.164,
-       -61.385,
-       130.77
+       89.886,
+       -61.308,
+       129.225
       ]
      },
      "position": {
       "0.0000": [
-       "-10.362 + v.kick * (-0.266 + v.ads * 0.159) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
-       "6.619 + v.kick * (0.228 + v.ads * -0.137) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
-       "-6.110 + v.kick * (-0.000 + v.ads * 0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+       "-10.275 + v.kick * (-0.269 + v.ads * 0.162) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "6.671 + v.kick * (0.224 + v.ads * -0.134) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-6.149 + v.kick * (0.002 + v.ads * -0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
       ],
       "0.1250": [
-       "-10.419 + v.kick * (-0.266 + v.ads * 0.159) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
-       "6.764 + v.kick * (0.228 + v.ads * -0.137) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
-       "-6.451 + v.kick * (-0.000 + v.ads * 0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+       "-10.335 + v.kick * (-0.269 + v.ads * 0.162) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "6.817 + v.kick * (0.224 + v.ads * -0.134) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-6.489 + v.kick * (0.002 + v.ads * -0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
       ],
       "0.2500": [
-       "-10.568 + v.kick * (-0.266 + v.ads * 0.159) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
-       "7.146 + v.kick * (0.228 + v.ads * -0.137) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
-       "-7.349 + v.kick * (-0.000 + v.ads * 0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+       "-10.494 + v.kick * (-0.269 + v.ads * 0.162) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "7.200 + v.kick * (0.224 + v.ads * -0.134) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-7.385 + v.kick * (0.002 + v.ads * -0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
       ],
       "0.3750": [
-       "-10.780 + v.kick * (-0.266 + v.ads * 0.159) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
-       "7.685 + v.kick * (0.228 + v.ads * -0.137) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
-       "-8.619 + v.kick * (-0.000 + v.ads * 0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+       "-10.719 + v.kick * (-0.269 + v.ads * 0.162) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "7.742 + v.kick * (0.224 + v.ads * -0.134) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-8.652 + v.kick * (0.002 + v.ads * -0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
       ],
       "0.5000": [
-       "-10.987 + v.kick * (-0.266 + v.ads * 0.159) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
-       "8.290 + v.kick * (0.228 + v.ads * -0.137) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
-       "-10.037 + v.kick * (-0.000 + v.ads * 0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+       "-10.942 + v.kick * (-0.269 + v.ads * 0.162) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "8.351 + v.kick * (0.224 + v.ads * -0.134) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-10.065 + v.kick * (0.002 + v.ads * -0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
       ],
       "0.6250": [
-       "-10.903 + v.kick * (-0.266 + v.ads * 0.159) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
-       "8.787 + v.kick * (0.228 + v.ads * -0.137) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
-       "-11.134 + v.kick * (-0.000 + v.ads * 0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+       "-10.869 + v.kick * (-0.269 + v.ads * 0.162) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "8.854 + v.kick * (0.224 + v.ads * -0.134) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-11.161 + v.kick * (0.002 + v.ads * -0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
       ],
       "0.7500": [
-       "-10.616 + v.kick * (-0.266 + v.ads * 0.159) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
-       "9.140 + v.kick * (0.228 + v.ads * -0.137) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
-       "-11.859 + v.kick * (-0.000 + v.ads * 0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+       "-10.591 + v.kick * (-0.269 + v.ads * 0.162) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "9.216 + v.kick * (0.224 + v.ads * -0.134) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-11.885 + v.kick * (0.002 + v.ads * -0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
       ],
       "0.8750": [
-       "-10.311 + v.kick * (-0.266 + v.ads * 0.159) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
-       "9.352 + v.kick * (0.228 + v.ads * -0.137) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
-       "-12.259 + v.kick * (-0.000 + v.ads * 0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+       "-10.290 + v.kick * (-0.269 + v.ads * 0.162) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "9.434 + v.kick * (0.224 + v.ads * -0.134) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-12.285 + v.kick * (0.002 + v.ads * -0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
       ],
       "1.0000": [
-       "-10.168 + v.kick * (-0.266 + v.ads * 0.159) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
-       "9.422 + v.kick * (0.228 + v.ads * -0.137) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
-       "-12.382 + v.kick * (-0.000 + v.ads * 0.000) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+       "-10.149 + v.kick * (-0.269 + v.ads * 0.162) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "9.507 + v.kick * (0.224 + v.ads * -0.134) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-12.408 + v.kick * (0.002 + v.ads * -0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
       ]
      },
      "scale": 0.25
@@ -432,96 +432,96 @@
     "arma": {
      "rotation": {
       "0.0000": [
-       99.935,
-       -56.954,
-       120.409
+       100.533,
+       -56.816,
+       118.996
       ],
       "0.1250": [
-       99.553,
-       -57.16,
-       120.794
+       100.156,
+       -57.024,
+       119.376
       ],
       "0.2500": [
-       98.524,
-       -57.698,
-       121.834
+       99.141,
+       -57.568,
+       120.402
       ],
       "0.3750": [
-       97.017,
-       -58.443,
-       123.365
+       97.653,
+       -58.321,
+       121.912
       ],
       "0.5000": [
-       95.211,
-       -59.273,
-       125.212
+       95.87,
+       -59.162,
+       123.735
       ],
       "0.6250": [
-       93.316,
-       -60.075,
-       127.161
+       93.998,
+       -59.976,
+       125.659
       ],
       "0.7500": [
-       91.587,
-       -60.75,
-       128.947
+       92.29,
+       -60.662,
+       127.423
       ],
       "0.8750": [
-       90.321,
-       -61.213,
-       130.261
+       91.037,
+       -61.132,
+       128.722
       ],
       "1.0000": [
-       89.831,
-       -61.385,
-       130.77
+       90.553,
+       -61.308,
+       129.225
       ]
      },
      "position": {
       "0.0000": [
-       "-10.112 + v.kick * (-0.683 + v.ads * 0.410) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
-       "6.174 + v.kick * (0.586 + v.ads * -0.352) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
-       "-5.726 + v.kick * (-0.001 + v.ads * 0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+       "-10.016 + v.kick * (-0.692 + v.ads * 0.415) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "6.228 + v.kick * (0.575 + v.ads * -0.345) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-5.769 + v.kick * (0.004 + v.ads * -0.003) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
       ],
       "0.1250": [
-       "-10.178 + v.kick * (-0.683 + v.ads * 0.410) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
-       "6.326 + v.kick * (0.586 + v.ads * -0.352) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
-       "-6.088 + v.kick * (-0.001 + v.ads * 0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+       "-10.086 + v.kick * (-0.692 + v.ads * 0.415) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "6.381 + v.kick * (0.575 + v.ads * -0.345) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-6.129 + v.kick * (0.004 + v.ads * -0.003) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
       ],
       "0.2500": [
-       "-10.353 + v.kick * (-0.683 + v.ads * 0.410) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
-       "6.727 + v.kick * (0.586 + v.ads * -0.352) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
-       "-7.042 + v.kick * (-0.001 + v.ads * 0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+       "-10.271 + v.kick * (-0.692 + v.ads * 0.415) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "6.783 + v.kick * (0.575 + v.ads * -0.345) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-7.080 + v.kick * (0.004 + v.ads * -0.003) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
       ],
       "0.3750": [
-       "-10.552 + v.kick * (-0.683 + v.ads * 0.410) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
-       "7.275 + v.kick * (0.586 + v.ads * -0.352) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
-       "-8.337 + v.kick * (-0.001 + v.ads * 0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+       "-10.484 + v.kick * (-0.692 + v.ads * 0.415) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "7.335 + v.kick * (0.575 + v.ads * -0.345) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-8.372 + v.kick * (0.004 + v.ads * -0.003) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
       ],
       "0.5000": [
-       "-10.584 + v.kick * (-0.683 + v.ads * 0.410) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
-       "7.830 + v.kick * (0.586 + v.ads * -0.352) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
-       "-9.607 + v.kick * (-0.001 + v.ads * 0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+       "-10.530 + v.kick * (-0.692 + v.ads * 0.415) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "7.896 + v.kick * (0.575 + v.ads * -0.345) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-9.639 + v.kick * (0.004 + v.ads * -0.003) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
       ],
       "0.6250": [
-       "-10.492 + v.kick * (-0.683 + v.ads * 0.410) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
-       "8.339 + v.kick * (0.586 + v.ads * -0.352) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
-       "-10.741 + v.kick * (-0.001 + v.ads * 0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+       "-10.450 + v.kick * (-0.692 + v.ads * 0.415) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "8.411 + v.kick * (0.575 + v.ads * -0.345) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-10.771 + v.kick * (0.004 + v.ads * -0.003) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
       ],
       "0.7500": [
-       "-10.342 + v.kick * (-0.683 + v.ads * 0.410) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
-       "8.757 + v.kick * (0.586 + v.ads * -0.352) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
-       "-11.655 + v.kick * (-0.001 + v.ads * 0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+       "-10.310 + v.kick * (-0.692 + v.ads * 0.415) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "8.836 + v.kick * (0.575 + v.ads * -0.345) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-11.684 + v.kick * (0.004 + v.ads * -0.003) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
       ],
       "0.8750": [
-       "-10.203 + v.kick * (-0.683 + v.ads * 0.410) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
-       "9.041 + v.kick * (0.586 + v.ads * -0.352) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
-       "-12.265 + v.kick * (-0.001 + v.ads * 0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+       "-10.178 + v.kick * (-0.692 + v.ads * 0.415) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "9.125 + v.kick * (0.575 + v.ads * -0.345) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-12.293 + v.kick * (0.004 + v.ads * -0.003) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
       ],
       "1.0000": [
-       "-10.142 + v.kick * (-0.683 + v.ads * 0.410) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
-       "9.145 + v.kick * (0.586 + v.ads * -0.352) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
-       "-12.487 + v.kick * (-0.001 + v.ads * 0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+       "-10.119 + v.kick * (-0.692 + v.ads * 0.415) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "9.231 + v.kick * (0.575 + v.ads * -0.345) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-12.514 + v.kick * (0.004 + v.ads * -0.003) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
       ]
      },
      "scale": 0.25

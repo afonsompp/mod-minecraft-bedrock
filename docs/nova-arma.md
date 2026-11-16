@@ -60,13 +60,15 @@ A lista de armas está repetida em vários lugares, então siga a lista inteira:
 
 ## Tipos de arma
 
-`modelos.ARMAS[id] = (função, tipo)`. O tipo decide a animação de disparo e as mãos:
+`modelos.ARMAS[id] = (função, tipo)`. Hoje o tipo decide as **mãos** e o tamanho do recuo:
 
-| Tipo | Disparo | Mãos |
+| Tipo | Mãos | Recuo |
 |---|---|---|
-| `"fuzil"` | cicla enquanto o dedo está na tela (rajada) | duas mãos, a esquerda no guarda-mão |
-| `"pistola"` | 1 ciclo por toque | duas mãos juntas na empunhadura |
-| `"sniper"` | 1 ciclo por toque, com recuo bem maior | igual ao fuzil |
+| `"fuzil"` | duas mãos, a esquerda no guarda-mão | normal |
+| `"pistola"` | duas mãos juntas na empunhadura | menor |
+| `"sniper"` | igual ao fuzil | bem maior |
+
+A **animação de disparo é igual para todos** desde a v1.6.5: um ciclo por tiro de verdade, disparado pelo cooldown `joao_tiro` que o `main.js` liga ao atirar. Quem decide se a arma solta rajada é o `automatica` no `main.js`, não o tipo.
 
 ## Arma com luneta
 
