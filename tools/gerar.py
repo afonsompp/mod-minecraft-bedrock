@@ -30,7 +30,11 @@ BC_BB = np.stack([_r, _u, _f], axis=1)      # colunas: direita, cima, frente (em
 # Câmera REAL do jogo: a do Blockbench não bate com o Bedrock (no celular a arma aparecia ~2x maior
 # e mais para baixo/direita, e a Glock saía da tela). Calibrada ajustando a silhueta da M4A4 renderizada
 # a um print do jogo (celular, 1600x738): [desloc. x, y, z da câmera, rotação bb rx, ry, rz, FOV vertical].
-CALIB = [1.686, -0.153, 5.428, -1.187, 1.132, 1.963, 67.5]
+# O 6º número (roll da câmera) é ZERO de propósito: o ajuste por silhueta da v1.1.1 tinha achado 1,963°,
+# mas a silhueta de um fuzil quase não restringe o roll, e era ruído do otimizador. Com ele, a arma saía
+# girada ~2° na tela do jogo — invisível nas miras de ferro, mas o retículo da luneta, que atravessa a
+# tela, ficava visivelmente torto (vídeo da v1.6.2). A prévia nunca mostrava, porque usa a mesma câmera.
+CALIB = [1.686, -0.153, 5.428, -1.187, 1.132, 0.0, 67.5]
 CAM = CAM_BB + np.array(CALIB[:3])
 BC = rot_bb(CALIB[3:6]) @ BC_BB
 VFOV = CALIB[6]
@@ -353,6 +357,7 @@ def main(RP, PREV):
                     "scripts": {
                         "pre_animation": disparo_molang(tipo, I) + [
                             "v.mira = c.owning_entity->v.joao_mira > 0.0;",
+                            f"v.tem_luneta = {1.0 if info.get('luneta') else 0.0};",
                             # mira (ADS): agachado = 1, em pé = 0; suavizado por tempo real
                             "v.ads = v.ads ?? 0.0;",
                             "v.uso = q.main_hand_item_use_duration > 0.0;",
@@ -495,7 +500,9 @@ def main(RP, PREV):
     anim = {"format_version": "1.10.0", "animations": animations}
     anim["animations"]["animation.joao.sem_maos"] = {"loop": True,
         "bones": {"maos": {"scale": 0}, "luneta": {"scale": 0}}}
-    anim["animations"]["animation.joao.clarao"] = {"loop": True, "bones": {"flash": {"scale": "v.mostra_clarao ? 1.0 : 0.0"}}}
+    # o clarão some junto com a arma quando a luneta cobre a tela (senão aparece solto embaixo)
+    anim["animations"]["animation.joao.clarao"] = {"loop": True, "bones": {"flash": {
+        "scale": f"(v.mostra_clarao && !(v.tem_luneta > 0.5 && {NA_LUNETA} > 0.5)) ? 1.0 : 0.0"}}}
     anim_json_path.write_text(json.dumps(anim, indent=1))
 
     rc = {"format_version": "1.10.0", "render_controllers": {"controller.render.joao_arma": {

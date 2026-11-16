@@ -29,6 +29,7 @@
      "v.kick = v.atirando ? (1.0 - v.ciclo) : 0.0;",
      "v.mostra_clarao = v.atirando && v.ciclo < 0.34;",
      "v.mira = c.owning_entity->v.joao_mira > 0.0;",
+     "v.tem_luneta = 0.0;",
      "v.ads = v.ads ?? 0.0;",
      "v.uso = q.main_hand_item_use_duration > 0.0;",
      "v.t_solto = v.uso ? 0.0 : (v.t_solto ?? 99.0) + q.delta_time;",

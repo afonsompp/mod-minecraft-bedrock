@@ -2,6 +2,11 @@
 
 Formato: versão — data — o que mudou. Marque **[testado no celular]** quando o Afonso confirmar no aparelho do João.
 
+## 1.6.3 — 2026-11-16
+- Corrigido: **a mira da luneta estava girada ~2°** (a cruz entrava torta na tela). Era um giro que sobrou da calibração da câmera e aparecia em todas as armas, mas só dava para notar no retículo, que atravessa a tela.
+- Corrigido: **o clarão do tiro aparecia solto embaixo** quando se atirava pela luneta. Agora ele some junto com a arma.
+- O **nome da arma e a munição** não ficam mais plantados no meio da tela: aparecem ao trocar de arma e ao atirar, e somem sozinhos. Mirando, a tela fica limpa.
+
 ## 1.6.2 — 2026-11-13
 - Corrigido: **o tiro não saía no meio da mira da AWP** e a luneta parecia torta para um lado. O círculo estava 5° à direita e 8° acima do centro da tela, e o tiro sai sempre do centro. Agora o retículo fica no centro e o tiro sai nele.
 - A mesma correção deixa a mira das outras três armas um pouco mais certa.

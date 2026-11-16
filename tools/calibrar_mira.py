@@ -27,23 +27,31 @@ im = Image.open(QUADRO).convert("RGB")
 a = np.asarray(im).astype(int)
 h, w = a.shape[:2]
 
-# o painel é preto; o furo é tudo o que não é preto. A cruz do retículo corta o furo em quatro, por isso
-# o fechamento morfológico antes de procurar a região.
-claro = ndimage.binary_closing(a.max(2) > 45, np.ones((25, 25)))
-lab, n = ndimage.label(claro)
-melhor = None
-for i in range(1, n + 1):
-    ys, xs = np.nonzero(lab == i)
-    if len(ys) < 20000 or xs.min() <= 2 or xs.max() >= w - 3 or ys.min() <= 2 or ys.max() >= h - 3:
-        continue                                    # descarta HUD e o que vaza pela borda
-    if melhor is None or len(ys) > melhor[0]:
-        melhor = (len(ys), xs, ys)
-if melhor is None:
+# O centro sai da SIMETRIA do furo, não do centro de massa da região clara: a actionbar ("AWP | Munição
+# de Sniper") fica DENTRO do furo e é clara, e puxava o centro medido para baixo. Como ela não encosta na
+# borda, o ponto médio entre as duas bordas de cada linha (e de cada coluna) não é afetado por ela.
+# A janela central também evita os botões do HUD e a hotbar.
+claro = a.max(2) > 45
+x0, x1 = int(w * 0.25), int(w * 0.75)
+y0, y1 = int(h * 0.03), int(h * 0.85)
+jan = claro[y0:y1, x0:x1]
+
+def centros(m, base):
+    """Ponto médio entre a primeira e a última coluna clara de cada linha de m."""
+    out = []
+    for lin in m:
+        xs = np.nonzero(lin)[0]
+        if len(xs) >= 30:
+            out.append((xs.min() + xs.max()) / 2 + base)
+    return np.array(out)
+
+cs_x = centros(jan, x0)               # por linha -> centro horizontal
+cs_y = centros(jan.T, y0)             # por coluna -> centro vertical
+if len(cs_x) < 50 or len(cs_y) < 50:
     raise SystemExit("não achei o furo da luneta: o quadro é de alguém agachado com a arma na mira?")
-_, xs, ys = melhor
-cx, cy = (xs.min() + xs.max()) / 2, (ys.min() + ys.max()) / 2
-diam = ((xs.max() - xs.min()) + (ys.max() - ys.min())) / 2
-razao = (xs.max() - xs.min()) / (ys.max() - ys.min())
+cx, cy = float(np.median(cs_x)), float(np.median(cs_y))
+larguras = [np.ptp(np.nonzero(l)[0]) for l in jan if np.count_nonzero(l) >= 30]
+diam = float(np.max(larguras))
 
 # o que era esperado
 corpo, maos, info, tipo = modelos.build(ARMA)
@@ -59,7 +67,7 @@ x = z * (cx - w / 2) / (h / 2) * meia_tela
 y = z * -(cy - h / 2) / (h / 2) * meia_tela
 resto = np.array([x, y, z - d_esp])
 
-print(f"furo: {xs.max()-xs.min()} x {ys.max()-ys.min()} px (redondo = 1,00: {razao:.3f})")
+print(f"furo: diâmetro {diam:.0f} px (centro por simetria de {len(cs_x)} linhas e {len(cs_y)} colunas)")
 print(f"centro ({cx:.0f}, {cy:.0f}) | centro da tela ({w//2}, {h//2})")
 print(f"desvio: {np.degrees(np.arctan2(x, z)):+.2f}° na horizontal, {np.degrees(np.arctan2(y, z)):+.2f}° na vertical")
 print(f"tamanho: {diam/diam_esp:.3f} do esperado -> painel a {z:.3f} em vez de {d_esp:.3f}")

@@ -70,6 +70,8 @@ const proximoTiro = new Map();
 const atirando = new Map();
 /** @type {Map<string, number>} FOV de mira aplicado em cada jogador (ausente = FOV normal) */
 const zoomAtual = new Map();
+/** @type {Map<string, string>} último texto mostrado na actionbar, para não reenviar sempre */
+const ultimoHud = new Map();
 let avisouCamera = false;
 
 /** @param {import("@minecraft/server").Player} p */
@@ -137,10 +139,24 @@ function particula(dim, efeito, loc) {
 }
 
 /** @param {import("@minecraft/server").Player} p @param {string} id */
-function mostrarMunicao(p, id) {
+/** Mostra arma e munição na actionbar, mas só quando algo muda: trocar de arma, atirar, acabar a bala.
+ * Assim o texto some sozinho em vez de ficar plantado no meio da tela — atrapalhava na mira da luneta.
+ * Mirando, nunca mostra, e limpa o que estiver na tela.
+ * @param {import("@minecraft/server").Player} p @param {string} id @param {boolean} [forcar] */
+function mostrarMunicao(p, id, forcar) {
   const arma = ARMAS[id];
+  if (p.isSneaking) {                      // na mira a tela fica limpa
+    if (ultimoHud.get(p.id)) {
+      p.onScreenDisplay.setActionBar("");
+      ultimoHud.set(p.id, "");
+    }
+    return;
+  }
   const qtd = ehCriativo(p) ? "∞" : String(contarMunicao(p, arma.municao));
-  p.onScreenDisplay.setActionBar(`§e${arma.nome} §7| §f${NOME_MUNICAO[arma.municao]}: §a${qtd}`);
+  const texto = `§e${arma.nome} §7| §f${NOME_MUNICAO[arma.municao]}: §a${qtd}`;
+  if (!forcar && texto === ultimoHud.get(p.id)) return;
+  ultimoHud.set(p.id, texto);
+  p.onScreenDisplay.setActionBar(texto);
 }
 
 /** @param {import("@minecraft/server").Player} p @param {string} id */
@@ -199,7 +215,7 @@ function atirar(p, id) {
     particula(dim, "minecraft:basic_crit_particle", ponto(origem, dir, t));
   }
 
-  mostrarMunicao(p, id);
+  mostrarMunicao(p, id, true);
 }
 
 /** Zoom da mira: agachado segurando arma = FOV da arma; senão, FOV normal. Só age quando o estado muda.
@@ -252,6 +268,7 @@ world.afterEvents.playerLeave.subscribe(({ playerId }) => {
   atirando.delete(playerId);
   proximoTiro.delete(playerId);
   zoomAtual.delete(playerId);
+  ultimoHud.delete(playerId);
 });
 
 // Um único laço por tick: rajada, zoom da mira e (a cada 10 ticks) contador de munição
@@ -266,5 +283,6 @@ system.runInterval(() => {
     }
     atualizarMira(p, id);
     if (mostrar && id && ARMAS[id] && !atirando.has(p.id)) mostrarMunicao(p, id);
+    else if (mostrar && !id) ultimoHud.delete(p.id);     // guardou a arma: próxima vez mostra de novo
   }
 }, 1);

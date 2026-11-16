@@ -139,7 +139,7 @@ tools/
 
 ### Estado atual × alvo (migração)
 
-- **Hoje** (v1.6.2): só existe o domínio armas. O `main.js` ainda guarda o objeto `ARMAS` por ID, e os geradores estão em arquivos únicos (`modelos.py`, `gerar.py`, `geometria.py`, `sons.py`).
+- **Hoje** (v1.6.3): só existe o domínio armas. O `main.js` ainda guarda o objeto `ARMAS` por ID, e os geradores estão em arquivos únicos (`modelos.py`, `gerar.py`, `geometria.py`, `sons.py`).
 - **Quando**: migre para a estrutura acima **ao entrar a segunda categoria** (provavelmente o primeiro dinossauro), ou antes, se uma mudança em armas já pedir isso.
 - **Como**: faça a migração em commit próprio, **sem mudar comportamento**. Verifique que `--gerar` produz arquivos idênticos aos de antes (exceto `.ogg`) e que `npm run check` passa. Só então comece o conteúdo novo.
 - Na migração das armas para `joao:arma_fogo` + tags, **mantenha os IDs dos itens** (`joao:glock`, `joao:ak47`, `joao:m4a4`, munições). Mudar ID apaga os itens do inventário do João.
@@ -219,9 +219,10 @@ Detalhamento (helpers de `modelos.py`, atlas, pintura 3D, recuo, clarão, mira e
 
   Na mira, isso parece a arma "subindo sozinha". `compensacao_bob()` desconta os dois. Supõe o "balanço da visão" ligado, porque `v.bob_animation` não é legível.
 - No attachable, `q.*` são as queries do **jogador** e `v.*` são variáveis do próprio attachable, que persistem entre quadros. Variável do jogador só é legível se for pública (`c.owning_entity->v.joao_mira`).
+- O **roll do `CALIB` fica em zero**. O ajuste por silhueta não restringe bem o roll (a silhueta de um fuzil é alongada), e o 1,963° que ele achou na v1.1.1 era ruído: punha a arma girada ~2° na tela do jogo. Não dava para ver nas miras de ferro, mas o retículo da luneta, que atravessa a tela, ficava torto. **A prévia nunca mostra esse tipo de erro**, porque renderiza com a mesma câmera que posiciona a arma — câmera errada dá prévia certa e jogo errado.
 - Rotação no Bedrock **não** é a convenção matemática comum. Use `tools/bt.py`; não chute sinais.
 
-## Estado (v1.6.2)
+## Estado (v1.6.3)
 
 Histórico completo no `CHANGELOG.md`. Resumo do que importa para continuar:
 
@@ -245,7 +246,7 @@ Histórico completo no `CHANGELOG.md`. Resumo do que importa para continuar:
 - **A confirmar:**
   - **se o zoom funciona com Cheats ligados.** O `/camera fov_set` exige cheats e só aceita FOV de 30 a 110 (a v1.6.0 pedia 18 e era recusada em silêncio — foi o que apareceu no vídeo da AWP). `camera.setFov()` não existe na API 2.0.0, então o comando é o único caminho hoje;
   - **se o zoom amplia também a arma.** O painel da luneta é dimensionado pelo FOV normal (`VFOV`), supondo que a arma em 1ª pessoa tem FOV próprio. Se um print mostrar a vinheta sumindo ao agachar, o zoom afeta a arma e o painel precisa ser dimensionado por `FOV_ZOOM`;
-  - **se o retículo da AWP ficou no centro** depois do `AGACHADO` novo (v1.6.2). O tiro sai sempre do centro da tela, então o retículo fora do centro = tiro fora da mira. Para medir de novo: `tools/calibrar_mira.py` num quadro com a luneta ativa;
+  - **se o retículo da AWP ficou reto e no centro.** O centro foi confirmado no vídeo da v1.6.2 (desvio < 1°, medido com `tools/calibrar_mira.py`); falta confirmar que o giro de 2° sumiu com o `CALIB` sem roll (v1.6.3). O tiro sai sempre do centro da tela, então retículo fora do lugar = tiro fora da mira;
   - se a compensação de balanço faz a arma balançar com o "balanço da visão" desligado;
   - como fica no PC (16:9).
 - **Pendências e ideias:**
