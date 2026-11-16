@@ -98,8 +98,8 @@ O referencial é o do preview de attachable do Blockbench (`js/formats/bedrock/a
 
 ## Terceira pessoa
 
-- Com o `POSE_RP` ativo, o jogador declara a variável pública `v.joao_mira = 1`. O attachable lê `c.owning_entity->v.joao_mira` e usa a animação `terceira_mira`, calculada para o braço em `[-90, -5.73, 0]`, que acompanha o pitch da mira.
-- Sem o `POSE_RP`, a animação é `terceira_baixo`, para o braço quase pendurado (`[-18, 0, 0]`), com a arma apontando para a frente.
+- O RP substitui o `player.entity.json` do jogo (gerado por `pose.py`): o jogador declara a variável pública `v.joao_mira = 1`. O attachable lê `c.owning_entity->v.joao_mira` e usa a animação `terceira_mira`, calculada para o braço em `[-90, -5.73, 0]`, que acompanha o pitch da mira.
+- Se o jogo for antigo e ignorar esse `player.entity.json` (o `format_version` dele é 1.26.0), a variável não existe e a animação cai em `terceira_baixo`, braço quase pendurado (`[-18, 0, 0]`), com a arma apontando para a frente. É o fallback, e é por isso que o `min_engine_version` do RP segue em 1.21.90: com 1.26 o add-on inteiro ficaria incompatível e as armas sumiriam, em vez de só a pose.
 - Pivô do braço direito em bb: `(5, 22, 0)`. O item fica em `(1, −7, 1)` em relação ao braço.
 
 ## Rajada e animações no attachable
@@ -112,6 +112,6 @@ O referencial é o do preview de attachable do Blockbench (`js/formats/bedrock/a
 - Mira: `v.uso`, `v.t_solto`, `v.alvo_ads`, `v.ads` (ver "Mira (ADS)").
 - Balanços: `v.respira`, `v.mao_bob`, `v.passo_x`, `v.passo_y` (ver "Primeira pessoa").
 
-As queries (`q.*`) no attachable são as do **jogador** (`q.is_sneaking`, `q.life_time`, `q.walk_distance`, `q.main_hand_item_use_duration`). As variáveis (`v.*`) são do próprio attachable e persistem entre quadros (confirmado com `v.ads`). Variáveis do jogador só são legíveis se forem públicas: `c.owning_entity->v.joao_mira`, declarada pelo `POSE_RP`.
+As queries (`q.*`) no attachable são as do **jogador** (`q.is_sneaking`, `q.life_time`, `q.walk_distance`, `q.main_hand_item_use_duration`). As variáveis (`v.*`) são do próprio attachable e persistem entre quadros (confirmado com `v.ads`). Variáveis do jogador só são legíveis se forem públicas: `c.owning_entity->v.joao_mira`, declarada no `player.entity.json` do RP.
 
 O clarão e o recuo são **visuais e sincronizados por tempo**, não pelo tiro real do script. O tiro real é o `system.runInterval` no `main.js`.

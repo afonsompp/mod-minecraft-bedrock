@@ -29,7 +29,6 @@ PREVIEWS = RAIZ / "previews"
 PASTAS = {
     "BP": ("Armas_do_Joao_BP", "development_behavior_packs"),
     "RP": ("Armas_do_Joao_RP", "development_resource_packs"),
-    "POSE_RP": ("Armas_do_Joao_Pose_RP", "development_resource_packs"),
 }
 
 sys.path.insert(0, str(TOOLS))
@@ -80,6 +79,8 @@ def gerar():
     subprocess.run([py, str(TOOLS / "municao.py"), str(PACKS / "RP" / "textures" / "items"), str(PREVIEWS)],
                    check=True, cwd=TOOLS)
     subprocess.run([py, str(TOOLS / "icone.py"), str(PREVIEWS)], check=True, cwd=TOOLS)
+    # pose de mira em 3ª pessoa: reaproveita o player.entity.json que já está no RP como base
+    subprocess.run([py, str(TOOLS / "pose.py")], check=True, cwd=TOOLS)
     print(f"gerado — confira as prévias em {PREVIEWS}")
 
 

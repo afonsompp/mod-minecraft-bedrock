@@ -32,7 +32,7 @@ A lista de armas está repetida em vários lugares, então siga a lista inteira:
    - a tupla do laço em `main()`.
 3. `tools/ajuste.py`: entrada no laço, se for usar o ajuste automático de posição no quadril.
 4. `tools/sons.py`: 3 variações de tiro. Também `packs/RP/sounds/sound_definitions.json` (`joao.<nome>.tiro`).
-5. `tools/pose.py`: o item entra na condição `joao_mira_fuzil` ou `joao_mira_pistola` (3ª pessoa com `POSE_RP`).
+5. `tools/pose.py`: o item entra na condição `joao_mira_fuzil` ou `joao_mira_pistola` (pose de 3ª pessoa). O `--gerar` chama o `pose.py`, então basta editar a lista — até a v1.6.3 ele ficava fora do `--gerar` e a AWP não entrou na pose.
 6. `tools/site_joao.py`: `ARMAS` (suporte de armas do site).
 7. `packs/BP/items/<nome>.json`: copie de uma arma do mesmo tipo. Mantenha `minecraft:use_modifiers` (sem isso, "segurar para atirar" não funciona no celular). Faça também `packs/BP/recipes/<nome>.json`.
 8. `packs/BP/scripts/main.js`: entrada em `ARMAS` com `dano`, `alcance`, `intervalo` (igual ao do `PLACE`), `automatica`, `municao`, `som`, `dispersao` e `mira: { fov, dispersao }`.

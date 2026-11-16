@@ -62,10 +62,10 @@ As prévias não têm a iluminação do jogo, e o FOV do celular varia. Quando m
 
 ## O que é gerado e o que é editado à mão
 
-- **Editado à mão**: `packs/BP/**` (itens, receitas, `scripts/main.js`), `packs/RP/manifest.json`, `packs/RP/textures/item_texture.json`, `packs/RP/sounds/sound_definitions.json`, `packs/POSE_RP/manifest.json`, tudo em `tools/`.
+- **Editado à mão**: `packs/BP/**` (itens, receitas, `scripts/main.js`), `packs/RP/manifest.json`, `packs/RP/textures/item_texture.json`, `packs/RP/sounds/sound_definitions.json`, tudo em `tools/`.
 - **Gerado por `tools/gerar.py` (não editar direto)**: `packs/RP/models/entity/joao/*`, `packs/RP/textures/entity/joao/*`, `packs/RP/attachables/*`, `packs/RP/animations/joao_armas.animation.json`, `packs/RP/render_controllers/*`, `packs/RP/textures/items/{glock,ak47,m4a4}.png`.
 - Site de downloads: modelo em `tools/site/modelo.html` (editado à mão), gerador `tools/site_joao.py`; a pasta `site/` é gerada (não editar).
-- Gerado por `sons.py` → `packs/RP/sounds/joao/*.ogg`; `municao.py` → ícones de munição; `icone.py` → `pack_icon.png`; `pose.py` → `packs/POSE_RP/entity` e `animations`.
+- Gerado por `sons.py` → `packs/RP/sounds/joao/*.ogg`; `municao.py` → ícones de munição; `icone.py` → `pack_icon.png`; `pose.py` → `packs/RP/entity/player.entity.json` e `animations/joao_mira.animation.json`.
 
 ## Arquitetura escalável e orientada a dados (multi-domínio)
 
@@ -139,7 +139,7 @@ tools/
 
 ### Estado atual × alvo (migração)
 
-- **Hoje** (v1.6.3): só existe o domínio armas. O `main.js` ainda guarda o objeto `ARMAS` por ID, e os geradores estão em arquivos únicos (`modelos.py`, `gerar.py`, `geometria.py`, `sons.py`).
+- **Hoje** (v1.6.4): só existe o domínio armas. O `main.js` ainda guarda o objeto `ARMAS` por ID, e os geradores estão em arquivos únicos (`modelos.py`, `gerar.py`, `geometria.py`, `sons.py`).
 - **Quando**: migre para a estrutura acima **ao entrar a segunda categoria** (provavelmente o primeiro dinossauro), ou antes, se uma mudança em armas já pedir isso.
 - **Como**: faça a migração em commit próprio, **sem mudar comportamento**. Verifique que `--gerar` produz arquivos idênticos aos de antes (exceto `.ogg`) e que `npm run check` passa. Só então comece o conteúdo novo.
 - Na migração das armas para `joao:arma_fogo` + tags, **mantenha os IDs dos itens** (`joao:glock`, `joao:ak47`, `joao:m4a4`, munições). Mudar ID apaga os itens do inventário do João.
@@ -147,7 +147,7 @@ tools/
 ## Convenções
 
 - Namespace `joao:`. IDs: `joao:glock`, `joao:ak47`, `joao:m4a4`, `joao:municao_pistola`, `joao:municao_fuzil`. Sons `joao.*`, geometrias `geometry.joao.*`, animações `animation.joao.*`.
-- Script API `@minecraft/server` **2.0.0** (jogo ≥ 1.21.90). `min_engine_version` [1,21,90] no BP/RP; o POSE_RP exige [1,26,0].
+- Script API `@minecraft/server` **2.0.0** (jogo ≥ 1.21.90). `min_engine_version` [1,21,90] no BP e no RP.
 - Tiro = raycast instantâneo (`getBlockFromRay` + `getEntitiesFromRay`) a partir da cabeça; dano via `applyDamage` creditado ao jogador. Rajada: `itemStartUse`/`itemStopUse` + `runInterval`; o `itemUse` sempre dá 1 tiro (fallback se a rajada não funcionar no celular). Itens têm `minecraft:use_modifiers` (use_duration 3600) para permitir segurar.
 - Para adicionar uma arma, siga **`docs/nova-arma.md`**. Ele traz:
   - os 9 lugares onde a lista de armas se repete;
@@ -157,7 +157,9 @@ tools/
 
   Câmera, sistema de mira, compensações e pintura já vêm prontos. Esse é o fluxo atual; depois da migração, vira item JSON com tags + `joao:arma_fogo` + módulo do gerador.
 - **Nunca mude os UUIDs** dos manifests nem os IDs de itens/entidades já entregues.
-- O `POSE_RP` substitui o `player.entity.json` do jogo. Ele fica **separado e opcional**; não mova isso para o RP principal.
+- O RP substitui o `player.entity.json` do jogo (pose de mira em 3ª pessoa). Até a v1.6.3 isso era um pack separado (`POSE_RP`), opcional; na v1.6.4 virou parte do RP, porque eram **dois** resource packs para ativar no mundo e o Afonso queria um só. Consequências a lembrar:
+  - **o `min_engine_version` do RP fica em [1,21,90]**, nunca [1,26,0]: o `format_version` do arquivo é 1.26.0, e num jogo anterior o jogo ignora o arquivo e cai no fallback `terceira_baixo` (perde só a pose). Com min_engine 1.26, o add-on **inteiro** ficaria incompatível e as armas sumiriam;
+  - qualquer outro pack que mexa no jogador (skin 3D, animação) conflita com o nosso, e agora não dá para desligar só a pose.
 - Não copie arquivos de outros add-ons (o Aplok Guns é CC BY-NC-ND). Estudar a técnica pode; reutilizar modelo/textura/som, não.
 - Celular primeiro. Aparelhos de referência: **Redmi Note 8** (o mais fraco; o desempenho se mede por ele) e Galaxy S24.
   - arma ou armadura: **sem teto fixo de cubos**. Use quantos o realismo pedir (a M4A4 da v1.4 tem ~150). Em 1ª pessoa só uma arma é desenhada por vez;
@@ -193,7 +195,7 @@ tools/
   - luneta futura = mesma coisa, com `visada` no eixo do tubo e `fov` menor.
 
   **A linha de mira tem que passar bem acima de tudo entre o olho e a alça** (na AK, a tampa escondia o entalhe). Detalhes em `docs/modelos-e-pose.md`.
-- **3ª pessoa**: com POSE_RP ativo o braço fica em `[-90 + pitch, -5.73, 0]` e o attachable lê `c.owning_entity->v.joao_mira` (variável pública) para escolher `terceira_mira`; sem o pack usa `terceira_baixo` (braço ~[-18,0,0]).
+- **3ª pessoa**: o `player.entity.json` do RP põe o braço em `[-90 + pitch, -5.73, 0]` e o attachable lê `c.owning_entity->v.joao_mira` (variável pública) para escolher `terceira_mira`; se o jogo ignorar esse arquivo, usa `terceira_baixo` (braço ~[-18,0,0]).
 - O renderizador de prévias (`geometria.render`) ordena por **pedaço** de face e mostra a face certa (até a v1.3.1 errava de perto e mostrava o verso das faces). Desde a v1.3.2, as prévias de mira reproduzem os prints do jogo. Ele não tem a iluminação do jogo, então contraste e brilho só se julgam no aparelho. Peça ao Afonso um print ou vídeo do jogo quando mexer em posição.
 
 Detalhamento (helpers de `modelos.py`, atlas, pintura 3D, recuo, clarão, mira e `pre_animation`): `docs/modelos-e-pose.md`. Observação: espessuras finas de detalhes salientes (rebites 0.15, janela da Glock 0.1) fogem da regra dos 0.25 e funcionam porque o atlas tem margem.
@@ -222,7 +224,7 @@ Detalhamento (helpers de `modelos.py`, atlas, pintura 3D, recuo, clarão, mira e
 - O **roll do `CALIB` fica em zero**. O ajuste por silhueta não restringe bem o roll (a silhueta de um fuzil é alongada), e o 1,963° que ele achou na v1.1.1 era ruído: punha a arma girada ~2° na tela do jogo. Não dava para ver nas miras de ferro, mas o retículo da luneta, que atravessa a tela, ficava torto. **A prévia nunca mostra esse tipo de erro**, porque renderiza com a mesma câmera que posiciona a arma — câmera errada dá prévia certa e jogo errado.
 - Rotação no Bedrock **não** é a convenção matemática comum. Use `tools/bt.py`; não chute sinais.
 
-## Estado (v1.6.3)
+## Estado (v1.6.4)
 
 Histórico completo no `CHANGELOG.md`. Resumo do que importa para continuar:
 

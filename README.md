@@ -1,13 +1,14 @@
 # Armas do João — add-on de Minecraft Bedrock
 
-Add-on feito para o João: **Glock**, **AK-47** e **M4A4** em 3D, com pose de FPS, munição, receitas na bancada e sons próprios.
+Add-on feito para o João: **Glock**, **AK-47**, **M4A4** e **AWP** em 3D, com pose de FPS, munição, receitas na bancada e sons próprios.
 
 ## Instalar no celular
 
 1. Gere o pacote (veja abaixo) ou pegue o `.mcaddon` mais recente em `dist/`.
 2. Abra o arquivo no celular → ele abre no Minecraft e importa sozinho.
-3. Nas configurações do mundo → **Pacotes de Comportamento** → ative **Armas do João** (o pacote de texturas vem junto).
-4. Opcional: **Pacotes de Recursos** → ative **Armas do João — pose de mira (3ª pessoa)** para o personagem apontar com os dois braços na visão de 3ª pessoa (exige Minecraft 1.26+).
+3. Nas configurações do mundo → **Pacotes de Comportamento** → ative **Armas do João** (o pacote de recursos vem junto).
+
+Desde a v1.6.4 há **um pacote de recursos só**: a pose de mira em 3ª pessoa virou parte dele. Quem tinha o `POSE_RP` separado instalado pode apagá-lo.
 
 ## Como jogar
 
@@ -54,7 +55,7 @@ python tools/build.py --deploy      # PC com Windows: copia para as pastas de de
 packs/
   BP/        comportamento: itens, receitas, scripts/main.js (tiro, munição, rajada)
   RP/        recursos: modelos 3D, texturas, attachables, animações, sons, ícones (quase tudo GERADO)
-  POSE_RP/   opcional: pose de mira em 3ª pessoa (substitui o player.entity.json)
+             inclui entity/player.entity.json: a pose de mira em 3ª pessoa (GERADO por pose.py)
 tools/
   build.py      build / versão / deploy
   modelos.py    os cubos de cada arma e das mãos  ← editar aqui para mudar o formato
@@ -64,7 +65,7 @@ tools/
   sons.py       sintetiza os sons de tiro
   municao.py    ícones das munições
   icone.py      pack_icon.png
-  pose.py       regenera o POSE_RP a partir do player.entity.json oficial
+  pose.py       pose de mira em 3ª pessoa (reescreve packs/RP/entity/player.entity.json)
   bt.py         matemática de rotação do Bedrock
 docs/
   modelos-e-pose.md   referência técnica: unidades, texturas, rotação, pose em 1ª/3ª pessoa

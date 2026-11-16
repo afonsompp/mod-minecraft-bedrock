@@ -2,6 +2,10 @@
 
 Formato: versão — data — o que mudou. Marque **[testado no celular]** quando o Afonso confirmar no aparelho do João.
 
+## 1.6.4 — 2026-11-16
+- **Um pacote de recursos só.** A pose de mira em 3ª pessoa era um segundo pacote para ativar no mundo; agora vem dentro do pacote principal. Se você tinha o **pose de mira (3ª pessoa)** instalado, pode apagar em Configurações > Armazenamento.
+- Corrigido: em 3ª pessoa, o personagem **não apontava a AWP** com os dois braços como faz com os outros fuzis.
+
 ## 1.6.3 — 2026-11-16
 - Corrigido: **a mira da luneta estava girada ~2°** (a cruz entrava torta na tela). Era um giro que sobrou da calibração da câmera e aparecia em todas as armas, mas só dava para notar no retículo, que atravessa a tela.
 - Corrigido: **o clarão do tiro aparecia solto embaixo** quando se atirava pela luneta. Agora ele some junto com a arma.

@@ -18,6 +18,6 @@ ak = Image.open(PREV / "lado_t_ak47.png").resize((300, 300), Image.LANCZOS)
 gl = Image.open(PREV / "lado_t_glock.png").resize((140, 140), Image.LANCZOS)
 ic.alpha_composite(ak, (-30, -40))
 ic.alpha_composite(gl, (110, 120))
-for pasta in ("BP", "RP", "POSE_RP"):
+for pasta in ("BP", "RP"):
     ic.save(PACKS / pasta / "pack_icon.png")
 print("ícones ok")
