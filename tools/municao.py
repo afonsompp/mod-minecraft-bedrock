@@ -45,6 +45,39 @@ def cartucho(img, cx, top, w, case_h, bullet_h, neck=0.0):
     arr[y + case_h - max(3, w // 10): y + case_h, x0 - 2:x0 + w + 2, 3] = 255
     return Image.fromarray(arr.clip(0, 255).astype(np.uint8), "RGBA")
 
+def dardo(img, cx, top, w, corpo_h, penacho_h, agulha_h):
+    """Dardo tranquilizante: penacho laranja, corpo de alumínio com o líquido à mostra e agulha fina.
+    Não sai do cartucho(): não tem ogiva de latão nem sulco de extrator — é uma seringa com cauda."""
+    arr = np.array(img).astype(float)
+    aluminio = cyl_shade(w, (150, 156, 164), (235, 240, 248))
+    laranja = cyl_shade(w, (196, 86, 30), (255, 190, 140))
+    remedio = cyl_shade(max(2, w - 10), (120, 196, 150), (220, 255, 230))
+    x0, y = cx - w // 2, top
+    # penacho (estabilizador): mais largo que o corpo
+    pw = int(w * 1.35)
+    px = cx - pw // 2
+    arr[y:y + penacho_h, px:px + pw, :3] = cyl_shade(pw, (196, 86, 30), (255, 190, 140))[None, :, :]
+    arr[y:y + penacho_h, px:px + pw, 3] = 255
+    # corpo de alumínio
+    y += penacho_h
+    arr[y:y + corpo_h, x0:x0 + w, :3] = aluminio[None, :, :]
+    arr[y:y + corpo_h, x0:x0 + w, 3] = 255
+    # janela do sedativo (verde), no meio do corpo
+    jx, jy = cx - (w - 10) // 2, y + int(corpo_h * 0.3)
+    arr[jy:jy + int(corpo_h * 0.42), jx:jx + max(2, w - 10), :3] = remedio[None, :, :]
+    # colar de gelatina, logo antes da agulha
+    y += corpo_h
+    arr[y:y + max(3, w // 7), x0 - 2:x0 + w + 2, :3] = laranja[None, np.linspace(0, w - 1, w + 4).astype(int), :] * 0.8
+    arr[y:y + max(3, w // 7), x0 - 2:x0 + w + 2, 3] = 255
+    # agulha
+    y += max(3, w // 7)
+    aw = max(4, w // 5)
+    ax = cx - aw // 2
+    arr[y:y + agulha_h, ax:ax + aw, :3] = cyl_shade(aw, (170, 174, 180), (245, 248, 255))[None, :, :]
+    arr[y:y + agulha_h, ax:ax + aw, 3] = 255
+    return Image.fromarray(arr.clip(0, 255).astype(np.uint8), "RGBA")
+
+
 def contorno(img):
     a = np.array(img)
     alpha = a[..., 3] > 0
@@ -76,9 +109,16 @@ for cx in (190, 322):
 sn = contorno(sn)
 sn.resize((64, 64), Image.LANCZOS).save(f"{OUT}/municao_sniper.png")
 
-prev = Image.new("RGBA", (390, 130), (139, 139, 139, 255))
-prev.alpha_composite(p.resize((128, 128), Image.LANCZOS), (0, 1)); prev.alpha_composite(r.resize((128, 128), Image.LANCZOS), (130, 1))
-prev.alpha_composite(sn.resize((128, 128), Image.LANCZOS), (260, 1))
+# Dardo tranquilizante: 2 dardos (penacho laranja, corpo de alumínio, agulha)
+dt = Image.new("RGBA", (S, S), (0, 0, 0, 0))
+for cx in (190, 322):
+    dt = dardo(dt, cx, 40, 76, 230, 70, 120)
+dt = contorno(dt)
+dt.resize((64, 64), Image.LANCZOS).save(f"{OUT}/dardo.png")
+
+prev = Image.new("RGBA", (520, 130), (139, 139, 139, 255))
+for i, im in enumerate((p, r, sn, dt)):
+    prev.alpha_composite(im.resize((128, 128), Image.LANCZOS), (i * 130, 1))
 if PREV:
     prev.save(f"{PREV}/municao.png")
 print("ok")

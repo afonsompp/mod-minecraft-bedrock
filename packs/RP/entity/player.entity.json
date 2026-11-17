@@ -42,7 +42,7 @@
         "animate": [
           "root",
           {
-            "joao_mira_fuzil": "!variable.is_first_person && query.is_item_name_any('slot.weapon.mainhand', 0, 'joao:ak47', 'joao:m4a4', 'joao:awp')"
+            "joao_mira_fuzil": "!variable.is_first_person && query.is_item_name_any('slot.weapon.mainhand', 0, 'joao:ak47', 'joao:m4a4', 'joao:awp', 'joao:besta')"
           },
           {
             "joao_mira_pistola": "!variable.is_first_person && query.is_item_name_any('slot.weapon.mainhand', 0, 'joao:glock')"

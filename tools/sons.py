@@ -47,6 +47,58 @@ def tiro(dur, crack_f, body_f, body_amt, tail, punch, seed):
     return s * fade * 0.95
 
 
+def corda(dur, corpo_f, aperto, assobio, seed):
+    """Estalo de corda de besta: nada do tiro(), que é todo pólvora (estampido, soco grave e eco).
+
+    Aqui a energia é mecânica: um "toc" de madeira/fibra, a corda e os arcos vibrando por um instante
+    (duas parciais que somem depressa) e o assobio curto do dardo saindo. Sem cauda: besta é arma
+    silenciosa, e é por isso que se usa para dardo."""
+    r = np.random.default_rng(seed)
+    n = int(SR * dur)
+    t = np.arange(n) / SR
+    ruido = r.normal(0, 1, n)
+    toc = lowpass(ruido, corpo_f) * np.exp(-t / 0.012)                 # impacto do arco contra o batente
+    estalo = highpass(ruido, 5000) * np.exp(-t / 0.0025) * 0.55        # a corda saindo do gatilho
+    # vibração: a fundamental do arco e uma parcial, ambas decaindo rápido
+    vibra = (np.sin(2 * np.pi * aperto * t) * np.exp(-t / 0.045)
+             + 0.45 * np.sin(2 * np.pi * aperto * 2.7 * t) * np.exp(-t / 0.022))
+    sibilo = highpass(r.normal(0, 1, n), 2600) * np.exp(-t / assobio) * 0.3   # o dardo cortando o ar
+    s = toc * 1.1 + estalo + vibra * 0.5 + sibilo
+    s = np.tanh(s * 1.5)
+    s /= np.max(np.abs(s)) + 1e-9
+    fade = np.ones(n)
+    fade[-1500:] = np.linspace(1, 0, 1500)
+    return s * fade * 0.9
+
+
+def catraca(voltas, seed):
+    """Manivela de armar: cliques de catraca em sequência, acelerando um pouco."""
+    r = np.random.default_rng(seed)
+    passos = []
+    for k in range(voltas):
+        n = int(SR * (0.085 - 0.004 * k))
+        t = np.arange(n) / SR
+        c = highpass(r.normal(0, 1, n), 2600) * np.exp(-t / 0.0035)
+        c += np.sin(2 * np.pi * (1500 + 60 * k) * t) * np.exp(-t / 0.005) * 0.4
+        passos.append(c)
+    s = np.concatenate(passos)
+    s /= np.max(np.abs(s)) + 1e-9
+    return s * 0.5
+
+
+def toque(dur, freq, seed):
+    """Dardo acertando: um toc curto e abafado, sem nada de metálico (é agulha em couro)."""
+    r = np.random.default_rng(seed)
+    n = int(SR * dur)
+    t = np.arange(n) / SR
+    s = lowpass(r.normal(0, 1, n), 1100) * np.exp(-t / 0.018)
+    s += np.sin(2 * np.pi * freq * np.exp(-t / 0.03) * t) * np.exp(-t / 0.025) * 0.7
+    s /= np.max(np.abs(s)) + 1e-9
+    fade = np.ones(n)
+    fade[-800:] = np.linspace(1, 0, 800)
+    return s * fade * 0.8
+
+
 def clique():
     n = int(SR * 0.08)
     t = np.arange(n) / SR
@@ -72,5 +124,9 @@ for i in range(3):
     salvar(f"m4a4_{i}", tiro(0.8, 3500, 1300, 1.0, 0.18, 85 + i * 4, 20 + i))
     salvar(f"glock_{i}", tiro(0.6, 4000, 1600, 0.8, 0.12, 110 + i * 5, 30 + i))
     salvar(f"awp_{i}", tiro(1.3, 2000, 700, 1.6, 0.35, 52 + i * 3, 40 + i))
+    # Besta: estalo mecânico seco, sem eco. Muito mais baixa que as armas de fogo, de propósito.
+    salvar(f"besta_{i}", corda(0.45, 900, 148 + i * 9, 0.05, 50 + i))
+    salvar(f"dardo_{i}", toque(0.25, 240 + i * 20, 60 + i))
+salvar("besta_recarga", catraca(7, 70))
 salvar("vazio", clique())
 print("ok")

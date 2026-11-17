@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 import numpy as np
 from PIL import Image
-from bt import rot_bb, vec_bb, euler_from_bb, Ry
+from bt import rot_bb, vec_bb, euler_from_bb, bone_matrix, Ry
 import modelos
 from geometria import build_geometry, render
 
@@ -63,6 +63,10 @@ PLACE = {
     "m4a4": dict(grip=(7.77, -6.09, 6.82), yaw=5.7, pitch=1.0, roll=-4, intervalo=3, olho=3.5, atirando=0.45),
     "glock": dict(grip=(4.70, -3.93, 5.42), yaw=5.8, pitch=1.0, roll=-3, intervalo=5, olho=2.5, atirando=0.3),
     "awp": dict(grip=(8.19, -6.12, 7.30), yaw=5.7, pitch=1.0, roll=-4, intervalo=25, olho=2.0, atirando=0.3),
+    # Besta: ciclo de 0,75 s (a corda volta nesse tempo) e luneta de média distância, com zoom moderado
+    # e furo mais largo que o da AWP. fov_mira tem que ser igual ao ARMAS[...].mira.fov do main.js.
+    "besta": dict(grip=(6.60, -5.60, 6.00), yaw=11.5, pitch=1.0, roll=-4, intervalo=15, olho=2.0,
+                  atirando=0.3, fov_mira=40.0),
 }
 # Mira (ADS): agachado = mira completa. Atirando em pé, a arma é puxada parte do caminho para o centro
 # (PLACE[...]["atirando"]: fração do caminho quadril -> mira; menor na Glock, que perto do olho ocupa a tela).
@@ -84,10 +88,11 @@ ALCA_NA_MIRA = "math.clamp(1.0 - (v.ads - 0.55) * 5.0, 0.0, 1.0)"
 #   então o zoom amplia o mundo e não deve mexer no tamanho do painel.
 # Assim o painel cobre a tela com ou sem zoom. Se um print mostrar a vinheta sumindo quando agacha,
 # é porque o zoom TAMBÉM amplia a arma: aí é só dimensionar por FOV_ZOOM.
-FOV_ZOOM = 30.0             # igual ao ARMAS[...].mira.fov do main.js (mínimo que o jogo aceita)
+FOV_ZOOM = 30.0             # padrão (AWP): igual ao ARMAS[...].mira.fov do main.js, mínimo que o jogo aceita.
+                            # Arma com outro zoom põe "fov_mira" no PLACE.
 # só na mira completa: durante a aproximação a arma ainda está a caminho e o painel sairia torto
 NA_LUNETA = "(v.ads > 0.995 ? 1.0 : 0.0)"
-MIRA_CIRCULO = 0.86         # diâmetro do furo em fração da altura da tela
+MIRA_CIRCULO = 0.86         # padrão: diâmetro do furo em fração da altura da tela ("luneta_furo" no info)
 
 
 def painel_luneta(cfg, info):
@@ -100,7 +105,8 @@ def painel_luneta(cfg, info):
     meia = d * np.tan(np.radians(VFOV / 2)) / ESCALA      # meia-altura da tela, em unidades de modelo
     # o painel tem 1,5x a meia-altura da tela (folga para telas largas e FOV maior)
     return dict(y=y, z=z, hw=round(meia * 2.4 * 1.5, 3), hh=round(meia * 1.5, 3),
-                raio=round(meia * MIRA_CIRCULO, 3))
+                raio=round(meia * info.get("luneta_furo", MIRA_CIRCULO), 3),
+                duplex=info.get("luneta_duplex", False), marcas=info.get("luneta_marcas", 0))
 MIRA_VELOCIDADE = 12.0      # 1/s: ~0,25 s para chegar à mira
 # Balanços que o jogo aplica no braço/item em 1ª pessoa (player_firstperson.animation.json vanilla):
 #  - respiração (osso rightitem): y = v.bob_animation * sin(q.life_time * 45) * 0.5  -> ciclo de 8 s;
@@ -112,7 +118,7 @@ COMPENSA_RESPIRACAO = True
 COMPENSA_CAMINHADA = True
 RECUO_MIRA = 0.4            # recuo na mira, relativo ao recuo do quadril
 QUADROS_MIRA = 8            # segmentos do caminho quadril -> mira (quadros-chave dirigidos por v.ads)
-NOMES = {"ak47": "AK-47", "m4a4": "M4A4", "glock": "Glock", "awp": "AWP"}
+NOMES = {"ak47": "AK-47", "m4a4": "M4A4", "glock": "Glock", "awp": "AWP", "besta": "Besta"}
 
 
 def rot_axis(axis, ang):
@@ -266,6 +272,17 @@ def third_person(arm_rot, grip_off=(0, -1.0, 0)):
     return dict(rot=rot, pos=np.array([-T_bb[0], T_bb[1], T_bb[2]]), R_g=R_g, T_bb=T_bb, R_arm=R_arm)
 
 
+def repouso_osso(o, pivo_mundo):
+    """Transformação de um osso animado na pose parada (ex.: besta armada), em espaço bb.
+
+    As prévias não interpretam Molang, então sem isto a corda apareceria reta, do jeito que foi
+    desenhada. É também o que o jogo mostra se a animação falhar, e por isso o "repouso" tem de ser
+    uma pose válida."""
+    r = o.get("repouso", {})
+    M = bone_matrix(pivo_mundo, r.get("rot", (0, 0, 0)), r.get("pos", (0, 0, 0)))
+    return lambda q_bb: (M[:3, :3] @ np.asarray(q_bb, float).T).T + M[:3, 3]
+
+
 def offset(cubes, d):
     out = []
     for c in cubes:
@@ -297,19 +314,33 @@ def main(RP, PREV):
         pass
 
     previews = []
-    for nome in ("glock", "ak47", "m4a4", "awp"):
+    for nome in ("glock", "ak47", "m4a4", "awp", "besta"):
         corpo, maos, info, tipo = modelos.build(nome)
         cfg = cfg0 = PLACE[nome]
         corpo = offset(corpo, PIV)
         maos = offset(maos, PIV)
         muzzle = np.array(info["muzzle_rel"]) + PIV
         geo_id = f"geometry.joao.{nome}"
-        alca = [c for c in corpo if c.get("osso") == "alca"]
-        corpo = [c for c in corpo if c.get("osso") != "alca"]
+        # ossos animados do modelo: a alça que se recolhe na mira e os do info["ossos"] (corda da
+        # besta, dardo na calha). Cada um vira um osso filho de "arma", com o pivô que o modelo pediu.
+        extras = {}
+        if "alca_pivo_rel" in info:
+            extras["alca"] = dict(pivo=info["alca_pivo_rel"], anim={"scale": ALCA_NA_MIRA})
+        extras.update(info.get("ossos_rel", {}))
+        partes = {n: [c for c in corpo if c.get("osso") == n] for n in extras}
+        extras = {n: o for n, o in extras.items() if partes[n]}
+        corpo = [c for c in corpo if c.get("osso") not in extras]
         ossos = [("arma", None, PIV, []), ("corpo", "arma", PIV, corpo)]
-        if alca:
-            ossos.append(("alca", "arma", PIV + np.array(info["alca_pivo_rel"]), alca))
+        for n, o in extras.items():
+            ossos.append((n, "arma", PIV + np.array(o["pivo"]), partes[n]))
         ossos.append(("maos", "arma", PIV, maos))
+        estaticos = ["corpo", *extras]
+        repousos = {n: repouso_osso(o, PIV + np.array(o["pivo"])) for n, o in extras.items()}
+
+        def compoe(vista, n=None, repousos=repousos):
+            """Vista da prévia para um osso: aplica antes a pose parada do osso, se ele tiver uma."""
+            r = repousos.get(n)
+            return vista if r is None else (lambda q_bb: vista(r(q_bb)))
         luneta = painel_luneta(cfg0, info) if info.get("luneta") else None
         if luneta:
             luneta = dict(luneta, y=luneta["y"] + PIV[1], z=luneta["z"] + PIV[2])
@@ -321,7 +352,8 @@ def main(RP, PREV):
         fp = first_person(cfg)
         caminho = caminho_mira(cfg, pose_mira(cfg, info))
         ads = caminho[-1][1]
-        k = fp["kick"] * {"pistola": 0.5, "sniper": 0.9}.get(tipo, 0.35)   # sniper: coice bem maior
+        # sniper: coice bem maior; besta: um tranco curto, não um coice de pólvora
+        k = fp["kick"] * {"pistola": 0.5, "sniper": 0.9, "besta": 0.25}.get(tipo, 0.35)
         dk = k * (RECUO_MIRA - 1.0)
         # recuo (aditivo) menor na mira
         recuo = [f" + v.kick * ({k[i]:.3f} + v.ads * {dk[i]:.3f})" for i in range(3)]
@@ -336,10 +368,11 @@ def main(RP, PREV):
             "animation_length": 1.05,
             "anim_time_update": "v.ads",
             "bones": {"arma": {"rotation": rot_kf, "position": pos_kf, "scale": ESCALA},
-                      **({"alca": {"scale": ALCA_NA_MIRA}} if alca else {}),
+                      **{n: o["anim"] for n, o in extras.items()},
                       # na luneta a arma some e só fica o painel (como no CS)
                       **({"corpo": {"scale": f"1.0 - {NA_LUNETA}"},
                           "maos": {"scale": f"1.0 - {NA_LUNETA}"},
+                          **{n: {"scale": 0} for n in extras},
                           "luneta": {"scale": NA_LUNETA}} if luneta else {})},
         }
         for tag, tp in (("mira", TP_MIRA), ("baixo", TP_BAIXO)):
@@ -419,7 +452,8 @@ def main(RP, PREV):
             if na_luneta:                 # mira com luneta: a arma some, fica só o painel
                 ossos_v = {"luneta": fp_world}
             else:
-                ossos_v = {"corpo": fp_world, "maos": fp_world, **({"alca": fp_world} if com_alca else {})}
+                ossos_v = {"corpo": fp_world, "maos": fp_world,
+                           **{n: compoe(fp_world, n) for n in extras if n != "alca" or com_alca}}
             im = render(faces, ossos_v, proj, (W, H), bg=zoom_bg if zoom else bgi)
             from PIL import ImageDraw
             dr = ImageDraw.Draw(im)
@@ -432,7 +466,8 @@ def main(RP, PREV):
         im_quadril = render_fp(fp)
         im_quadril.save(PREV / f"fp_{nome}.png")
         # fundo "com zoom": o cenário da prévia ampliado, para simular o /camera fov_set
-        zoom_bg = bgi.resize((int(W * VFOV / FOV_ZOOM), int(H * VFOV / FOV_ZOOM)), Image.LANCZOS)
+        fov_zoom = cfg0.get("fov_mira", FOV_ZOOM)
+        zoom_bg = bgi.resize((int(W * VFOV / fov_zoom), int(H * VFOV / fov_zoom)), Image.LANCZOS)
         zx, zy = zoom_bg.width, zoom_bg.height
         zoom_bg = zoom_bg.crop(((zx - W) // 2, (zy - H) // 2, (zx - W) // 2 + W, (zy - H) // 2 + H))
         im_mira = render_fp(mistura(caminho, 1.0), agachado=1.0, com_alca=False,
@@ -448,14 +483,29 @@ def main(RP, PREV):
         tira.save(PREV / f"fp_transicao_{nome}.png")
 
         # ---------------- vista lateral (também vira o ícone)
+        # A besta sai de CIMA, inclinada: de lado os arcos desaparecem atrás da calha e ela vira uma
+        # barra comprida, igual a um fuzil. De cima vê-se o T dos arcos, a corda em V e o dardo —
+        # que é como se reconhece uma besta. "vista_icone" no info da arma escolhe.
+        de_cima = info.get("vista_icone") == "topo"
+        ci, si = np.cos(np.radians(34.0)), np.sin(np.radians(34.0))
+
+        def tela(q):
+            """(direita, cima) de um bloco de pontos já relativos ao pivô, na vista do ícone."""
+            if de_cima:   # deitada como as outras armas: frente à direita, arcos abrindo para os lados
+                return q[:, 2] * ci + q[:, 1] * si, -q[:, 0]
+            return q[:, 2], q[:, 1]
+
         def side(q_bb):
             # olhando o lado direito da arma (+X bedrock = -X bb): câmera em x_bb muito negativo
             q = q_bb - PIV
-            return np.stack([q[:, 2], q[:, 1], q[:, 0] + 1000], axis=1)   # direita=z(frente), cima=y, prof
+            u, v = tela(q)
+            prof = (q[:, 1] * ci - q[:, 2] * si) if de_cima else q[:, 0]
+            return np.stack([u, v, prof + 1000], axis=1)   # direita, cima, profundidade
 
         pts = np.array([np.array(c["o"]) for c in corpo] + [np.array(c["o"]) + np.array(c["s"]) for c in corpo]) - PIV
-        zmin, zmax = pts[:, 2].min(), pts[:, 2].max()
-        ymin, ymax = pts[:, 1].min(), pts[:, 1].max()
+        pu, pv = tela(pts)
+        zmin, zmax = pu.min(), pu.max()
+        ymin, ymax = pv.min(), pv.max()
         S = 512
         span = max(zmax - zmin, ymax - ymin) * 1.6
         cz, cy = (zmin + zmax) / 2, (ymin + ymax) / 2
@@ -464,7 +514,7 @@ def main(RP, PREV):
         def oproj(p):
             return ((p[0] - cz) * sc + S / 2, S / 2 - (p[1] - cy) * sc)
 
-        side_img = render(faces, {"corpo": side, "alca": side}, oproj, (S, S))
+        side_img = render(faces, {n: compoe(side, n) for n in estaticos}, oproj, (S, S))
         bb = side_img.getbbox()
         crop = side_img.crop(bb)
         side_n = max(crop.width, crop.height) + 12
@@ -479,10 +529,14 @@ def main(RP, PREV):
         big.save(PREV / f"lado_{nome}.png")
 
         # ---------------- detalhe em 3/4 (perspectiva, grande): para julgar peças pequenas e a paleta
-        dist_det = 2.6 * max(zmax - zmin, 2.0 * (ymax - ymin))   # enquadra armas compridas e altas
+        # (enquadramento próprio: o do ícone pode ser uma vista de cima, que não serve aqui)
+        dzmin, dzmax = pts[:, 2].min(), pts[:, 2].max()
+        dymin, dymax = pts[:, 1].min(), pts[:, 1].max()
+        dcz, dcy = (dzmin + dzmax) / 2, (dymin + dymax) / 2
+        dist_det = 2.6 * max(dzmax - dzmin, 2.0 * (dymax - dymin))   # enquadra armas compridas e altas
 
         def tres_quartos(q_bb, giro=np.radians(28.0), incl=np.radians(16.0), dist=dist_det):
-            q = q_bb - PIV - np.array([0.0, cy, cz])
+            q = q_bb - PIV - np.array([0.0, dcy, dcz])
             cg, sg, ci, si = np.cos(giro), np.sin(giro), np.cos(incl), np.sin(incl)
             Ryy = np.array([[cg, 0, sg], [0, 1, 0], [-sg, 0, cg]])
             # câmera elevada: gira em torno do eixo "direita" da câmera (que é z no referencial da vista lateral)
@@ -496,7 +550,7 @@ def main(RP, PREV):
         def pproj(p):
             return (DW / 2 + p[0] / p[2] * fd, DH / 2 - p[1] / p[2] * fd)
 
-        det = render(faces, {"corpo": tres_quartos, "alca": tres_quartos}, pproj, (DW, DH),
+        det = render(faces, {n: compoe(tres_quartos, n) for n in estaticos}, pproj, (DW, DH),
                      bg=Image.new("RGBA", (DW, DH), (200, 203, 207, 255)))
         det.save(PREV / f"detalhe_{nome}.png")
 
@@ -507,7 +561,7 @@ def main(RP, PREV):
             return Wd
 
         print(nome, "FP rot", r3(fp["rot"]), "pos", r3(fp["pos"]), "| mira rot", r3(ads["rot"]), "pos", r3(ads["pos"]), "| TP mira", r3(TP_MIRA["rot"]), "| TP baixo", r3(TP_BAIXO["rot"]))
-        previews.append((nome, tp_world, faces))
+        previews.append((nome, tp_world, faces, estaticos, compoe))
 
     anim = {"format_version": "1.10.0", "animations": animations}
     anim["animations"]["animation.joao.sem_maos"] = {"loop": True,
@@ -524,7 +578,7 @@ def main(RP, PREV):
     (RP / "render_controllers/joao_armas.render_controllers.json").write_text(json.dumps(rc, indent=1))
 
     # terceira pessoa: render simples de lado (jogador olhando para -Z, vemos pelo lado direito dele)
-    for nome, tpw, faces in previews:
+    for nome, tpw, faces, estaticos, compoe in previews:
         def side_tp(q_bb, tpw=tpw):
             Wd = tpw(q_bb)
             # câmera à direita do jogador (x_bb grande), olhando para -X; direita da tela = -Z (frente do jogador)
@@ -540,7 +594,7 @@ def main(RP, PREV):
             dr.rectangle([o((-z1, y1)), o((-z0, y0))], fill=(80, 110, 160, 255))
         # braço direito estendido para frente (rot -90)
         dr.rectangle([o((0, 24)), o((12, 20))], fill=(200, 160, 120, 255))
-        im2 = render(faces, {"corpo": side_tp, "alca": side_tp}, lambda p: o((p[0], p[1])), (S, S), bg=im)
+        im2 = render(faces, {n: compoe(side_tp, n) for n in estaticos}, lambda p: o((p[0], p[1])), (S, S), bg=im)
         im2.save(PREV / f"tp_{nome}.png")
     print("ok")
 

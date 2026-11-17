@@ -1,0 +1,60 @@
+{
+  "format_version": "1.21.90",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "joao:dardo_voo",
+      "is_spawnable": false,
+      "is_summonable": true,
+      "runtime_identifier": "minecraft:arrow"
+    },
+    "component_groups": {
+      "joao:fim": {
+        "minecraft:instant_despawn": {}
+      }
+    },
+    "components": {
+      "minecraft:type_family": {
+        "family": [ "joao", "joao:dardo" ]
+      },
+      "minecraft:collision_box": {
+        "width": 0.2,
+        "height": 0.2
+      },
+      "minecraft:physics": {},
+      "minecraft:projectile": {
+        "on_hit": {
+          "impact_damage": {
+            "damage": 1,
+            "knockback": false,
+            "destroy_on_hit": false,
+            "catch_fire": false
+          },
+          "remove_on_hit": {}
+        },
+        "hit_sound": "joao.dardo.acerto",
+        "power": 2.4,
+        "gravity": 0.02,
+        "uncertainty_base": 0,
+        "uncertainty_multiplier": 0,
+        "should_bounce": false,
+        "reflect_on_hurt": false,
+        "catch_fire": false,
+        "crit_particle_on_hurt": false
+      },
+      "minecraft:timer": {
+        "time": 12,
+        "looping": false,
+        "time_down_event": {
+          "event": "joao:sumir"
+        }
+      }
+    },
+    "events": {
+      "joao:sumir": {
+        "add": {
+          "component_groups": [ "joao:fim" ]
+        }
+      }
+    }
+  }
+}

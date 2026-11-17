@@ -1,0 +1,20 @@
+{
+ "format_version": "1.10.0",
+ "minecraft:client_entity": {
+  "description": {
+   "identifier": "joao:dardo_voo",
+   "materials": {
+    "default": "entity_alphatest"
+   },
+   "textures": {
+    "default": "textures/entity/joao/dardo"
+   },
+   "geometry": {
+    "default": "geometry.joao.dardo"
+   },
+   "render_controllers": [
+    "controller.render.joao_dardo"
+   ]
+  }
+ }
+}

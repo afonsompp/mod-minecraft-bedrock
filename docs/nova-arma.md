@@ -40,13 +40,17 @@ A lista de armas está repetida em vários lugares, então siga a lista inteira:
 
 ## Valores de referência
 
-| Parâmetro | Fuzil com alça no meio (AK) | Fuzil com alça atrás (M4) | Pistola (Glock) | Sniper (AWP) |
-|---|---|---|---|---|
-| `olho` (un. de câmera, 1/16 bloco) | 7,5 | 3,5 | 2,5 | 2,0 |
-| `atirando` (fração do caminho até a mira) | 0,45 | 0,45 | 0,3 | 0,3 |
-| `intervalo` (ticks entre tiros) | 3 | 3 | 5 | 25 |
-| `mira.fov` / `mira.dispersao` | 52 / 0,3 | 52 / 0,3 | 58 / 0,4 | 18 / 0,04 |
-| `yaw` / `pitch` / `roll` no quadril | 5,7 / 1 / −4 | 5,7 / 1 / −4 | 5,8 / 1 / −3 | 5,7 / 1 / −4 |
+| Parâmetro | Fuzil com alça no meio (AK) | Fuzil com alça atrás (M4) | Pistola (Glock) | Sniper (AWP) | Besta |
+|---|---|---|---|---|---|
+| `olho` (un. de câmera, 1/16 bloco) | 7,5 | 3,5 | 2,5 | 2,0 | 2,0 |
+| `atirando` (fração do caminho até a mira) | 0,45 | 0,45 | 0,3 | 0,3 | 0,3 |
+| `intervalo` (ticks entre tiros) | 3 | 3 | 5 | 25 | 15 |
+| `mira.fov` / `mira.dispersao` | 52 / 0,3 | 52 / 0,3 | 58 / 0,4 | 30 / 0,04 | 40 / 0,25 |
+| `yaw` / `pitch` / `roll` no quadril | 5,7 / 1 / −4 | 5,7 / 1 / −4 | 5,8 / 1 / −3 | 5,7 / 1 / −4 | 11,5 / 1 / −4 |
+
+A besta foge do padrão de propósito: ela é **larga**, e com o yaw dos fuzis os arcos — que são a cara
+dela — ficavam fora da tela. O `yaw` maior traz a frente para dentro do quadro. `tools/ajuste.py` tem
+alvos de tela próprios para o tipo `"besta"`.
 
 - `olho` é a distância do olho ao ponto de trás da visada na mira. A alça no meio da arma pede olho mais longe, senão o olho entra na caixa. Alça traseira e pistola ficam perto; com olho grande, a pistola parece pequena e distante (v1.3.1).
 - `atirando` alto na pistola faz ela tapar a tela (v1.2.1).
@@ -67,8 +71,30 @@ A lista de armas está repetida em vários lugares, então siga a lista inteira:
 | `"fuzil"` | duas mãos, a esquerda no guarda-mão | normal |
 | `"pistola"` | duas mãos juntas na empunhadura | menor |
 | `"sniper"` | igual ao fuzil | bem maior |
+| `"besta"` | igual ao fuzil | bem menor (tranco, não coice) |
+
+Um tipo novo tem de ser registrado nos **quatro** lugares onde o tipo é testado, e não há outros:
+`maos()` em `modelos.py`, o dicionário do recuo em `gerar.py`, os alvos de tela em `ajuste.py` e a
+lista de `pose.py`. Esquecer `pose.py` é o erro que deixou a AWP sem pose de 3ª pessoa até a v1.6.3.
 
 A **animação de disparo é igual para todos** desde a v1.6.5: um ciclo por tiro de verdade, disparado pelo cooldown `joao_tiro` que o `main.js` liga ao atirar. Quem decide se a arma solta rajada é o `automatica` no `main.js`, não o tipo.
+
+## Ossos que se mexem (corda da besta, dardo na calha)
+
+`info["ossos"]` leva um dicionário `nome -> dict(pivo, anim, repouso)`. Cada entrada vira um osso
+filho de `arma`, com os cubos marcados por `osso("<nome>", cubo)` em `modelos.py`:
+
+- **`pivo`**: ponto em volta do qual o osso gira ou escala, nas coordenadas do modelo;
+- **`anim`**: o que entra na animação de 1ª pessoa (`rotation`, `position`, `scale`), em Molang. É
+  aqui que se usa `v.ciclo`, que vai de 0 (saiu o tiro) a 1 (arma pronta de novo) no intervalo da
+  arma — ele já existe e já é disparado pelo tiro de verdade;
+- **`repouso`**: a pose parada. **É obrigatória quando a pose desenhada não é a pose correta.** As
+  prévias não interpretam Molang, e é também o que o jogo mostra se a animação falhar: sem isso, a
+  corda da besta aparecia reta, do jeito que foi desenhada, em vez de formar o V.
+
+A alça rebatível da M4 usa o mesmo mecanismo por outro caminho (`alca_pivo` no `info`).
+
+Na mira com luneta, esses ossos recebem `scale 0` junto com a arma.
 
 ## Arma com luneta
 
@@ -78,6 +104,10 @@ A **animação de disparo é igual para todos** desde a v1.6.5: um ciclo por tir
 - Ele é dimensionado pelo FOV normal, então cobre a tela com zoom ou sem.
 - `mira.fov` no `main.js` só vale entre **30 e 110**: fora disso o jogo recusa o zoom em silêncio. E o `/camera fov_set` exige **Cheats ligados** no mundo.
 - A luneta em si pode ser modelada sólida e realista: na mira ela não aparece.
+- O painel é ajustável por arma, no `info`: `luneta_furo` (fração da altura da tela; 0,86 na AWP,
+  0,93 na besta, que é de média distância e tem campo mais largo), `luneta_duplex` (retículo de
+  rifle, fino no centro e com posto grosso nas bordas) e `luneta_marcas` (tracinhos de queda abaixo
+  do centro). O zoom por arma é `fov_mira` no `PLACE`, e **tem de ser igual** ao `mira.fov` do script.
 
 ## Regras de desenho da mira (lições das versões anteriores)
 
@@ -94,7 +124,9 @@ A **animação de disparo é igual para todos** desde a v1.6.5: um ciclo por tir
    - `fp_transicao_<nome>.png`: quadril, atirando em pé e mira;
    - `fp_mira_<nome>.png`: a cruz cai na ponta da massa, dentro do entalhe;
    - `detalhe_<nome>.png`: 3/4 grande; confira se cada peça pequena se lê e se a paleta não virou silhueta;
-   - `lado_<nome>.png`: proporções, e vira o ícone;
+   - `lado_<nome>.png`: proporções, e vira o ícone. Arma larga pode pedir `vista_icone="topo"` no
+     `info`: de lado, a besta vira uma barra igual a um fuzil, e de cima vê-se o T dos arcos e a
+     corda em V;
    - `tp_<nome>.png`: 3ª pessoa.
 2. Desde a v1.3.2, o renderizador de prévias é confiável de perto: ordena por pedaço de face e mostra a face certa. Só não tem a luz do jogo.
 3. `--versao`, `--deploy` e `--publicar`. Peça ao Afonso prints **mirando agachado**, **em pé** e **atirando em pé**.

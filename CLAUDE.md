@@ -10,7 +10,7 @@
   - armaduras;
   - animais;
   - qualquer outra mecânica ou criatura que ele pedir no futuro.
-- Hoje existem 3 armas: Glock, AK-47 e M4A4. Os nomes dos packs nos manifests ainda são "Armas do João". Renomear o nome exibido é permitido; **os UUIDs nunca mudam**.
+- Hoje existem 5 armas: Glock, AK-47, M4A4, AWP e a Besta Tranquilizante (que não mata: põe o bicho para dormir). Os nomes dos packs nos manifests ainda são "Armas do João". Renomear o nome exibido é permitido; **os UUIDs nunca mudam**.
 - Quem desenvolve é o **Afonso**, tio do João e desenvolvedor.
 
 ## Perfil do João e padrão de qualidade (realismo estrito)
@@ -65,7 +65,8 @@ As prévias não têm a iluminação do jogo, e o FOV do celular varia. Quando m
 - **Editado à mão**: `packs/BP/**` (itens, receitas, `scripts/main.js`), `packs/RP/manifest.json`, `packs/RP/textures/item_texture.json`, `packs/RP/sounds/sound_definitions.json`, tudo em `tools/`.
 - **Gerado por `tools/gerar.py` (não editar direto)**: `packs/RP/models/entity/joao/*`, `packs/RP/textures/entity/joao/*`, `packs/RP/attachables/*`, `packs/RP/animations/joao_armas.animation.json`, `packs/RP/render_controllers/*`, `packs/RP/textures/items/{glock,ak47,m4a4}.png`.
 - Site de downloads: modelo em `tools/site/modelo.html` (editado à mão), gerador `tools/site_joao.py`; a pasta `site/` é gerada (não editar).
-- Gerado por `sons.py` → `packs/RP/sounds/joao/*.ogg`; `municao.py` → ícones de munição; `icone.py` → `pack_icon.png`; `pose.py` → `packs/RP/entity/player.entity.json` e `animations/joao_mira.animation.json`.
+- Gerado por `sons.py` → `packs/RP/sounds/joao/*.ogg`; `municao.py` → ícones de munição; `icone.py` → `pack_icon.png`; `pose.py` → `packs/RP/entity/player.entity.json` e `animations/joao_mira.animation.json`; `dardo.py` → entidade do dardo em voo (`models/entity/joao/dardo.geo.json`, `entity/dardo.entity.json`, `render_controllers/joao_dardo.*`, `textures/particle/joao_sono.png`).
+- **Editado à mão também**: `packs/BP/entities/*` (comportamento de entidade é dado, não geração) e `packs/RP/particles/*`.
 
 ## Arquitetura escalável e orientada a dados (multi-domínio)
 
@@ -90,6 +91,9 @@ Domínios previstos: `armas`, `dinossauros`, `veiculos`, `armaduras`, `animais`,
 | `joao:dino`, `joao:dino_carnivoro`, `joao:dino_herbivoro` | entidade (family) | dinossauros |
 | `joao:animal` | entidade (family) | animais do modpack |
 | `joao:veiculo`, `joao:veiculo_terrestre`, `joao:veiculo_aereo`, `joao:veiculo_aquatico` | entidade (family) | veículos |
+| `joao:dardo` | entidade (family) | dardo tranquilizante em voo (`joao:dardo_voo`) |
+| `joao:sedavel` | entidade (family) | **dorme de verdade** com o dardo: o script dispara nela os eventos `joao:dormir` / `joao:acordar`, que o JSON do bicho tem de declarar (deitar, calar, desligar os `behavior.*`). Sem essa família, o script só congela o bicho com lentidão e fraqueza, que é o máximo que dá num mob do jogo |
+| `joao:dormindo` | entidade (tag de runtime) | **estado**, não classificação: quem está adormecido agora |
 
 ### Script API modular (`packs/BP/scripts/`)
 
@@ -104,15 +108,19 @@ scripts/
     hud.js                # actionbar / mensagens
     inventario.js         # contar/gastar itens
     tags.js               # constantes das tags e famílias (fonte única dos nomes)
+    mira.js               # zoom (/camera fov_set), pedido em nome do domínio
   armas/
     index.js              # registra o componente joao:arma_fogo; tiro, rajada, munição
+  sedativo/
+    index.js              # besta: lança o dardo (entidade), doses e sono
   dinossauros/            # comportamento que o JSON não cobre (ex.: rugido, montaria especial)
   veiculos/               # controle, física, combustível
   armaduras/              # efeitos de conjunto completo etc.
 ```
 
-- Cada domínio exporta uma função `registrar(contexto)` chamada pelo `main.js`. Domínios **não importam uns aos outros**; o que for compartilhado vai para `comum/`.
-- Um único `system.runInterval` por domínio, no máximo. Prefira eventos a polling.
+- Cada domínio exporta um objeto `dominio` com ganchos opcionais (`iniciar`, `aoUsar`, `aoComecarUso`, `aoSoltarUso`, `aCadaTick`, `aoSair`). O contrato está em `comum/dominio.js`; o `main.js` assina cada evento **uma vez** e repassa a quem declarou o gancho. Domínios **não importam uns aos outros**; o que for compartilhado vai para `comum/`.
+- Um único `system.runInterval` por domínio, no máximo, e o laço por jogador é o do `main.js` (`aCadaTick`). Prefira eventos a polling.
+- **Recurso compartilhado precisa de dono.** O zoom da mira é de dois domínios (arma de fogo e besta), então `comum/mira.js` guarda quem pediu e ignora um "limpar" de outro: sem isso, com a besta na mão, um domínio mandava tirar o zoom e o outro mandava pôr, a cada tick.
 - `npm run check` precisa cobrir todos os arquivos (`jsconfig.json` já inclui `packs/BP/scripts/**/*.js`).
 
 ### Geradores modulares (`tools/`)
@@ -139,14 +147,14 @@ tools/
 
 ### Estado atual × alvo (migração)
 
-- **Hoje** (v1.6.5): só existe o domínio armas. O `main.js` ainda guarda o objeto `ARMAS` por ID, e os geradores estão em arquivos únicos (`modelos.py`, `gerar.py`, `geometria.py`, `sons.py`).
-- **Quando**: migre para a estrutura acima **ao entrar a segunda categoria** (provavelmente o primeiro dinossauro), ou antes, se uma mudança em armas já pedir isso.
-- **Como**: faça a migração em commit próprio, **sem mudar comportamento**. Verifique que `--gerar` produz arquivos idênticos aos de antes (exceto `.ogg`) e que `npm run check` passa. Só então comece o conteúdo novo.
+- **Feito na v1.7.0**: o script está modular (`main.js` só roteia; `comum/`, `armas/`, `sedativo/`), em commit próprio e sem mudar comportamento. Os geradores em Python continuam em arquivos únicos (`modelos.py`, `gerar.py`, `geometria.py`, `sons.py`), mais `dardo.py` para a entidade.
+- **Falta**: trocar a tabela `ARMAS` de `armas/index.js` por `minecraft:tags` + o componente customizado `joao:arma_fogo` registrado em `system.beforeEvents.startup`. Isso mexe nos JSONs dos itens, e no Bedrock um erro ali faz o item **sumir sem mensagem** — por isso ficou para um commit só dele, com teste no aparelho. Os geradores em domínios (`tools/dominios/...`) ficam para o primeiro dinossauro.
+- **Como**: migração em commit próprio, **sem mudar comportamento**. Verifique que `--gerar` produz arquivos idênticos aos de antes (exceto `.ogg`) e que `npm run check` passa. Só então comece o conteúdo novo.
 - Na migração das armas para `joao:arma_fogo` + tags, **mantenha os IDs dos itens** (`joao:glock`, `joao:ak47`, `joao:m4a4`, munições). Mudar ID apaga os itens do inventário do João.
 
 ## Convenções
 
-- Namespace `joao:`. IDs: `joao:glock`, `joao:ak47`, `joao:m4a4`, `joao:municao_pistola`, `joao:municao_fuzil`. Sons `joao.*`, geometrias `geometry.joao.*`, animações `animation.joao.*`.
+- Namespace `joao:`. IDs: `joao:glock`, `joao:ak47`, `joao:m4a4`, `joao:awp`, `joao:besta`, `joao:municao_pistola`, `joao:municao_fuzil`, `joao:municao_sniper`, `joao:dardo`. Entidades: `joao:dardo_voo`. Sons `joao.*`, geometrias `geometry.joao.*`, animações `animation.joao.*`, partículas `joao:*`.
 - Script API `@minecraft/server` **2.0.0** (jogo ≥ 1.21.90). `min_engine_version` [1,21,90] no BP e no RP.
 - Tiro = raycast instantâneo (`getBlockFromRay` + `getEntitiesFromRay`) a partir da cabeça; dano via `applyDamage` creditado ao jogador. Rajada: `itemStartUse`/`itemStopUse` + `runInterval`; o `itemUse` sempre dá 1 tiro (fallback se a rajada não funcionar no celular). Itens têm `minecraft:use_modifiers` (use_duration 3600) para permitir segurar.
 - Para adicionar uma arma, siga **`docs/nova-arma.md`**. Ele traz:
@@ -224,8 +232,10 @@ Detalhamento (helpers de `modelos.py`, atlas, pintura 3D, recuo, clarão, mira e
 - **Os três ângulos do `CALIB` não saem de ajuste por silhueta.** A silhueta de um fuzil é alongada e quase não muda quando a câmera gira um grau, então o otimizador da v1.1.1 pôs ruído nos três: roll 1,963° (zerado na v1.6.3) e yaw 1,132° (medido em 0,387 na v1.6.5). Menos de um grau some nas miras de ferro, mas o retículo da luneta atravessa a tela e denuncia. Meça com `tools/medir_mira.py`, que lê o retículo da AWP (linhas de 1 px, ~0,07°) e confere nas outras armas. **A prévia nunca mostra esse tipo de erro**, porque renderiza com a mesma câmera que posiciona a arma — câmera errada dá prévia certa e jogo errado.
 - **Erro de ÂNGULO da câmera e erro de POSIÇÃO (`AGACHADO`) parecem a mesma coisa numa arma só.** O de ângulo desvia todas as armas igual; o de posição desvia proporcionalmente a 1/distância do olho, então a AWP (olho 2,0) erraria quase 4x mais que a AK (olho 7,5). Na v1.6.2 os dois foram confundidos e o `AGACHADO` absorveu um erro que era de ângulo. Meça sempre com duas armas ou mais.
 - Rotação no Bedrock **não** é a convenção matemática comum. Use `tools/bt.py`; não chute sinais.
+- **As prévias não interpretam Molang.** Um osso que só fica certo pela animação (a corda da besta) aparece na prévia do jeito que foi *desenhado*. Por isso `info["ossos"]` tem `repouso`: a pose parada, que as prévias aplicam e que o jogo mostra se a animação falhar. Desenhe sempre uma pose que seja válida sozinha.
+- **Projétil de verdade é território pouco documentado.** `minecraft:projectile` em *item* de add-on não funciona (MCPE-170972); o caminho que funciona é entidade + `spawnEntity` + `getComponent("minecraft:projectile").shoot()` pelo script, com `owner` para o acerto ser creditado. A orientação no voo vem de `runtime_identifier: "minecraft:arrow"`, cuja lista de efeitos a wiki admite estar incompleta — e por isso o dardo não usa `stick_in_ground`: com o runtime de flecha, um projétil cravado no chão pode virar uma flecha na mão de quem passa por cima.
 
-## Estado (v1.6.5)
+## Estado (v1.7.0)
 
 Histórico completo no `CHANGELOG.md`. Resumo do que importa para continuar:
 
@@ -236,31 +246,27 @@ Histórico completo no `CHANGELOG.md`. Resumo do que importa para continuar:
   - câmera calibrada (`CALIB` + `AGACHADO`, encaixe ~0 na v1.3.1);
   - `v.ads` persiste e `q.is_sneaking` funciona no attachable.
 - **Entregue e ainda não visto no aparelho:**
-  - as quatro armas no padrão novo, peça por peça: M4A4 com 142 cubos (v1.4.0), AK com 88, Glock com 55 (v1.5.0) e AWP com 89 + 74 do painel da luneta (v1.6.0);
-  - AWP: sniper de ferrolho com mira estilo CS (painel preto com furo circular), dano 30, munição própria. Os vídeos confirmaram o painel, o furo e o retículo no jogo; a v1.6.2 centralizou o retículo;
-  - atlas 4x menor em todas as armas (empacotamento por altura, v1.6.0);
-  - paleta clara e estilo limpo com luz pintada (v1.4.0/v1.4.1);
-  - alça da M4 que se recolhe na mira (v1.4.2);
-  - pintura 3D das texturas (v1.3.0): julgar contraste no jogo;
-  - puxão ao atirar em pé (v1.3.1);
-  - AK com alça e massa mais altas e Glock mais perto na mira (v1.3.2).
-
-  Pedir prints mirando (AK e Glock), em pé e atirando em pé.
-- **A confirmar:**
-  - **se o zoom funciona com Cheats ligados.** O `/camera fov_set` exige cheats e só aceita FOV de 30 a 110 (a v1.6.0 pedia 18 e era recusada em silêncio — foi o que apareceu no vídeo da AWP). `camera.setFov()` não existe na API 2.0.0, então o comando é o único caminho hoje;
-  - **se o zoom amplia também a arma.** O painel da luneta é dimensionado pelo FOV normal (`VFOV`), supondo que a arma em 1ª pessoa tem FOV próprio. Se um print mostrar a vinheta sumindo ao agachar, o zoom afeta a arma e o painel precisa ser dimensionado por `FOV_ZOOM`;
-  - **se o retículo da AWP ficou reto e no centro.** O giro foi resolvido na v1.6.3 (os prints da v1.6.4 mediram 0,05°, contra ~2° antes). O centro foi corrigido na v1.6.5, com os ângulos do `CALIB` medidos em 5 prints (`tools/medir_mira.py`): faltava 1,2° à direita e 1,1° acima. O tiro sai sempre do centro da tela, então retículo fora do lugar = tiro fora da mira;
-  - **se a arma parou de animar sem munição** (v1.6.5) e se a rajada continua lisa: a animação agora segue o cooldown `joao_tiro` que o script liga a cada tiro, em vez do dedo na tela;
+  - **tudo da v1.7.0** (besta, dardo, sono) — nada disso rodou no jogo ainda;
+  - a mira no centro e a animação presa ao tiro real (v1.6.5);
+  - as cinco armas no padrão novo, peça por peça: M4A4 com 142 cubos, AK com 88, Glock com 55, AWP com 89 + 74 do painel da luneta, besta com 130;
+  - atlas 4x menor em todas as armas (v1.6.0); paleta clara e estilo limpo (v1.4.x); pintura 3D (v1.3.0).
+- **A confirmar, em ordem de risco:**
+  - **o dardo em voo.** É a primeira entidade do add-on. A orientação no voo depende do `runtime_identifier: minecraft:arrow`, que a wiki só testou até a 1.18. Se o dardo aparecer deitado, de lado ou invisível, o plano B é desenhá-lo sem orientação (uma cápsula curta) ou voltar ao raycast com um dardo decorativo — **só depois de um vídeo**;
+  - **a corda da besta.** Ela gira e encurta por Molang (`math.lerp` com `v.ciclo`). Se o Molang falhar, ela fica parada na pose armada, que é a de repouso — repare se ela se mexe ao atirar;
+  - **a partícula `joao:sono`** (o "zZz"): JSON de partícula é novo no projeto e erro de partícula é silencioso;
+  - **se o zoom funciona com Cheats ligados.** O `/camera fov_set` exige cheats e só aceita FOV de 30 a 110. Pendência desde a v1.6.0;
+  - **se o zoom amplia também a arma.** Se um print mostrar a vinheta sumindo ao agachar, o painel precisa ser dimensionado por `FOV_ZOOM`;
   - se a compensação de balanço faz a arma balançar com o "balanço da visão" desligado;
   - como fica no PC (16:9).
 - **Pendências e ideias:**
-  - mãos visíveis segurando a Glock na mira (hoje parece uma coluna solta);
-  - som de ferrolho da AWP entre os tiros (hoje só o estampido);
+  - **dardo cravado no bicho**: não existe nativamente. Quando os dinos chegarem, vira um osso no modelo deles, que é como os add-ons de referência fazem;
+  - migrar as armas para `minecraft:tags` + componente `joao:arma_fogo` (ver "Estado atual × alvo");
+  - mãos visíveis segurando a Glock na mira;
+  - som de ferrolho da AWP entre os tiros;
   - marcações gravadas (seletor, inscrições);
   - amostras de material geradas por IA (Nano Banana) lidas pela `paint()`;
-  - coice de câmera no tiro (`camerashake`), se o João sentir falta;
-  - site ainda não publicado na Vercel (`--publicar`, 1ª vez `npx vercel login`).
-- **O que o João pode pedir:** fuzil com luneta (já previsto na mira), recarga com animação, mais armas, dinossauros (Jurassic World é o favorito dele).
+  - coice de câmera no tiro (`camerashake`), se o João sentir falta.
+- **O que o João pode pedir:** dinossauros (Jurassic World é o favorito dele) — a besta já é a metade do caminho, porque o jeito de fazer dormir está pronto e esperando a família `joao:sedavel`. Também: recarga com animação, mais armas, veículos.
 
 ## Referências
 

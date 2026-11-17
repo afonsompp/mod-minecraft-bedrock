@@ -499,10 +499,237 @@ def awp():
                    visada=((0, EIXO_Y, -8.75), (0, EIXO_Y, 14.25)), luneta=True)
 
 
+# ---------------------------------------------------------------- Besta de dardos tranquilizantes
+CORDA_Y = 5.8                    # altura da corda: ela corre SOBRE a calha, não dentro do sulco
+DARDO_Y = 5.1                    # o dardo assenta no sulco, com a metade de cima à mostra
+CAM = (9.0, CORDA_Y, 23.0)       # roldana direita (a esquerda é espelhada)
+SERVING_Z = 0.5                  # corda armada: recuada até a ação
+SERVING_SOLTA_Z = 16.5           # até onde ela corre no disparo (power stroke ~22 cm, como na real)
+SERVING_HW = 0.9                 # meia-largura do serving (onde cada meia-corda termina)
+
+
+def meia_corda(ponta_z):
+    """(comprimento, ry) da meia-corda, da roldana direita até a borda do serving.
+
+    O cubo é desenhado reto, ao longo de -Z a partir da roldana, e a rotação em Y o leva até o centro
+    da calha; a animação interpola essa rotação e a escala em Z entre armada e solta (ver gerar.py).
+    ry = -atan2(dx, -dz) sai de rot_bb (x_bb = -x): sinal de rotação no Bedrock não se chuta (bt.py)."""
+    dx, dz = SERVING_HW - CAM[0], ponta_z - CAM[2]
+    return float(np.hypot(dx, dz)), -float(np.degrees(np.arctan2(dx, -dz)))
+
+
+def besta():
+    """Besta composta de dardos tranquilizantes: coronha de polímero, calha (flight deck), arcos de
+    fibra com roldanas, corda que dispara e volta sendo puxada, estribo de pé e luneta de média
+    distância. ~1,36 cm por unidade (~54 un = ~74 cm; arcos a ~26 cm de ponta a ponta, como uma
+    composta armada). Pontos calibrados (não mexer sem refazer a pose): punho, visada, boca."""
+    c = []
+    P, S, D, B, F, C = "polimero", "aco", "aco_escuro", "borracha", "fibra", "cabo"
+    G = "polimero_grip"
+    EIXO_Y = 10.5                                        # eixo óptico da luneta
+    # ---------------- coronha vazada com apoio de rosto
+    c += [
+        sym(2.2, -2.0, 7.2, -27.0, -25.5, B),            # soleira (borracha)
+        sym(1.1, -2.0, 1.6, -25.5, -24.9, S),            # espaçador da soleira
+        sym(0.5, 0.6, 4.3, -25.5, -24.9, S),
+        sym(1.8, 4.3, 7.0, -25.5, -17.5, P),             # barra superior
+        sym(2.0, 7.0, 7.7, -24.5, -18.5, B),             # almofada do apoio de rosto
+        sym(1.7, -2.0, 0.6, -25.5, -19.0, P),            # barra inferior (deixa o vão da coronha)
+        sym(0.7, 0.6, 4.3, -25.5, -24.2, P),             # montante traseiro
+        sym(1.9, 0.6, 5.2, -19.0, -13.0, P),             # pescoço
+        sym(1.95, 2.0, 4.0, -17.5, -13.5, G),            # pegada antiderrapante do pescoço
+        sym(0.35, -2.0, -1.4, -21.0, -20.0, S),          # argola da bandoleira
+        # manivela de armar, dobrada contra a coronha (é com ela que se puxa a corda)
+        box(1.8, 2.15, 1.0, 4.6, -23.5, -22.8, D),       # caixa da manivela
+        box(2.15, 2.5, 2.4, 3.2, -23.4, -22.9, S),       # eixo
+        box(2.5, 2.8, 2.6, 3.0, -23.3, -17.5, S),        # braço dobrado para a frente
+        box(2.4, 3.0, 2.3, 3.3, -18.2, -17.4, B),        # pega da manivela
+    ]
+    # ---------------- ação (receiver) e trilho da luneta
+    c += [
+        sym(2.1, 0.8, 5.0, -13.0, 0.5, P),               # corpo da ação
+        sym(2.3, 1.4, 4.2, -12.0, -0.5, P),              # abaulamento lateral
+        sym(2.35, 1.8, 3.4, -11.0, -8.0, D),             # placa de identificação
+        sym(1.9, 5.0, 5.6, -13.0, -1.0, S),              # base do trilho
+        sym(1.5, 5.6, 5.9, -12.5, -1.2, D),              # trilho
+        box(2.1, 2.45, 1.2, 3.2, -8.5, -6.5, D),         # trava de segurança (direita)
+        box(-2.45, -2.1, 1.4, 2.6, -8.5, -7.0, S),       # retém da corda (esquerda)
+        box(-2.45, -2.1, 2.8, 3.4, -7.5, -6.6, D),       # trava anti-disparo a seco
+        sym(1.6, 0.4, 0.9, -12.0, -2.0, D),              # chapa inferior da ação
+        sym(2.35, 1.6, 4.4, -5.5, -4.6, D),              # nervura vertical (reforço da caixa)
+        sym(2.35, 1.6, 4.4, -2.6, -1.7, D),
+        box(2.1, 2.4, 3.6, 4.4, -12.6, -11.4, D),        # pinos de desmontagem
+        box(-2.4, -2.1, 3.6, 4.4, -12.6, -11.4, D),
+        box(2.1, 2.4, 1.3, 2.1, -4.2, -3.0, D),
+        box(-2.4, -2.1, 1.3, 2.1, -4.2, -3.0, D),
+        sym(1.45, 5.0, 5.3, -1.0, 0.3, D),               # rampa de entrada do dardo
+    ]
+    c += dentes_z(-12.0, -1.5, lambda z0, z1: sym(1.6, 5.9, 6.25, z0, z1, D), passo=1.6, larg=0.5)
+    # ---------------- empunhadura de pistola, gatilho e guarda-mato
+    RG, PG = (-21, 0, 0), (0, -1, -7.5)
+    c += [
+        sym(1.5, -10.5, -1.0, -9.8, -5.2, P, r=RG, p=PG),          # empunhadura
+        sym(1.3, -11.0, -1.0, -10.4, -9.8, P, r=RG, p=PG),         # dorso
+        sym(1.55, -10.0, -1.5, -9.4, -8.6, G, r=RG, p=PG),         # pegada
+        sym(1.6, -11.1, -10.5, -10.0, -5.4, P, r=RG, p=PG),        # tampa da base
+        sym(0.5, -2.8, -2.3, -5.0, 0.5, S),                        # guarda-mato: barra de baixo
+        sym(0.5, -2.8, -1.0, 0.0, 0.5, S),                         # haste da frente
+        sym(0.5, -2.6, -1.0, -5.3, -4.8, S),                       # haste de trás
+        sym(0.25, -2.3, -0.6, -3.0, -2.3, D),                      # gatilho
+        sym(0.25, -2.7, -2.0, -3.4, -2.6, D),                      # ponta do gatilho
+        sym(0.9, -1.4, -1.0, -3.6, -2.0, D),                       # alojamento do gatilho
+    ]
+    # ---------------- calha (flight deck): sulco por onde correm a corda e o dardo
+    c += [
+        sym(2.0, 4.4, 5.0, 0.5, 22.0, P),                # barra da calha
+        box(-2.0, -0.95, 5.0, 5.45, 0.5, 22.0, P),       # borda esquerda do sulco
+        box(0.95, 2.0, 5.0, 5.45, 0.5, 22.0, P),         # borda direita
+        box(-0.95, 0.95, 4.95, 5.1, 0.5, 22.0, D),       # fundo do sulco (chapa lisa)
+        sym(2.15, 4.3, 4.6, 1.0, 21.0, D),               # friso lateral
+        sym(1.9, 3.9, 4.4, 0.5, 19.0, P),                # alma da calha
+        box(-2.05, -1.95, 5.45, 5.9, 3.0, 4.2, D),       # retentor do dardo (clipe)
+        box(1.95, 2.05, 5.45, 5.9, 3.0, 4.2, D),
+    ]
+    # ---------------- guarda-mão por baixo, com abas de proteção do dedo
+    c += [
+        sym(1.7, 0.6, 3.9, 11.5, 19.0, P),               # corpo do guarda-mão
+        sym(1.85, 1.4, 3.2, 12.5, 18.0, G),              # pegada
+        box(1.7, 2.3, 1.6, 4.3, 13.5, 16.5, P),          # aba direita (o dedo não sobe até a corda)
+        box(-2.3, -1.7, 1.6, 4.3, 13.5, 16.5, P),        # aba esquerda
+        sym(1.5, 0.2, 0.7, 12.0, 18.5, D),               # chapa inferior
+        sym(0.35, -0.2, 0.3, 15.0, 16.0, S),             # argola da bandoleira (frente)
+    ]
+    # ---------------- riser (bloco dos arcos) e estribo de pé, numa peça só com a frente
+    c += [
+        sym(2.5, 2.4, 6.4, 19.0, 23.0, S),               # riser
+        sym(2.7, 3.2, 5.8, 19.6, 22.4, D),               # faixa central
+        sym(1.2, 6.4, 6.9, 19.6, 22.4, S),               # topo do riser
+        sym(2.3, 1.2, 2.4, 19.4, 23.2, S),               # base do riser
+        sym(0.6, 6.9, 7.4, 20.2, 21.6, D),               # olhal de montagem
+        box(2.5, 2.8, 3.0, 3.6, 19.8, 22.2, D),          # parafusos laterais do riser
+        box(-2.8, -2.5, 3.0, 3.6, 19.8, 22.2, D),
+        # estribo: argola fechada, saindo da base do riser (é onde entra o pé para armar)
+        sym(2.1, -1.0, 1.4, 20.6, 23.4, D),              # pescoço, colado no riser
+        sym(1.9, -4.4, -1.0, 22.4, 23.4, D),             # perna de trás
+        sym(2.3, -4.9, -4.4, 22.4, 26.2, D),             # barra do pé
+        sym(2.4, -5.3, -4.9, 22.4, 26.2, B),             # borracha antiderrapante
+        sym(1.7, -4.4, 0.2, 25.4, 26.2, D),              # perna da frente
+        sym(1.5, 0.2, 1.0, 22.8, 26.2, D),               # travessa de cima, fechando a argola
+    ]
+    # ---------------- arcos (limbs) de fibra: dois trechos por lado, afinando e indo para a frente
+    for lado in (1, -1):
+        ry1, ry2 = -15.0 * lado, -26.0 * lado            # ry negativo leva a ponta direita para +Z
+        p1 = (lado * 2.4, 4.4, 20.8)
+        p2 = (lado * 6.3, 4.6, 21.4)
+        c += [
+            box(min(lado * 2.4, lado * 6.6), max(lado * 2.4, lado * 6.6), 3.1, 5.7, 19.9, 21.7, F,
+                r=(0, ry1, 0), p=p1),                    # trecho interno (grosso)
+            box(min(lado * 2.2, lado * 6.8), max(lado * 2.2, lado * 6.8), 3.7, 5.1, 19.5, 22.1, F,
+                r=(0, ry1, 0), p=p1),                    # nervura do trecho interno
+            box(min(lado * 2.3, lado * 3.6), max(lado * 2.3, lado * 3.6), 2.7, 6.1, 19.7, 21.9, S,
+                r=(0, ry1, 0), p=p1),                    # sapata que prende o arco no riser
+            box(min(lado * 2.5, lado * 3.4), max(lado * 2.5, lado * 3.4), 2.4, 2.8, 20.1, 21.5, D,
+                r=(0, ry1, 0), p=p1),                    # parafuso de regulagem da sapata
+            box(min(lado * 6.1, lado * 9.5), max(lado * 6.1, lado * 9.5), 3.5, 5.5, 20.5, 22.1, F,
+                r=(0, ry2, 0), p=p2),                    # trecho externo (mais fino)
+            box(min(lado * 6.1, lado * 9.7), max(lado * 6.1, lado * 9.7), 4.0, 5.0, 20.2, 22.4, F,
+                r=(0, ry2, 0), p=p2),
+            box(min(lado * 6.0, lado * 6.9), max(lado * 6.0, lado * 6.9), 3.3, 5.7, 20.4, 22.2, D,
+                r=(0, ry2, 0), p=p2),                    # luva de emenda dos dois trechos
+        ]
+        # roldana (cam): dois quadrados cruzados = disco, mais o eixo
+        cx = lado * CAM[0]
+        c += [
+            box(cx - 0.45, cx + 0.45, CORDA_Y - 1.7, CORDA_Y + 1.7, CAM[2] - 1.2, CAM[2] + 1.2, D),
+            box(cx - 0.45, cx + 0.45, CORDA_Y - 1.2, CORDA_Y + 1.2, CAM[2] - 1.7, CAM[2] + 1.7, D),
+            box(cx - 0.8, cx + 0.8, CORDA_Y - 0.4, CORDA_Y + 0.4, CAM[2] - 0.4, CAM[2] + 0.4, S),
+            box(cx - 0.62, cx + 0.62, CORDA_Y - 1.5, CORDA_Y - 1.1, CAM[2] - 0.9, CAM[2] + 0.9, S),
+            # cabo: liga a roldana ao riser (a composta tem o par de cabos além da corda)
+            box(cx - 0.18, cx + 0.18, CORDA_Y + 1.1, CORDA_Y + 1.46, 21.4, CAM[2], C),
+            box(cx - 0.18, cx + 0.18, CORDA_Y - 1.46, CORDA_Y - 1.1, 21.4, CAM[2], C),
+            # amortecedor de corda (string stop): a besta real tem um para calar o estalo
+            box(cx - 2.6, cx - 1.6, CORDA_Y + 1.2, CORDA_Y + 1.9, 21.6, 22.3, B) if lado > 0 else
+            box(cx + 1.6, cx + 2.6, CORDA_Y + 1.2, CORDA_Y + 1.9, 21.6, 22.3, B),
+        ]
+    # ---------------- corda: ossos próprios, animados pelo ciclo do disparo (ver gerar.py)
+    L_arm, ry_arm = meia_corda(SERVING_Z)
+    L_sol, ry_sol = meia_corda(SERVING_SOLTA_Z)
+    c.append(osso("corda", box(-SERVING_HW - 0.15, SERVING_HW + 0.15, CORDA_Y - 0.3, CORDA_Y + 0.3,
+                               SERVING_Z - 0.4, SERVING_Z + 0.4, C)))          # serving central
+    for lado, nome in ((1, "corda_d"), (-1, "corda_e")):
+        cx = lado * CAM[0]
+        c.append(osso(nome, box(cx - 0.2, cx + 0.2, CORDA_Y - 0.2, CORDA_Y + 0.2,
+                                CAM[2] - L_arm, CAM[2], C)))
+    # ---------------- dardo na calha (some no tiro, volta quando a besta rearma)
+    DZ0, AL = 1.4, "aluminio"
+    c += [osso("dardo", x) for x in (
+        box(-0.55, 0.55, DARDO_Y + 0.05, DARDO_Y + 1.15, DZ0, DZ0 + 1.0, "fluor"),       # penacho
+        box(-0.35, 0.35, DARDO_Y - 0.1, DARDO_Y + 1.3, DZ0 + 0.3, DZ0 + 0.7, "fluor"),
+        box(-0.5, 0.5, DARDO_Y + 0.1, DARDO_Y + 1.1, DZ0 + 1.0, DZ0 + 6.2, AL),          # corpo (3 cc)
+        box(-0.35, 0.35, DARDO_Y - 0.05, DARDO_Y + 1.25, DZ0 + 1.0, DZ0 + 6.2, AL),      # seção cruzada
+        box(-0.4, 0.4, DARDO_Y + 0.2, DARDO_Y + 1.0, DZ0 + 6.2, DZ0 + 6.8, D),           # colar de gelatina
+        box(-0.15, 0.15, DARDO_Y + 0.45, DARDO_Y + 0.75, DZ0 + 6.8, DZ0 + 9.4, S),       # cânula
+    )]
+    # ---------------- luneta de média distância (sólida: na mira a arma some e o painel assume a tela)
+    RT = 1.35                                            # raio do tubo
+    c += [
+        sym(RT, EIXO_Y - RT, EIXO_Y + RT, -11.5, 2.0, D),                    # tubo (seção quadrada)
+        sym(RT - 0.35, EIXO_Y - RT - 0.35, EIXO_Y + RT + 0.35, -11.5, 2.0, D),  # seção cruzada
+        sym(1.8, EIXO_Y - 1.8, EIXO_Y + 1.8, -13.6, -11.5, D),               # sino da ocular
+        sym(1.45, EIXO_Y - 2.15, EIXO_Y + 2.15, -13.6, -11.5, D),
+        sym(1.9, EIXO_Y - 1.9, EIXO_Y + 1.9, -14.0, -13.6, S),               # aro da ocular
+        sym(1.95, EIXO_Y - 1.95, EIXO_Y + 1.95, -14.3, -14.0, B),            # borracha da ocular
+        sym(2.2, EIXO_Y - 2.2, EIXO_Y + 2.2, 2.0, 6.0, D),                   # sino da objetiva
+        sym(1.75, EIXO_Y - 2.6, EIXO_Y + 2.6, 2.0, 6.0, D),
+        sym(2.3, EIXO_Y - 2.3, EIXO_Y + 2.3, 6.0, 6.4, S),                   # aro da objetiva
+        box(-1.75, 1.75, EIXO_Y - 1.75, EIXO_Y + 1.75, 6.4, 6.5, "boca"),    # lente
+        sym(RT + 0.25, EIXO_Y - RT - 0.25, EIXO_Y + RT + 0.25, -4.5, -2.5, D),  # anel do aumento
+        box(-1.6, 1.6, EIXO_Y + RT + 0.25, EIXO_Y + RT + 0.42, -4.2, -2.8, S),
+        box(-0.65, 0.65, EIXO_Y + RT, EIXO_Y + RT + 1.2, -7.0, -4.7, D),     # torre de elevação
+        box(-0.8, 0.8, EIXO_Y + RT + 1.2, EIXO_Y + RT + 1.5, -7.1, -4.6, S),
+        box(RT, RT + 1.2, EIXO_Y - 0.65, EIXO_Y + 0.65, -7.0, -4.7, D),      # torre lateral
+        box(RT + 1.2, RT + 1.5, EIXO_Y - 0.8, EIXO_Y + 0.8, -7.1, -4.6, S),
+        # anéis de montagem altos: ligam o tubo ao trilho da ação
+        sym(1.4, 6.25, EIXO_Y - RT, -10.6, -8.4, S),     # pé traseiro
+        sym(1.4, 6.25, EIXO_Y - RT, -4.0, -1.8, S),      # pé dianteiro
+        sym(1.75, EIXO_Y - RT - 0.33, EIXO_Y - RT + 0.33, -10.8, -8.2, S),
+        sym(1.75, EIXO_Y - RT - 0.33, EIXO_Y - RT + 0.33, -4.2, -1.6, S),
+        box(-1.8, 1.8, EIXO_Y + RT - 0.33, EIXO_Y + RT + 0.33, -10.8, -8.2, S),
+        box(-1.8, 1.8, EIXO_Y + RT - 0.33, EIXO_Y + RT + 0.33, -4.2, -1.6, S),
+        box(1.75, 2.0, EIXO_Y - RT - 0.5, EIXO_Y - RT + 0.5, -10.6, -8.4, D),   # parafusos dos anéis
+        box(1.75, 2.0, EIXO_Y - RT - 0.5, EIXO_Y - RT + 0.5, -4.0, -1.8, D),
+        box(-2.0, -1.75, EIXO_Y - RT - 0.5, EIXO_Y - RT + 0.5, -10.6, -8.4, D),
+        box(-2.0, -1.75, EIXO_Y - RT - 0.5, EIXO_Y - RT + 0.5, -4.0, -1.8, D),
+    ]
+    # visada: centro da ocular -> centro da objetiva (eixo óptico)
+    return c, dict(
+        grip=(0, -4, -7), muzzle=(0, CORDA_Y + 0.6, 26.0), handguard=(0, 1.4, 15.5),
+        visada=((0, EIXO_Y, -12.5), (0, EIXO_Y, 4.0)), luneta=True, vista_icone="topo",
+        # a luneta é de rifle de média distância, não a vinheta fechada da AWP: campo mais largo,
+        # retículo duplex e marcas de queda (o dardo cai de verdade; o tiro sai do centro da tela)
+        luneta_furo=0.93, luneta_duplex=True, luneta_marcas=2,
+        ossos={
+            # a corda dispara para a frente e volta sendo puxada, no ritmo do ciclo (v.ciclo: 0 no tiro,
+            # 1 rearmada). Cada meia-corda gira no pivô da roldana e muda de comprimento (escala em Z),
+            # que é o que a roldana faz na vida real ao liberar e recolher corda.
+            "corda": dict(pivo=(0, CORDA_Y, SERVING_Z),
+                          anim={"position": [0, 0, f"(1.0 - v.ciclo) * {SERVING_SOLTA_Z - SERVING_Z:.3f}"]}),
+            # "repouso" é a pose parada (besta armada), que as prévias desenham e que o jogo mostra
+            # se o Molang falhar: a corda tem de parecer certa mesmo sem animação nenhuma.
+            "corda_d": dict(pivo=CAM, repouso=dict(rot=(0, ry_arm, 0)), anim={
+                "rotation": [0, f"math.lerp({ry_sol:.3f}, {ry_arm:.3f}, v.ciclo)", 0],
+                "scale": [1, 1, f"math.lerp({L_sol / L_arm:.4f}, 1.0, v.ciclo)"]}),
+            "corda_e": dict(pivo=(-CAM[0], CAM[1], CAM[2]), repouso=dict(rot=(0, -ry_arm, 0)), anim={
+                "rotation": [0, f"math.lerp({-ry_sol:.3f}, {-ry_arm:.3f}, v.ciclo)", 0],
+                "scale": [1, 1, f"math.lerp({L_sol / L_arm:.4f}, 1.0, v.ciclo)"]}),
+            # o dardo some no disparo e reaparece com a besta rearmada
+            "dardo": dict(pivo=(0, DARDO_Y, DZ0), anim={"scale": "(v.ciclo > 0.98) ? 1.0 : 0.0"}),
+        })
+
 def maos(info, tipo):
     """Mãos com luva + manga, só aparecem em primeira pessoa (coordenadas já relativas ao punho)."""
     c = []
-    if tipo in ("fuzil", "sniper"):
+    if tipo in ("fuzil", "sniper", "besta"):
         # mão direita fechada na empunhadura
         c.append(sym(2.5, -7, -0.5, -6.5, 0.5, "luva", r=(-20, 0, 0), p=(0, -0.5, -3)))
         c.append(box(-2.5, -1.5, -1.5, 0.5, 0.5, 3, "luva"))     # dedo no guarda-mato
@@ -525,6 +752,7 @@ ARMAS = {
     "m4a4": (m4a4, "fuzil"),
     "glock": (glock, "pistola"),
     "awp": (awp, "sniper"),
+    "besta": (besta, "besta"),
 }
 
 
@@ -551,4 +779,7 @@ def build(nome):
     info["visada_rel"] = tuple(tuple(np.array(v) - g) for v in info["visada"])
     if "alca_pivo" in info:
         info["alca_pivo_rel"] = tuple(np.array(info["alca_pivo"]) - g)
+    # ossos animados do modelo (corda, dardo...): só o pivô muda de referencial
+    info["ossos_rel"] = {n: dict(o, pivo=tuple(np.array(o["pivo"]) - g))
+                         for n, o in info.get("ossos", {}).items()}
     return shift(corpo), maos(info, tipo), info, tipo

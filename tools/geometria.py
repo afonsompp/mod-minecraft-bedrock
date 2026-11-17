@@ -130,9 +130,15 @@ def contexto_face(c, f, w, h, caixas):
 # ~#40-#60 para as faces mostrarem volume; com ~#20 (até a v1.3) tudo virava silhueta.
 METAIS = {"aco": "#56595e", "aco_claro": "#74787e", "aco_escuro": "#404246", "ferrolho": "#505357",
           "quebra_chama": "#3d3f42", "ferrolho_serrilha": "#505357", "carregador": "#424448",
-          "carregador_m4": "#63666a", "anodizado": "#4c4f53", "guarda_mao": "#484b4f", "trilho": "#45484c"}
+          "carregador_m4": "#63666a", "anodizado": "#4c4f53", "guarda_mao": "#484b4f", "trilho": "#45484c",
+          "aluminio": "#7e838a"}   # corpo do dardo (alumínio escovado, mais claro que o aço)
 POLIMEROS = {"polimero": "#3a3c3f", "polimero_grip": "#36383b", "borracha": "#2b2b2c",
-             "chassi": "#4a523c"}   # verde-oliva da AWP (chassi Accuracy International)
+             "chassi": "#4a523c",   # verde-oliva da AWP (chassi Accuracy International)
+             "fibra": "#5e4e36",    # arcos da besta: fibra de vidro, marrom quente. Em cinza eles sumiam
+                                    # no meio do corpo preto, e a besta parecia um fuzil.
+             "cabo": "#8e8878",     # corda e cabos da besta (poliéster claro: tem que destacar do corpo)
+             "fluor": "#c85a1e"}    # penacho do dardo. Cor viva de propósito, fora da paleta cinza:
+                                    # é por ela que se acha o dardo no mato e no bicho.
 
 
 def base_3d(mat, cx):
@@ -220,6 +226,11 @@ def detalhes_2d(mat, img):
     elif mat == "luva":
         img[::2, ::2] -= 4
         img[1::2, 1::2] += 3
+    elif mat == "cabo":
+        # corda trançada: fios diagonais, o passo visível de perto numa corda de besta
+        yy, xx = np.mgrid[0:h, 0:w]
+        img[(xx + yy) % 3 == 0] -= 10
+        img[(xx + yy) % 3 == 1] += 6
     elif mat == "manga":
         if long_u:
             img[h // 2, :] -= 14
@@ -285,7 +296,8 @@ def paint(mat, w, h, cx=None):
     return rgba.astype(np.uint8)
 
 
-def painel_luneta_cubos(y, z, hw, hh, raio, faixas=34, linha=0.022, vao=0.05, m="boca"):
+def painel_luneta_cubos(y, z, hw, hh, raio, faixas=34, linha=0.022, vao=0.05, m="boca",
+                        duplex=False, marcas=0):
     """Máscara da luneta (estilo CS) feita de GEOMETRIA, não de textura: faixas pretas que deixam um furo
     circular e um retículo em cruz. Em textura, o painel precisaria de ~512x256 e estourava o atlas; em
     cubos planos, as faces são de 1 px e o círculo fica liso e o retículo bem fino."""
@@ -299,8 +311,22 @@ def painel_luneta_cubos(y, z, hw, hh, raio, faixas=34, linha=0.022, vao=0.05, m=
         c += [quad(-hw, -dx, y0, y1), quad(dx, hw, y0, y1)]
     # retículo: cruz de ponta a ponta com um vão no centro
     r9, v = raio * 0.995, raio * vao
-    c += [quad(-linha, linha, v, r9), quad(-linha, linha, -r9, -v),
-          quad(v, r9, -linha, linha), quad(-r9, -v, -linha, linha)]
+    if duplex:
+        # retículo duplex (o de rifle de caça): fino no centro, posto grosso nas bordas. Com campo largo,
+        # a cruz fina some no mato; o posto leva o olho até ela.
+        meio, g = r9 * 0.55, linha * 2.8
+        c += [quad(-linha, linha, v, meio), quad(-linha, linha, -meio, -v),
+              quad(v, meio, -linha, linha), quad(-meio, -v, -linha, linha),
+              quad(-g, g, meio, r9), quad(-g, g, -r9, -meio),
+              quad(meio, r9, -g, g), quad(-r9, -meio, -g, g)]
+    else:
+        c += [quad(-linha, linha, v, r9), quad(-linha, linha, -r9, -v),
+              quad(v, r9, -linha, linha), quad(-r9, -v, -linha, linha)]
+    # marcas de distância abaixo do centro (o dardo cai; o tiro sai sempre do CENTRO da tela)
+    for k in range(1, marcas + 1):
+        d = r9 * 0.16 * k
+        larg = r9 * (0.07 - 0.015 * k)
+        c.append(quad(-larg, larg, -d - linha, -d + linha))
     return c
 
 
@@ -359,7 +385,7 @@ class Atlas:
         return Image.fromarray(out, "RGBA")
 
 
-def build_geometry(identifier, bones_cubes, atlas_width=1024, flash_at=None, scope=None):
+def build_geometry(identifier, bones_cubes, atlas_width=1024, flash_at=None, scope=None, binding=True):
     """bones_cubes: lista de (nome_osso, pai, pivô, cubos). Retorna (geo_json, atlas_img, faces_render)."""
     atlas = Atlas(atlas_width)
     render_faces = []   # para o renderizador: (bone, cube, face, img)
@@ -387,7 +413,10 @@ def build_geometry(identifier, bones_cubes, atlas_width=1024, flash_at=None, sco
             jcubes.append(jc)
         b = {"name": name, "pivot": [round(v, 4) for v in pivot], "cubes": jcubes}
         if parent is None:
-            b["binding"] = "q.item_slot_to_bone_name(c.item_slot)"
+            # attachable: o osso raiz se prende à mão do jogador. Entidade solta (o dardo em voo) não
+            # tem a que se prender, e com binding ela não aparece.
+            if binding:
+                b["binding"] = "q.item_slot_to_bone_name(c.item_slot)"
         else:
             b["parent"] = parent
         bones.append(b)
@@ -395,7 +424,8 @@ def build_geometry(identifier, bones_cubes, atlas_width=1024, flash_at=None, sco
     if scope is not None:
         # painel da luneta: fica na frente do olho na mira, cobre a tela e tem o furo circular.
         # Como a arma some na mira (ver gerar.py), o que se vê pelo furo é o mundo, não o modelo.
-        cubos = painel_luneta_cubos(scope["y"], scope["z"], scope["hw"], scope["hh"], scope["raio"])
+        cubos = painel_luneta_cubos(scope["y"], scope["z"], scope["hw"], scope["hh"], scope["raio"],
+                                    duplex=scope.get("duplex", False), marcas=scope.get("marcas", 0))
         jc = []
         for c in cubos:
             uv = {}

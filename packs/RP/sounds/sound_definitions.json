@@ -1,90 +1,139 @@
 {
-  "format_version": "1.20.20",
-  "sound_definitions": {
-    "joao.ak47.tiro": {
-      "category": "player",
-      "min_distance": 4.0,
-      "max_distance": 96.0,
-      "sounds": [
-        {
-          "name": "sounds/joao/ak47_0",
-          "volume": 1.0
-        },
-        {
-          "name": "sounds/joao/ak47_1",
-          "volume": 1.0
-        },
-        {
-          "name": "sounds/joao/ak47_2",
-          "volume": 1.0
-        }
-      ]
+ "format_version": "1.20.20",
+ "sound_definitions": {
+  "joao.ak47.tiro": {
+   "category": "player",
+   "min_distance": 4.0,
+   "max_distance": 96.0,
+   "sounds": [
+    {
+     "name": "sounds/joao/ak47_0",
+     "volume": 1.0
     },
-    "joao.m4a4.tiro": {
-      "category": "player",
-      "min_distance": 4.0,
-      "max_distance": 96.0,
-      "sounds": [
-        {
-          "name": "sounds/joao/m4a4_0",
-          "volume": 1.0
-        },
-        {
-          "name": "sounds/joao/m4a4_1",
-          "volume": 1.0
-        },
-        {
-          "name": "sounds/joao/m4a4_2",
-          "volume": 1.0
-        }
-      ]
+    {
+     "name": "sounds/joao/ak47_1",
+     "volume": 1.0
     },
-    "joao.glock.tiro": {
-      "category": "player",
-      "min_distance": 4.0,
-      "max_distance": 64.0,
-      "sounds": [
-        {
-          "name": "sounds/joao/glock_0",
-          "volume": 1.0
-        },
-        {
-          "name": "sounds/joao/glock_1",
-          "volume": 1.0
-        },
-        {
-          "name": "sounds/joao/glock_2",
-          "volume": 1.0
-        }
-      ]
-    },
-    "joao.vazio": {
-      "category": "player",
-      "sounds": [
-        {
-          "name": "sounds/joao/vazio",
-          "volume": 0.8
-        }
-      ]
-    },
-    "joao.awp.tiro": {
-      "category": "player",
-      "min_distance": 6.0,
-      "max_distance": 160.0,
-      "sounds": [
-        {
-          "name": "sounds/joao/awp_0",
-          "volume": 1.0
-        },
-        {
-          "name": "sounds/joao/awp_1",
-          "volume": 1.0
-        },
-        {
-          "name": "sounds/joao/awp_2",
-          "volume": 1.0
-        }
-      ]
+    {
+     "name": "sounds/joao/ak47_2",
+     "volume": 1.0
     }
+   ]
+  },
+  "joao.m4a4.tiro": {
+   "category": "player",
+   "min_distance": 4.0,
+   "max_distance": 96.0,
+   "sounds": [
+    {
+     "name": "sounds/joao/m4a4_0",
+     "volume": 1.0
+    },
+    {
+     "name": "sounds/joao/m4a4_1",
+     "volume": 1.0
+    },
+    {
+     "name": "sounds/joao/m4a4_2",
+     "volume": 1.0
+    }
+   ]
+  },
+  "joao.glock.tiro": {
+   "category": "player",
+   "min_distance": 4.0,
+   "max_distance": 64.0,
+   "sounds": [
+    {
+     "name": "sounds/joao/glock_0",
+     "volume": 1.0
+    },
+    {
+     "name": "sounds/joao/glock_1",
+     "volume": 1.0
+    },
+    {
+     "name": "sounds/joao/glock_2",
+     "volume": 1.0
+    }
+   ]
+  },
+  "joao.vazio": {
+   "category": "player",
+   "sounds": [
+    {
+     "name": "sounds/joao/vazio",
+     "volume": 0.8
+    }
+   ]
+  },
+  "joao.awp.tiro": {
+   "category": "player",
+   "min_distance": 6.0,
+   "max_distance": 160.0,
+   "sounds": [
+    {
+     "name": "sounds/joao/awp_0",
+     "volume": 1.0
+    },
+    {
+     "name": "sounds/joao/awp_1",
+     "volume": 1.0
+    },
+    {
+     "name": "sounds/joao/awp_2",
+     "volume": 1.0
+    }
+   ]
+  },
+  "joao.besta.tiro": {
+   "category": "player",
+   "min_distance": 3.0,
+   "max_distance": 48.0,
+   "sounds": [
+    {
+     "name": "sounds/joao/besta_0",
+     "volume": 0.9
+    },
+    {
+     "name": "sounds/joao/besta_1",
+     "volume": 0.9
+    },
+    {
+     "name": "sounds/joao/besta_2",
+     "volume": 0.9
+    }
+   ]
+  },
+  "joao.besta.recarga": {
+   "category": "player",
+   "min_distance": 3.0,
+   "max_distance": 24.0,
+   "sounds": [
+    {
+     "name": "sounds/joao/besta_recarga",
+     "volume": 0.7
+    }
+   ]
+  },
+  "joao.dardo.acerto": {
+   "category": "player",
+   "min_distance": 3.0,
+   "max_distance": 40.0,
+   "sounds": [
+    {
+     "name": "sounds/joao/dardo_0",
+     "volume": 0.9
+    },
+    {
+     "name": "sounds/joao/dardo_1",
+     "volume": 0.9
+    },
+    {
+     "name": "sounds/joao/dardo_2",
+     "volume": 0.9
+    }
+   ]
   }
+ }
 }

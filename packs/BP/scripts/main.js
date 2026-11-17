@@ -7,9 +7,10 @@ import { system, world } from "@minecraft/server";
 import { itemNaMao } from "./comum/inventario.js";
 import * as hud from "./comum/hud.js";
 import { dominio as armas } from "./armas/index.js";
+import { dominio as sedativo } from "./sedativo/index.js";
 
 /** @type {import("./comum/dominio.js").Dominio[]} */
-const DOMINIOS = [armas];
+const DOMINIOS = [armas, sedativo];
 
 for (const d of DOMINIOS) d.iniciar?.();
 

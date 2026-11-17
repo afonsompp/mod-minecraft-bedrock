@@ -573,6 +573,167 @@
     }
    }
   },
+  "animation.joao.besta.primeira_pessoa": {
+   "loop": true,
+   "animation_length": 1.05,
+   "anim_time_update": "v.ads",
+   "bones": {
+    "arma": {
+     "rotation": {
+      "0.0000": [
+       109.302,
+       -55.418,
+       108.913
+      ],
+      "0.1250": [
+       108.629,
+       -55.732,
+       109.639
+      ],
+      "0.2500": [
+       106.8,
+       -56.538,
+       111.613
+      ],
+      "0.3750": [
+       104.075,
+       -57.62,
+       114.559
+      ],
+      "0.5000": [
+       100.744,
+       -58.768,
+       118.163
+      ],
+      "0.6250": [
+       97.189,
+       -59.807,
+       122.016
+      ],
+      "0.7500": [
+       93.908,
+       -60.615,
+       125.577
+      ],
+      "0.8750": [
+       91.49,
+       -61.127,
+       128.206
+      ],
+      "1.0000": [
+       90.553,
+       -61.308,
+       129.225
+      ]
+     },
+     "position": {
+      "0.0000": [
+       "-10.826 + v.kick * (-0.192 + v.ads * 0.115) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "7.300 + v.kick * (0.160 + v.ads * -0.096) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-7.407 + v.kick * (0.001 + v.ads * -0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+      ],
+      "0.1250": [
+       "-10.874 + v.kick * (-0.192 + v.ads * 0.115) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "7.421 + v.kick * (0.160 + v.ads * -0.096) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-7.696 + v.kick * (0.001 + v.ads * -0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+      ],
+      "0.2500": [
+       "-11.002 + v.kick * (-0.192 + v.ads * 0.115) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "7.738 + v.kick * (0.160 + v.ads * -0.096) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-8.458 + v.kick * (0.001 + v.ads * -0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+      ],
+      "0.3750": [
+       "-11.133 + v.kick * (-0.192 + v.ads * 0.115) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "8.169 + v.kick * (0.160 + v.ads * -0.096) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-9.482 + v.kick * (0.001 + v.ads * -0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+      ],
+      "0.5000": [
+       "-11.085 + v.kick * (-0.192 + v.ads * 0.115) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "8.592 + v.kick * (0.160 + v.ads * -0.096) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-10.443 + v.kick * (0.001 + v.ads * -0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+      ],
+      "0.6250": [
+       "-10.912 + v.kick * (-0.192 + v.ads * 0.115) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "8.970 + v.kick * (0.160 + v.ads * -0.096) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-11.268 + v.kick * (0.001 + v.ads * -0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+      ],
+      "0.7500": [
+       "-10.691 + v.kick * (-0.192 + v.ads * 0.115) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "9.275 + v.kick * (0.160 + v.ads * -0.096) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-11.913 + v.kick * (0.001 + v.ads * -0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+      ],
+      "0.8750": [
+       "-10.501 + v.kick * (-0.192 + v.ads * 0.115) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "9.479 + v.kick * (0.160 + v.ads * -0.096) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-12.333 + v.kick * (0.001 + v.ads * -0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+      ],
+      "1.0000": [
+       "-10.421 + v.kick * (-0.192 + v.ads * 0.115) - v.ads * (-0.2988 * v.passo_x - 0.6409 * v.passo_y)",
+       "9.553 + v.kick * (0.160 + v.ads * -0.096) - v.respira - v.ads * (-0.3767 * v.passo_x - 0.6016 * v.passo_y)",
+       "-12.482 + v.kick * (0.001 + v.ads * -0.001) - v.ads * (0.8768 * v.passo_x - 0.4769 * v.passo_y)"
+      ]
+     },
+     "scale": 0.25
+    },
+    "corda": {
+     "scale": 0
+    },
+    "corda_d": {
+     "scale": 0
+    },
+    "corda_e": {
+     "scale": 0
+    },
+    "dardo": {
+     "scale": 0
+    },
+    "corpo": {
+     "scale": "1.0 - (v.ads > 0.995 ? 1.0 : 0.0)"
+    },
+    "maos": {
+     "scale": "1.0 - (v.ads > 0.995 ? 1.0 : 0.0)"
+    },
+    "luneta": {
+     "scale": "(v.ads > 0.995 ? 1.0 : 0.0)"
+    }
+   }
+  },
+  "animation.joao.besta.terceira_mira": {
+   "loop": true,
+   "bones": {
+    "arma": {
+     "rotation": [
+      90.0,
+      -0.0,
+      -174.27
+     ],
+     "position": [
+      -0.0,
+      -1.0,
+      0.0
+     ],
+     "scale": 0.25
+    }
+   }
+  },
+  "animation.joao.besta.terceira_baixo": {
+   "loop": true,
+   "bones": {
+    "arma": {
+     "rotation": [
+      162.0,
+      -0.0,
+      -180.0
+     ],
+     "position": [
+      -0.0,
+      -1.0,
+      0.0
+     ],
+     "scale": 0.25
+    }
+   }
+  },
   "animation.joao.sem_maos": {
    "loop": true,
    "bones": {

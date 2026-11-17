@@ -2,6 +2,16 @@
 
 Formato: versão — data — o que mudou. Marque **[testado no celular]** quando o Afonso confirmar no aparelho do João.
 
+## 1.7.0 — 2026-11-17
+- **Besta Tranquilizante.** Arma nova, para pegar bicho vivo em vez de matar:
+  - o **dardo voa de verdade**: você vê ele sair da besta, viajar e acertar. É a primeira coisa do add-on que não é tiro instantâneo;
+  - **o bicho dorme.** Cada dardo é uma dose; bicho grande precisa de mais de uma (uma dose a cada 10 de vida, até cinco). Cheia a conta, ele para onde está, com um "zZz" em cima da cabeça, e acorda sozinho depois de um tempo. Se você demorar demais entre um dardo e outro, a dose passa e a conta recomeça;
+  - a **corda dispara e volta sendo puxada** a cada tiro, e o dardo novo aparece na calha quando ela termina de armar. Um tiro a cada 0,75 s;
+  - **luneta de média distância**, com retículo duplex e duas marcas de queda abaixo do centro — o dardo cai um pouco, diferente da bala. O tiro sai sempre do centro da tela;
+  - som de **corda e manivela**, não de pólvora. Besta é arma silenciosa.
+- **Dardo Tranquilizante**: munição nova, feita na bancada com ferro, pena e olho de aranha fermentado. A besta sai de ferro, palito e corda.
+- Isso é a base para os **dinossauros**: o dardo já pergunta se o bicho é do modpack antes de agir, e nos nossos ele vai poder deitar de verdade.
+
 ## 1.6.5 — 2026-11-16
 - Corrigido: **a mira estava um pouco fora do centro em todas as armas** — o tiro saía um pouco à esquerda do que a alça e a massa mostravam, e na AWP o retículo ficava fora do meio. Faltava pouco mais de um grau, o bastante para errar de longe. A câmera do jogo foi medida de novo, em cinco prints.
 - Corrigido: **sem munição, a arma continuava dando coice e soltando clarão** a cada toque, como se estivesse atirando. Agora a animação só acontece quando o tiro sai mesmo, e de quebra o coice do fuzil bate certinho com a cadência dos tiros.

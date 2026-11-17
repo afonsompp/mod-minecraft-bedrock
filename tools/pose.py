@@ -38,7 +38,7 @@ def main(vanilla=None):
     desc["animations"]["joao_mira_pistola"] = "animation.joao.mira_pistola"
     cond = "!variable.is_first_person && query.is_item_name_any('slot.weapon.mainhand', 0, {})"
     sc["animate"] += [
-        {"joao_mira_fuzil": cond.format("'joao:ak47', 'joao:m4a4', 'joao:awp'")},
+        {"joao_mira_fuzil": cond.format("'joao:ak47', 'joao:m4a4', 'joao:awp', 'joao:besta'")},
         {"joao_mira_pistola": cond.format("'joao:glock'")},
     ]
     (POSE / "entity").mkdir(parents=True, exist_ok=True)

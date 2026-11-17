@@ -33,10 +33,13 @@ def solve(nome, tm, tr, rear_z, x0):
 
 
 if __name__ == "__main__":
-    for nome, rear in (("ak47", -6), ("m4a4", -6), ("glock", -3), ("awp", -6)):
+    for nome, rear in (("ak47", -6), ("m4a4", -6), ("glock", -3), ("awp", -6), ("besta", -6)):
         corpo, maos, info, tipo = modelos.build(nome)
         rear_rel = rear - modelos.ARMAS[nome][0]()[1]["grip"][2]
-        if tipo == "fuzil":
+        if tipo == "besta":
+            # a besta é larga: a frente entra mais na tela, senão os arcos (a cara dela) ficam de fora
+            tm = np.array([0.56 * W, 0.60 * H]); tr = np.array([0.92 * W, 0.95 * H])
+        elif tipo in ("fuzil", "sniper"):
             tm = np.array([0.64 * W, 0.64 * H]); tr = np.array([0.93 * W, 0.97 * H])
         else:
             tm = np.array([0.66 * W, 0.66 * H]); tr = np.array([0.80 * W, 0.84 * H])

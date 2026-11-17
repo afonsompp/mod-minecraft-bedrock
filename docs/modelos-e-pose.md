@@ -26,7 +26,14 @@ Leia antes de mexer em `tools/modelos.py`, `tools/geometria.py` ou na pose em `t
 | `corpo` | `arma` | a arma |
 | `maos` | `arma` | luvas e mangas; `scale 0` fora da 1ª pessoa |
 | `alca` (opcional) | `arma` | alça que some na mira (M4: orifício + base + orelhas); `scale` = `ALCA_NA_MIRA` na 1ª pessoa, pivô em `info["alca_pivo"]` (no trilho, para "rebater") |
+| `corda`, `corda_d`, `corda_e`, `dardo` (besta) | `arma` | ossos de `info["ossos"]`; animados por `v.ciclo` |
 | `flash` | `arma` | clarão (material `entity_beam_additive`); visível com `v.mostra_clarao` |
+
+Ossos de `info["ossos"]` (v1.7): cada um traz `pivo`, o `anim` que entra na animação de 1ª pessoa e,
+quando a pose desenhada não é a pose parada, um `repouso`. Na besta, cada meia-corda é desenhada reta
+a partir da roldana e é a animação que a gira (`rotation` em Y) e encurta (`scale` em Z) — é o que a
+roldana faz de verdade ao liberar e recolher corda. Sem o `repouso`, as prévias (que não interpretam
+Molang) desenhariam a corda reta. Na mira com luneta, esses ossos somem junto com a arma.
 
 Ossos com `binding` ganham um **offset de −24 em Y** (comportamento do jogo, confirmado no preview do Blockbench). Por isso o pivô é `[0, 24, 0]`.
 

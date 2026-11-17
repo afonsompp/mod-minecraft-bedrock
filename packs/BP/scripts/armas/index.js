@@ -1,10 +1,11 @@
 // Armas de fogo: tiro por raycast instantâneo, rajada, munição e zoom da mira.
-import { EasingType, EntityDamageCause, system } from "@minecraft/server";
+import { EntityDamageCause, system } from "@minecraft/server";
 import { COOLDOWN_TIRO } from "../comum/tags.js";
 import { contar, ehCriativo, gastar } from "../comum/inventario.js";
 import { particula, ponto, rastro } from "../comum/efeitos.js";
 import { espalhar, tiro } from "../comum/raycast.js";
 import * as hud from "../comum/hud.js";
+import * as mira from "../comum/mira.js";
 
 /**
  * @typedef {Object} Arma
@@ -67,10 +68,6 @@ const NOME_MUNICAO = {
 const proximoTiro = new Map();
 /** @type {Map<string, string>} jogadores segurando o gatilho de uma arma automática */
 const atirando = new Map();
-/** @type {Map<string, number>} FOV de mira aplicado em cada jogador (ausente = FOV normal) */
-const zoomAtual = new Map();
-let avisouCamera = false;
-
 /** Mostra arma e munição na actionbar. Mirando, nunca mostra, e limpa o que estiver na tela.
  * @param {import("@minecraft/server").Player} p @param {string} id @param {boolean} [forcar] */
 function mostrarMunicao(p, id, forcar) {
@@ -131,39 +128,11 @@ function atirar(p, id) {
   mostrarMunicao(p, id, true);
 }
 
-/** Zoom da mira: agachado segurando arma = FOV da arma; senão, FOV normal. Só age quando o estado muda.
- * Usa a API da câmera (não precisa de cheats) e cai para o comando /camera se ela não existir.
+/** Agachado com arma na mão = FOV da arma; senão, FOV normal.
  * @param {import("@minecraft/server").Player} p @param {string | undefined} id */
 function atualizarMira(p, id) {
   const arma = id ? ARMAS[id] : undefined;
-  const alvo = arma && p.isSneaking ? arma.mira.fov : undefined;
-  if (alvo === zoomAtual.get(p.id)) return;
-  if (alvo === undefined) zoomAtual.delete(p.id);
-  else zoomAtual.set(p.id, alvo);
-
-  // camera.setFov só existe em versões da API acima da 2.0.0; por isso o acesso é dinâmico
-  const cam = /** @type {any} */ (p.camera);
-  try {
-    if (typeof cam.setFov === "function") {
-      if (alvo === undefined) cam.clear();
-      else cam.setFov({ fov: alvo, easeOptions: { easeTime: 0.2, easeType: EasingType.InOutSine } });
-      return;
-    }
-  } catch {
-    // cai para o comando
-  }
-  try {
-    p.runCommand(alvo === undefined
-      ? "camera @s fov_clear 0.2 in_out_sine"
-      : `camera @s fov_set ${alvo} 0.2 in_out_sine`);
-  } catch (e) {
-    // sem zoom: a mira continua centralizada, só não amplia. Avisa na tela, uma vez por sessão.
-    if (!avisouCamera) {
-      p.onScreenDisplay.setActionBar("§eZoom da mira indisponível (ligue os Cheats no mundo).");
-      /** @type {any} */ (globalThis).console?.warn(`[joao] zoom da mira indisponível: ${e}`);
-    }
-    avisouCamera = true;
-  }
+  mira.zoom(p, arma && p.isSneaking ? arma.mira.fov : undefined, "armas");
 }
 
 /** @type {import("../comum/dominio.js").Dominio} */
@@ -200,6 +169,6 @@ export const dominio = {
   aoSair(playerId) {
     atirando.delete(playerId);
     proximoTiro.delete(playerId);
-    zoomAtual.delete(playerId);
+    mira.esquecer(playerId);
   },
 };

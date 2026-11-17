@@ -73,7 +73,9 @@ def subir_versao(nova):
 
 def gerar():
     import gerar as g
+    import dardo
     g.main(PACKS / "RP", PREVIEWS)
+    dardo.main(PACKS / "RP", PREVIEWS)      # entidade do dardo em voo (modelo, textura, client entity)
     py = sys.executable
     subprocess.run([py, str(TOOLS / "sons.py"), str(PACKS / "RP" / "sounds" / "joao")], check=True, cwd=TOOLS)
     subprocess.run([py, str(TOOLS / "municao.py"), str(PACKS / "RP" / "textures" / "items"), str(PREVIEWS)],
