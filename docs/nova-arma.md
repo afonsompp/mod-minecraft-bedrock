@@ -109,6 +109,20 @@ Na mira com luneta, esses ossos recebem `scale 0` junto com a arma.
   rifle, fino no centro e com posto grosso nas bordas) e `luneta_marcas` (tracinhos de queda abaixo
   do centro). O zoom por arma é `fov_mira` no `PLACE`, e **tem de ser igual** ao `mira.fov` do script.
 
+## Besta: a direção dos arcos
+
+**Os arcos abrem para TRÁS.** O riser fica na ponta da frente e as roldanas ficam atrás dele, perto do
+atirador — é o que as fotos de qualquer besta mostram, e foi o primeiro erro que o João viu na v1.7.
+Em `trecho_arco()`, isso é `ry` **positivo** para o lado direito (negativo levaria a ponta para a
+frente). Como consequência, a corda solta para na linha das roldanas: é por isso que
+`SERVING_SOLTA_Z` fica logo atrás delas, e não num ponto qualquer.
+
+A besta também é larga (~35 cm de ponta a ponta dos arcos contra ~75 cm de comprimento, a proporção
+real). Com a posição de tela dos fuzis, os arcos saíam do quadro em 1ª pessoa, e a besta virava um
+fuzil com luneta — daí o `yaw` maior no `PLACE`, que cruza a arma no campo de visão em vez de deixá-la
+apontada para longe. **`yaw` menor mostra menos**, não mais: a arma fica de enfiada e só se vê a
+coronha.
+
 ## Regras de desenho da mira (lições das versões anteriores)
 
 - **A linha de mira precisa passar bem acima de tudo que fica entre o olho e a alça.** Na v1.3.1, a visada da AK passava só 1,25 un. de modelo acima da tampa da caixa. Na mira, a tampa ficava colada embaixo do entalhe e escondia a alça. A correção foi subir a alça e a massa (visada em y 10,25). Confira em `fp_mira_<nome>.png`: o entalhe e a massa precisam estar visíveis e destacados do que está atrás.

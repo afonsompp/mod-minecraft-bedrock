@@ -134,8 +134,11 @@ METAIS = {"aco": "#56595e", "aco_claro": "#74787e", "aco_escuro": "#404246", "fe
           "aluminio": "#7e838a"}   # corpo do dardo (alumínio escovado, mais claro que o aço)
 POLIMEROS = {"polimero": "#3a3c3f", "polimero_grip": "#36383b", "borracha": "#2b2b2c",
              "chassi": "#4a523c",   # verde-oliva da AWP (chassi Accuracy International)
-             "fibra": "#5e4e36",    # arcos da besta: fibra de vidro, marrom quente. Em cinza eles sumiam
-                                    # no meio do corpo preto, e a besta parecia um fuzil.
+             "tatico": "#5a616b",   # corpo da besta: polímero tático, cinza puxando para o azul.
+                                    # Mais claro que as armas de fogo de propósito: a besta é cheia de
+                                    # peça fina (arcos, corda, cabos) que some quando tudo é preto.
+             "tatico_claro": "#6b727d",   # peças de cima da besta, que pegam mais luz
+             "fibra": "#4a515b",    # arcos da besta
              "cabo": "#8e8878",     # corda e cabos da besta (poliéster claro: tem que destacar do corpo)
              "fluor": "#c85a1e"}    # penacho do dardo. Cor viva de propósito, fora da paleta cinza:
                                     # é por ela que se acha o dardo no mato e no bicho.

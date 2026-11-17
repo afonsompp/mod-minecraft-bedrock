@@ -65,7 +65,10 @@ PLACE = {
     "awp": dict(grip=(8.19, -6.12, 7.30), yaw=5.7, pitch=1.0, roll=-4, intervalo=25, olho=2.0, atirando=0.3),
     # Besta: ciclo de 0,75 s (a corda volta nesse tempo) e luneta de média distância, com zoom moderado
     # e furo mais largo que o da AWP. fov_mira tem que ser igual ao ARMAS[...].mira.fov do main.js.
-    "besta": dict(grip=(6.60, -5.60, 6.00), yaw=11.5, pitch=1.0, roll=-4, intervalo=15, olho=2.0,
+    # A besta é larga (34 cm de ponta a ponta dos arcos): com a posição dos fuzis, os arcos — que são
+    # a cara dela — ficavam fora da tela. Fica mais ao centro, mais longe e quase sem toe-in, de modo
+    # que os dois lados caibam no quadro.
+    "besta": dict(grip=(6.40, -5.50, 6.40), yaw=12.0, pitch=1.0, roll=-4, intervalo=15, olho=2.0,
                   atirando=0.3, fov_mira=40.0),
 }
 # Mira (ADS): agachado = mira completa. Atirando em pé, a arma é puxada parte do caminho para o centro
