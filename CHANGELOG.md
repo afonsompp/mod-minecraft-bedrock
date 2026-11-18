@@ -2,6 +2,9 @@
 
 Formato: versão — data — o que mudou. Marque **[testado no celular]** quando o Afonso confirmar no aparelho do João.
 
+## 1.7.1 — 2026-11-18
+- Corrigido: **o dardo voava atravessado**, de lado, em vez de seguir reto na direção do tiro. Faltavam as duas coisas que a flecha do jogo faz e que ninguém vê: o dardo era desenhado apontando para trás, e nada girava o modelo durante o voo — ele ficava parado no eixo do mundo enquanto a trajetória ia para outro lado. Agora a agulha vai na frente e o dardo acompanha a subida e a descida do tiro.
+
 ## 1.7.0 — 2026-11-17
 - **Besta Tranquilizante.** Arma nova, para pegar bicho vivo em vez de matar:
   - o **dardo voa de verdade**: você vê ele sair da besta, viajar e acertar. É a primeira coisa do add-on que não é tiro instantâneo;

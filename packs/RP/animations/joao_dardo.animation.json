@@ -1,0 +1,17 @@
+{
+ "format_version": "1.8.0",
+ "animations": {
+  "animation.joao.dardo.voo": {
+   "loop": true,
+   "bones": {
+    "dardo": {
+     "rotation": [
+      "-query.target_x_rotation",
+      "-query.target_y_rotation",
+      0
+     ]
+    }
+   }
+  }
+ }
+}

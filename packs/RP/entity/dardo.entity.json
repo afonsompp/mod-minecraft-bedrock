@@ -12,6 +12,14 @@
    "geometry": {
     "default": "geometry.joao.dardo"
    },
+   "animations": {
+    "voo": "animation.joao.dardo.voo"
+   },
+   "scripts": {
+    "animate": [
+     "voo"
+    ]
+   },
    "render_controllers": [
     "controller.render.joao_dardo"
    ]

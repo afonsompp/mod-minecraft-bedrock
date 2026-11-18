@@ -233,9 +233,14 @@ Detalhamento (helpers de `modelos.py`, atlas, pintura 3D, recuo, clarão, mira e
 - **Erro de ÂNGULO da câmera e erro de POSIÇÃO (`AGACHADO`) parecem a mesma coisa numa arma só.** O de ângulo desvia todas as armas igual; o de posição desvia proporcionalmente a 1/distância do olho, então a AWP (olho 2,0) erraria quase 4x mais que a AK (olho 7,5). Na v1.6.2 os dois foram confundidos e o `AGACHADO` absorveu um erro que era de ângulo. Meça sempre com duas armas ou mais.
 - Rotação no Bedrock **não** é a convenção matemática comum. Use `tools/bt.py`; não chute sinais.
 - **As prévias não interpretam Molang.** Um osso que só fica certo pela animação (a corda da besta) aparece na prévia do jeito que foi *desenhado*. Por isso `info["ossos"]` tem `repouso`: a pose parada, que as prévias aplicam e que o jogo mostra se a animação falhar. Desenhe sempre uma pose que seja válida sozinha.
-- **Projétil de verdade é território pouco documentado.** `minecraft:projectile` em *item* de add-on não funciona (MCPE-170972); o caminho que funciona é entidade + `spawnEntity` + `getComponent("minecraft:projectile").shoot()` pelo script, com `owner` para o acerto ser creditado. A orientação no voo vem de `runtime_identifier: "minecraft:arrow"`, cuja lista de efeitos a wiki admite estar incompleta — e por isso o dardo não usa `stick_in_ground`: com o runtime de flecha, um projétil cravado no chão pode virar uma flecha na mão de quem passa por cima.
+- **Projétil de verdade é território pouco documentado.** `minecraft:projectile` em *item* de add-on não funciona (MCPE-170972); o caminho que funciona é entidade + `spawnEntity` + `getComponent("minecraft:projectile").shoot()` pelo script, com `owner` para o acerto ser creditado. O dardo não usa `stick_in_ground` de propósito: com `runtime_identifier: "minecraft:arrow"`, um projétil cravado no chão pode virar uma flecha na mão de quem passa por cima.
+- **`runtime_identifier` dá a física do projétil, não a orientação dele.** O renderizador não passa a rotação da entidade para o modelo: sem animação, o dardo fica parado no eixo do mundo e voa de lado para toda direção que não seja o norte (v1.7.1). Duas regras, as duas copiadas do `arrow` vanilla (a lógica, não o arquivo):
+  - a geometria aponta para **-Z**, que é a frente de qualquer entidade no Bedrock (a flecha tem as penas em +Z);
+  - o osso raiz leva uma animação com `rotation: ["-query.target_x_rotation", "-query.target_y_rotation", 0]`, declarada em `animations` + `scripts.animate` do client entity.
 
-## Estado (v1.7.0)
+  Se um dia o dardo girar **demais** (duas vezes o ângulo), é porque esse runtime passou a aplicar a rotação também: aí a animação sai. Se continuar preso, troque `target_*` por `body_*`. Nada disso aparece na prévia — ela desenha o modelo, não o voo.
+
+## Estado (v1.7.1)
 
 Histórico completo no `CHANGELOG.md`. Resumo do que importa para continuar:
 
@@ -246,12 +251,12 @@ Histórico completo no `CHANGELOG.md`. Resumo do que importa para continuar:
   - câmera calibrada (`CALIB` + `AGACHADO`, encaixe ~0 na v1.3.1);
   - `v.ads` persiste e `q.is_sneaking` funciona no attachable.
 - **Entregue e ainda não visto no aparelho:**
-  - **tudo da v1.7.0** (besta, dardo, sono) — nada disso rodou no jogo ainda;
+  - **tudo da v1.7.0 e da v1.7.1** (besta, dardo, sono) — só o voo do dardo foi visto, e estava de lado;
   - a mira no centro e a animação presa ao tiro real (v1.6.5);
   - as cinco armas no padrão novo, peça por peça: M4A4 com 142 cubos, AK com 88, Glock com 55, AWP com 89 + 74 do painel da luneta, besta com 130;
   - atlas 4x menor em todas as armas (v1.6.0); paleta clara e estilo limpo (v1.4.x); pintura 3D (v1.3.0).
 - **A confirmar, em ordem de risco:**
-  - **o dardo em voo.** É a primeira entidade do add-on. A orientação no voo depende do `runtime_identifier: minecraft:arrow`, que a wiki só testou até a 1.18. Se o dardo aparecer deitado, de lado ou invisível, o plano B é desenhá-lo sem orientação (uma cápsula curta) ou voltar ao raycast com um dardo decorativo — **só depois de um vídeo**;
+  - **o dardo em voo.** É a primeira entidade do add-on. Na v1.7.0 ele voou **de lado**: faltava apontar a geometria para -Z e animar a rotação (ver Armadilhas). Corrigido na v1.7.1, **ainda sem ver no jogo**. Se ainda sair torto, o vídeo dirá qual dos dois casos é: preso no eixo do mundo (animação ignorada) ou girando o dobro (rotação aplicada duas vezes);
   - **a corda da besta.** Ela gira e encurta por Molang (`math.lerp` com `v.ciclo`). Se o Molang falhar, ela fica parada na pose armada, que é a de repouso — repare se ela se mexe ao atirar;
   - **a partícula `joao:sono`** (o "zZz"): JSON de partícula é novo no projeto e erro de partícula é silencioso;
   - **se o zoom funciona com Cheats ligados.** O `/camera fov_set` exige cheats e só aceita FOV de 30 a 110. Pendência desde a v1.6.0;

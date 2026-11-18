@@ -8,8 +8,15 @@ Unidades aqui são pixels de modelo (1/16 de bloco), não os 1/64 das armas: a e
 reais, pelo mesmo motivo que a flecha do Minecraft tem um bloco de comprimento: menor que isso, não
 se enxerga nada em voo.
 
-A ponta fica em +Z: é a direção em que o jogo orienta um projétil (o mesmo do arrow vanilla, de quem
-a entidade herda a física por `runtime_identifier`).
+Duas regras saem do arrow vanilla, de quem a entidade herda a física por `runtime_identifier`, e as
+duas foram aprendidas errando (o dardo voava atravessado):
+
+ 1. **a ponta fica em -Z.** A flecha do jogo é desenhada assim: penas em +Z, ponta em -Z, que é a
+    frente de qualquer entidade no Bedrock.
+ 2. **quem gira o modelo é uma animação, não o renderizador.** Com o runtime de flecha, a rotação da
+    entidade não chega ao modelo: ele fica parado no eixo do mundo, e o dardo voa de lado para todo
+    lado que não seja o norte. O `arrow.entity.json` vanilla resolve isso com uma animação que põe
+    `-query.target_x/y_rotation` no osso — é o que `animacao()` faz aqui.
 """
 import json
 import sys
@@ -23,20 +30,37 @@ from modelos import box
 
 
 def modelo():
+    """O dardo visto do jogo: a agulha aponta para -Z, a direção de voo (ver o topo do arquivo)."""
     AL, D, S, L = "aluminio", "aco_escuro", "aco", "fluor"
     c = [
         # penacho (estabilizador), atrás: duas abas cruzadas, como o pompom de um dardo de verdade
-        box(-1.7, 1.7, -0.45, 0.45, -4.2, -1.4, L),
-        box(-0.45, 0.45, -1.7, 1.7, -4.2, -1.4, L),
-        box(-0.9, 0.9, -0.9, 0.9, -4.4, -1.4, L),
+        box(-1.7, 1.7, -0.45, 0.45, 1.4, 4.2, L),
+        box(-0.45, 0.45, -1.7, 1.7, 1.4, 4.2, L),
+        box(-0.9, 0.9, -0.9, 0.9, 1.4, 4.4, L),
         # corpo de alumínio (o tubo do sedativo), seção cruzada para ficar redondo
-        box(-1.15, 1.15, -0.8, 0.8, -1.4, 3.0, AL),
-        box(-0.8, 0.8, -1.15, 1.15, -1.4, 3.0, AL),
+        box(-1.15, 1.15, -0.8, 0.8, -3.0, 1.4, AL),
+        box(-0.8, 0.8, -1.15, 1.15, -3.0, 1.4, AL),
         # colar de gelatina e agulha
-        box(-0.9, 0.9, -0.9, 0.9, 3.0, 3.6, D),
-        box(-0.3, 0.3, -0.3, 0.3, 3.6, 5.8, S),
+        box(-0.9, 0.9, -0.9, 0.9, -3.6, -3.0, D),
+        box(-0.3, 0.3, -0.3, 0.3, -5.8, -3.6, S),
     ]
     return c
+
+
+def animacao():
+    """A rotação do dardo em voo, do jeito que o `arrow.entity.json` do jogo faz.
+
+    Não é enfeite: sem isto o dardo não gira. Com o runtime de flecha, o renderizador não passa a
+    rotação da entidade para o modelo, então a agulha fica apontando sempre para o mesmo lado do
+    mundo. As duas queries são as mesmas da flecha vanilla (a dela ainda soma `variable.shake_power`,
+    o tremor de flecha cravada, que o dardo não tem porque desaparece ao acertar)."""
+    return {
+        "format_version": "1.8.0",
+        "animations": {"animation.joao.dardo.voo": {
+            "loop": True,
+            "bones": {"dardo": {
+                "rotation": ["-query.target_x_rotation", "-query.target_y_rotation", 0]}}}},
+    }
 
 
 def textura_sono(rp):
@@ -56,7 +80,8 @@ def textura_sono(rp):
 
 def main(rp, previews):
     rp, previews = Path(rp), Path(previews)
-    for sub in ("models/entity/joao", "textures/entity/joao", "entity", "render_controllers"):
+    for sub in ("models/entity/joao", "textures/entity/joao", "entity", "render_controllers",
+                "animations"):
         (rp / sub).mkdir(parents=True, exist_ok=True)
     cubos = modelo()
     geo, atlas, faces = build_geometry("geometry.joao.dardo", [("dardo", None, (0, 0, 0), cubos)],
@@ -71,7 +96,11 @@ def main(rp, previews):
             "materials": {"default": "entity_alphatest"},
             "textures": {"default": "textures/entity/joao/dardo"},
             "geometry": {"default": "geometry.joao.dardo"},
+            "animations": {"voo": "animation.joao.dardo.voo"},
+            "scripts": {"animate": ["voo"]},
             "render_controllers": ["controller.render.joao_dardo"]}}}, indent=1))
+
+    (rp / "animations/joao_dardo.animation.json").write_text(json.dumps(animacao(), indent=1))
 
     (rp / "render_controllers/joao_dardo.render_controllers.json").write_text(json.dumps({
         "format_version": "1.10.0",
@@ -91,6 +120,9 @@ def main(rp, previews):
 
     def vista(q_bb):
         q = np.asarray(q_bb, float) - np.array([-centro[0], centro[1], centro[2]])
+        # gira 180° em Y: o dardo é desenhado apontando para -Z (a frente, no jogo), e a prévia
+        # mostra a ponta à direita, que é como se lê uma peça
+        q = q * np.array([-1.0, 1.0, -1.0])
         x = q[:, 0] * cg + q[:, 2] * sg
         z = q[:, 2] * cg - q[:, 0] * sg
         y = q[:, 1] * ci - z * si
