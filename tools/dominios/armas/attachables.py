@@ -8,11 +8,11 @@ import sys
 from pathlib import Path
 import numpy as np
 from PIL import Image
-from bt import rot_bb, vec_bb, euler_from_bb, bone_matrix, Ry
-import modelos
-from geometria import build_geometry, render
+from nucleo.bt import rot_bb, vec_bb, euler_from_bb, bone_matrix, Ry
+from dominios.armas import modelos
+from nucleo.geometria import build_geometry, render
 
-AQUI = Path(__file__).resolve().parent
+TOOLS = Path(__file__).resolve().parents[2]
 
 ESCALA = 0.25
 PIV = np.array([0, 24, 0], float)          # pivô do osso raiz (bedrock == bb pois x=0)
@@ -312,7 +312,7 @@ def main(RP, PREV):
 
     bg = None
     try:
-        bg = Image.open(AQUI / "assets" / "fundo_previa.jpg").convert("RGBA")
+        bg = Image.open(TOOLS / "assets" / "fundo_previa.jpg").convert("RGBA")
     except FileNotFoundError:
         pass
 

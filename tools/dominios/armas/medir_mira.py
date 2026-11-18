@@ -1,7 +1,7 @@
 """Mede o desalinhamento da mira em prints do jogo e devolve os ângulos da câmera (CALIB) corrigidos.
 
 Uso:
-  python tools/medir_mira.py awp=quadro1.png awp=quadro2.png glock=quadro3.png ak47=quadro4.png
+  python tools/dominios/armas/medir_mira.py awp=quadro1.png awp=quadro2.png glock=quadro3.png ak47=quadro4.png
 
 Cada argumento é `arma=print`, de um print MIRANDO AGACHADO, do pack da versão ATUAL (a medição compara
 o print com a pose que o gerador produz hoje). Vale a pena dar mais de uma arma: é o que separa um erro
@@ -30,11 +30,11 @@ import numpy as np
 from PIL import Image, ImageDraw
 from scipy.optimize import minimize
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-import gerar as G
-import modelos
-from bt import rot_bb
-from geometria import cube_face_quads
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from dominios.armas import attachables as G
+from dominios.armas import modelos
+from nucleo.bt import rot_bb
+from nucleo.geometria import cube_face_quads
 
 
 def pose_de_mira(arma):

@@ -38,7 +38,7 @@ def comprimentos():
     """Comprimento de cada arma no modelo (extensão em Z dos cubos), para mostrar na escala certa."""
     import sys
     sys.path.insert(0, str(Path(__file__).resolve().parent))
-    import modelos
+    from dominios.armas import modelos
     out = {}
     for id_, _ in ARMAS:
         corpo = modelos.ARMAS[id_][0]()[0]

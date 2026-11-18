@@ -2,7 +2,7 @@
 import json
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
-from bt import rot_bb, vec_bb
+from nucleo.bt import rot_bb, vec_bb
 
 R = 4            # texels por unidade
 PAD = 2

@@ -16,7 +16,7 @@ Fluxo atual (antes da migração para `joao:arma_fogo` + tags). Detalhes técnic
 
 A lista de armas está repetida em vários lugares, então siga a lista inteira:
 
-1. `tools/modelos.py`: função do modelo (`def nome()`) e entrada em `ARMAS` com o tipo (`"pistola"` ou `"fuzil"`). Modele **peça por peça**, sem teto de cubos: a M4A4 da v1.4 (~150 cubos) é a referência de nível. Ajudantes:
+1. `tools/dominios/armas/modelos.py`: função do modelo (`def nome()`) e entrada em `ARMAS` com o tipo (`"pistola"` ou `"fuzil"`). Modele **peça por peça**, sem teto de cubos: a M4A4 da v1.4 (~150 cubos) é a referência de nível. Ajudantes:
    - `dentes_z()`: trilhos Picatinny;
    - `chain()` + `nervuras_carregador()` + `base_carregador()`: carregador curvo completo;
    - dois cubos cruzados: peças "redondas" (tubos);
@@ -26,13 +26,13 @@ A lista de armas está repetida em vários lugares, então siga a lista inteira:
    - `grip`: ponto do punho;
    - `muzzle`: boca do cano;
    - `visada`: (ponto de trás, ponto da frente) da linha de mira (veja as regras abaixo);
-2. `tools/gerar.py`:
+2. `tools/dominios/armas/attachables.py`:
    - `PLACE[nome]`: `grip`, `yaw`, `pitch`, `roll`, `intervalo`, `olho` e `atirando` (valores na tabela abaixo);
    - `NOMES`;
    - a tupla do laço em `main()`.
-3. `tools/ajuste.py`: entrada no laço, se for usar o ajuste automático de posição no quadril.
-4. `tools/sons.py`: 3 variações de tiro. Também `packs/RP/sounds/sound_definitions.json` (`joao.<nome>.tiro`).
-5. `tools/pose.py`: o item entra na condição `joao_mira_fuzil` ou `joao_mira_pistola` (pose de 3ª pessoa). O `--gerar` chama o `pose.py`, então basta editar a lista — até a v1.6.3 ele ficava fora do `--gerar` e a AWP não entrou na pose.
+3. `tools/dominios/armas/ajuste.py`: entrada no laço, se for usar o ajuste automático de posição no quadril.
+4. `tools/dominios/armas/sons.py`: 3 variações de tiro. Também `packs/RP/sounds/sound_definitions.json` (`joao.<nome>.tiro`).
+5. `tools/dominios/armas/pose.py`: o item entra na condição `joao_mira_fuzil` ou `joao_mira_pistola` (pose de 3ª pessoa). O `--gerar` chama o `pose.py`, então basta editar a lista — até a v1.6.3 ele ficava fora do `--gerar` e a AWP não entrou na pose.
 6. `tools/site_joao.py`: `ARMAS` (suporte de armas do site).
 7. `packs/BP/items/<nome>.json`: copie de uma arma do mesmo tipo. Mantenha `minecraft:use_modifiers` (sem isso, "segurar para atirar" não funciona no celular). Faça também `packs/BP/recipes/<nome>.json`.
 8. `packs/BP/scripts/main.js`: entrada em `ARMAS` com `dano`, `alcance`, `intervalo` (igual ao do `PLACE`), `automatica`, `municao`, `som`, `dispersao` e `mira: { fov, dispersao }`.
@@ -49,7 +49,7 @@ A lista de armas está repetida em vários lugares, então siga a lista inteira:
 | `yaw` / `pitch` / `roll` no quadril | 5,7 / 1 / −4 | 5,7 / 1 / −4 | 5,8 / 1 / −3 | 5,7 / 1 / −4 | 11,5 / 1 / −4 |
 
 A besta foge do padrão de propósito: ela é **larga**, e com o yaw dos fuzis os arcos — que são a cara
-dela — ficavam fora da tela. O `yaw` maior traz a frente para dentro do quadro. `tools/ajuste.py` tem
+dela — ficavam fora da tela. O `yaw` maior traz a frente para dentro do quadro. `tools/dominios/armas/ajuste.py` tem
 alvos de tela próprios para o tipo `"besta"`.
 
 - `olho` é a distância do olho ao ponto de trás da visada na mira. A alça no meio da arma pede olho mais longe, senão o olho entra na caixa. Alça traseira e pistola ficam perto; com olho grande, a pistola parece pequena e distante (v1.3.1).
@@ -74,7 +74,7 @@ alvos de tela próprios para o tipo `"besta"`.
 | `"besta"` | igual ao fuzil | bem menor (tranco, não coice) |
 
 Um tipo novo tem de ser registrado nos **quatro** lugares onde o tipo é testado, e não há outros:
-`maos()` em `modelos.py`, o dicionário do recuo em `gerar.py`, os alvos de tela em `ajuste.py` e a
+`maos()` em `modelos.py`, o dicionário do recuo em `attachables.py`, os alvos de tela em `ajuste.py` e a
 lista de `pose.py`. Esquecer `pose.py` é o erro que deixou a AWP sem pose de 3ª pessoa até a v1.6.3.
 
 A **animação de disparo é igual para todos** desde a v1.6.5: um ciclo por tiro de verdade, disparado pelo cooldown `joao_tiro` que o `main.js` liga ao atirar. Quem decide se a arma solta rajada é o `automatica` no `main.js`, não o tipo.

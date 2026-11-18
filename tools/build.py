@@ -31,12 +31,15 @@ PASTAS = {
     "RP": ("Armas_do_Joao_RP", "development_resource_packs"),
 }
 
+# domínios do modpack, na ordem em que geram (ver gerar())
+DOMINIOS = ("armas",)
+
 sys.path.insert(0, str(TOOLS))
 
 
 def ler_json(p):
     sys.path.insert(0, str(TOOLS))
-    from jsonc import load
+    from nucleo.jsonc import load
     return load(p)
 
 
@@ -72,17 +75,15 @@ def subir_versao(nova):
 
 
 def gerar():
-    import gerar as g
-    import dardo
-    g.main(PACKS / "RP", PREVIEWS)
-    dardo.main(PACKS / "RP", PREVIEWS)      # entidade do dardo em voo (modelo, textura, client entity)
-    py = sys.executable
-    subprocess.run([py, str(TOOLS / "sons.py"), str(PACKS / "RP" / "sounds" / "joao")], check=True, cwd=TOOLS)
-    subprocess.run([py, str(TOOLS / "municao.py"), str(PACKS / "RP" / "textures" / "items"), str(PREVIEWS)],
-                   check=True, cwd=TOOLS)
-    subprocess.run([py, str(TOOLS / "icone.py"), str(PREVIEWS)], check=True, cwd=TOOLS)
-    # pose de mira em 3ª pessoa: reaproveita o player.entity.json que já está no RP como base
-    subprocess.run([py, str(TOOLS / "pose.py")], check=True, cwd=TOOLS)
+    """Roda cada domínio registrado, na ordem, e depois o que depende das prévias deles.
+
+    Domínio novo (dinossauros, veículos, armaduras) = uma linha em DOMINIOS e um `gerar(rp, bp,
+    previews)` no `__init__.py` dele. Cada um escreve só nas suas pastas."""
+    import importlib
+    for nome in DOMINIOS:
+        importlib.import_module(f"dominios.{nome}").gerar(PACKS / "RP", PACKS / "BP", PREVIEWS)
+    # o ícone do pack monta as prévias laterais das armas, então vem depois dos domínios
+    subprocess.run([sys.executable, "-m", "icone", str(PREVIEWS)], check=True, cwd=TOOLS)
     print(f"gerado — confira as prévias em {PREVIEWS}")
 
 

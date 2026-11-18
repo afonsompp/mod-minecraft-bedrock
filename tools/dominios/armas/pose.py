@@ -12,14 +12,14 @@ a lista de armas da pose de 3ª pessoa não ficar atrasada (na v1.6.3 a AWP não
 import json
 import sys
 from pathlib import Path
-from jsonc import load
+from nucleo.jsonc import load
 
 # Até a v1.6.3 isso era um pack separado (POSE_RP), para poder desligar só a pose. Na v1.6.4 virou parte
 # do RP: eram dois resource packs para ativar no mundo, e o João só queria um. O arquivo substitui o
 # player.entity.json do jogo, então o min_engine_version do RP segue em 1.21.90 de propósito: num jogo
 # anterior ao format_version deste arquivo (1.26.0) o jogo o ignora e cai na pose vanilla, enquanto um
 # min_engine 1.26 deixaria o add-on INTEIRO incompatível e as armas sumiriam.
-POSE = Path(__file__).resolve().parent.parent / "packs" / "RP"
+POSE = Path(__file__).resolve().parents[3] / "packs" / "RP"
 
 
 def main(vanilla=None):

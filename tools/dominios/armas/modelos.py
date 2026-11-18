@@ -5,7 +5,7 @@ Eixos (Bedrock): +Z = frente (cano), +Y = cima, +X = lado direito da arma.
 Cada cubo: dict(o=(x0,y0,z0), s=(sx,sy,sz), m=material, r=(rx,ry,rz) opcional, p=pivô opcional)
 """
 import numpy as np
-from bt import rot_bb, euler_from_bb
+from nucleo.bt import rot_bb, euler_from_bb
 
 
 def box(x0, x1, y0, y1, z0, z1, m, r=None, p=None):

@@ -36,9 +36,9 @@ python tools/build.py --versao X.Y.Z  # sobe a versão de TODOS os manifests e d
 python tools/build.py --deploy      # copia packs para development_*_packs do Minecraft no Windows
 python tools/build.py --site        # gera o site de downloads em site/ (dist/*.mcaddon + CHANGELOG.md)
 python tools/build.py --publicar    # gera o site e publica na Vercel (1ª vez: npx vercel login)
-python tools/ajuste.py              # resolve PLACE (posição em 1ª pessoa) a partir de alvos na tela
-python tools/calibrar.py print.png ...  # recalibra a câmera real (CALIB) a partir de um print da M4A4
-python tools/medir_mira.py awp=a.png glock=b.png ...  # mede a mira em prints do jogo e corrige os ângulos do CALIB
+python tools/dominios/armas/ajuste.py              # resolve PLACE (posição em 1ª pessoa) a partir de alvos na tela
+python tools/dominios/armas/calibrar.py print.png ...  # recalibra a câmera real (CALIB) a partir de um print da M4A4
+python tools/dominios/armas/medir_mira.py awp=a.png glock=b.png ...  # mede a mira em prints do jogo e corrige os ângulos do CALIB
 npm run check                       # tsc contra @minecraft/server 2.0.0
 ```
 
@@ -63,7 +63,7 @@ As prévias não têm a iluminação do jogo, e o FOV do celular varia. Quando m
 ## O que é gerado e o que é editado à mão
 
 - **Editado à mão**: `packs/BP/**` (itens, receitas, `scripts/main.js`), `packs/RP/manifest.json`, `packs/RP/textures/item_texture.json`, `packs/RP/sounds/sound_definitions.json`, tudo em `tools/`.
-- **Gerado por `tools/gerar.py` (não editar direto)**: `packs/RP/models/entity/joao/*`, `packs/RP/textures/entity/joao/*`, `packs/RP/attachables/*`, `packs/RP/animations/joao_armas.animation.json`, `packs/RP/render_controllers/*`, `packs/RP/textures/items/{glock,ak47,m4a4}.png`.
+- **Gerado por `tools/dominios/armas/attachables.py` (não editar direto)**: `packs/RP/models/entity/joao/*`, `packs/RP/textures/entity/joao/*`, `packs/RP/attachables/*`, `packs/RP/animations/joao_armas.animation.json`, `packs/RP/render_controllers/*`, `packs/RP/textures/items/{glock,ak47,m4a4}.png`.
 - Site de downloads: modelo em `tools/site/modelo.html` (editado à mão), gerador `tools/site_joao.py`; a pasta `site/` é gerada (não editar).
 - Gerado por `sons.py` → `packs/RP/sounds/joao/*.ogg`; `municao.py` → ícones de munição; `icone.py` → `pack_icon.png`; `pose.py` → `packs/RP/entity/player.entity.json` e `animations/joao_mira.animation.json`; `dardo.py` → entidade do dardo em voo (`models/entity/joao/dardo.geo.json`, `entity/dardo.entity.json`, `render_controllers/joao_dardo.*`, `textures/particle/joao_sono.png`).
 - **Editado à mão também**: `packs/BP/entities/*` (comportamento de entidade é dado, não geração) e `packs/RP/particles/*`.
@@ -129,15 +129,28 @@ Mantém-se a geração procedural em Python (`build.py --gerar`) com **prévias 
 
 ```
 tools/
-  build.py                # orquestra: --gerar roda todos os domínios registrados
-  nucleo/                 # compartilhado: bt.py (rotação), atlas/pintura/geometria, renderizador de prévias, sons base
+  build.py                # orquestra: --gerar roda todos os domínios de DOMINIOS, na ordem
+  icone.py                # pack_icon.png (depende das prévias laterais das armas, então roda por último)
+  site_joao.py            # site de downloads
+  nucleo/
+    bt.py                 # rotação Bedrock ↔ Blockbench
+    geometria.py          # build_geometry, pintura 3D, atlas, renderizador de prévias
+    jsonc.py              # JSON tolerante a comentários (validação do build)
   dominios/
-    armas/                # modelos + attachable + pose 1ª/3ª pessoa (o que hoje é modelos.py/gerar.py)
-    armaduras/            # attachable em ossos do jogador (cabeça, corpo, pernas)
-    dinossauros/          # entity completa: geometria com ossos articulados, animações (andar, correr, atacar, idle), controllers, spawn
-    animais/              # idem dinossauros
-    veiculos/             # entity montável: geometria, assentos, rodas/hélices animadas
+    armas/                # as 5 armas + a besta
+      __init__.py         #   gerar(rp, bp, previews) — o contrato que o build.py chama
+      modelos.py          #   as formas (cubos e ossos de cada arma)
+      attachables.py      #   geometria, attachable, animações, pose 1ª/3ª pessoa, ícones, prévias
+      dardo.py            #   a entidade do dardo em voo
+      pose.py sons.py municao.py
+      ajuste.py calibrar.py medir_mira.py   # calibração, rodados à mão
+    dinossauros/          # entity completa: ossos articulados, animações, controllers, laboratório
+    armaduras/ animais/ veiculos/           # quando chegarem
 ```
+
+**Armadilha de nome:** o `__init__.py` de um domínio define a função `gerar`, então **nenhum módulo
+dentro dele pode se chamar `gerar.py`** — o atributo do pacote sombreia o submódulo e o import devolve
+a função. Foi por isso que o montador das armas virou `attachables.py`.
 
 - **Dois tipos de saída no RP**:
   - armas e armaduras = **attachable** (segue o osso do jogador);
@@ -147,8 +160,9 @@ tools/
 
 ### Estado atual × alvo (migração)
 
-- **Feito na v1.7.0**: o script está modular (`main.js` só roteia; `comum/`, `armas/`, `sedativo/`), em commit próprio e sem mudar comportamento. Os geradores em Python continuam em arquivos únicos (`modelos.py`, `gerar.py`, `geometria.py`, `sons.py`), mais `dardo.py` para a entidade.
-- **Falta**: trocar a tabela `ARMAS` de `armas/index.js` por `minecraft:tags` + o componente customizado `joao:arma_fogo` registrado em `system.beforeEvents.startup`. Isso mexe nos JSONs dos itens, e no Bedrock um erro ali faz o item **sumir sem mensagem** — por isso ficou para um commit só dele, com teste no aparelho. Os geradores em domínios (`tools/dominios/...`) ficam para o primeiro dinossauro.
+- **Feito na v1.7.0**: o script está modular (`main.js` só roteia; `comum/`, `armas/`, `sedativo/`), em commit próprio e sem mudar comportamento.
+- **Feito na v1.7.2**: os geradores em Python estão em `nucleo/` + `dominios/armas/`, e o `build.py` varre a tupla `DOMINIOS`. Movimentação pura: `--gerar` saiu byte-idêntico (só os `.ogg` mudam, porque o sintetizador não os reproduz bit a bit).
+- **Falta**: trocar a tabela `ARMAS` de `armas/index.js` por `minecraft:tags` + o componente customizado `joao:arma_fogo` registrado em `system.beforeEvents.startup`. Isso mexe nos JSONs dos itens, e no Bedrock um erro ali faz o item **sumir sem mensagem** — por isso é um commit só dele, com teste no aparelho.
 - **Como**: migração em commit próprio, **sem mudar comportamento**. Verifique que `--gerar` produz arquivos idênticos aos de antes (exceto `.ogg`) e que `npm run check` passa. Só então comece o conteúdo novo.
 - Na migração das armas para `joao:arma_fogo` + tags, **mantenha os IDs dos itens** (`joao:glock`, `joao:ak47`, `joao:m4a4`, munições). Mudar ID apaga os itens do inventário do João.
 
@@ -188,8 +202,8 @@ tools/
   - o desgaste fica só em quina exposta.
 
   Material novo = ramo em `base_3d()` de `geometria.py`.
-- **Convenção de rotação** (verificada no código do Blockbench, `js/formats/bedrock/*`): converter Bedrock → espaço "bb" (destro) com `x_bb = -x`; rotação Bedrock `[rx, ry, rz]` vira `R = Rz(rz)·Ry(-ry)·Rx(-rx)`. Ponto no osso: `p' = P + T + R·s·(p - P)`. Ver `tools/bt.py` (`rot_bb`, `euler_from_bb`). Ossos com `binding` ganham um **offset de -24 em Y** (por isso o pivô 24).
-- **1ª pessoa**: usa o referencial do preview de attachable do Blockbench (`attachable_preview.js`): o modelo vinculado fica em `(-20, 21, 0)` com rotação ZYX `(-95°, 45°, 115°)` (= braço vanilla `[95,-45,115]`), câmera do Blockbench em `(0,19,-40)` olhando para `(0,16,0)`, FOV ~57°. **Essa câmera não é a do jogo**: `CALIB` em `gerar.py` (calibrada com print do celular) aproxima a câmera ~5,4 unidades e usa FOV vertical 67,5°. Sem isso, a Glock ficava atrás do plano da câmera e sumia. Agachado, a câmera do jogo ainda se desloca em relação ao braço (`AGACHADO`, medido com prints). `CALIB` + `AGACHADO` foram confirmados com prints na v1.3.1 e valem para qualquer arma. Em `gerar.py`, `first_person()` resolve a rotação/posição do osso para colocar o punho em `PLACE[...]["grip"]` = (direita, cima, profundidade) no espaço da câmera, com `yaw`/`pitch`/`roll` em graus. No jogo o braço direito fica oculto em 1ª pessoa quando segura item, por isso as mãos vêm dentro do modelo. A animação desconta os balanços vanilla de 1ª pessoa (`compensacao_bob()`; ver Armadilhas).
+- **Convenção de rotação** (verificada no código do Blockbench, `js/formats/bedrock/*`): converter Bedrock → espaço "bb" (destro) com `x_bb = -x`; rotação Bedrock `[rx, ry, rz]` vira `R = Rz(rz)·Ry(-ry)·Rx(-rx)`. Ponto no osso: `p' = P + T + R·s·(p - P)`. Ver `tools/nucleo/bt.py` (`rot_bb`, `euler_from_bb`). Ossos com `binding` ganham um **offset de -24 em Y** (por isso o pivô 24).
+- **1ª pessoa**: usa o referencial do preview de attachable do Blockbench (`attachable_preview.js`): o modelo vinculado fica em `(-20, 21, 0)` com rotação ZYX `(-95°, 45°, 115°)` (= braço vanilla `[95,-45,115]`), câmera do Blockbench em `(0,19,-40)` olhando para `(0,16,0)`, FOV ~57°. **Essa câmera não é a do jogo**: `CALIB` em `attachables.py` (calibrada com print do celular) aproxima a câmera ~5,4 unidades e usa FOV vertical 67,5°. Sem isso, a Glock ficava atrás do plano da câmera e sumia. Agachado, a câmera do jogo ainda se desloca em relação ao braço (`AGACHADO`, medido com prints). `CALIB` + `AGACHADO` foram confirmados com prints na v1.3.1 e valem para qualquer arma. Em `attachables.py`, `first_person()` resolve a rotação/posição do osso para colocar o punho em `PLACE[...]["grip"]` = (direita, cima, profundidade) no espaço da câmera, com `yaw`/`pitch`/`roll` em graus. No jogo o braço direito fica oculto em 1ª pessoa quando segura item, por isso as mãos vêm dentro do modelo. A animação desconta os balanços vanilla de 1ª pessoa (`compensacao_bob()`; ver Armadilhas).
 - **Mira (ADS)**:
   - agachar = mira completa;
   - atirar em pé puxa a arma parte do caminho ao centro (`PLACE[...]["atirando"]`) e ela fica lá 0,5 s depois de soltar;
@@ -229,9 +243,9 @@ Detalhamento (helpers de `modelos.py`, atlas, pintura 3D, recuo, clarão, mira e
 
   Na mira, isso parece a arma "subindo sozinha". `compensacao_bob()` desconta os dois. Supõe o "balanço da visão" ligado, porque `v.bob_animation` não é legível.
 - No attachable, `q.*` são as queries do **jogador** e `v.*` são variáveis do próprio attachable, que persistem entre quadros. Variável do jogador só é legível se for pública (`c.owning_entity->v.joao_mira`).
-- **Os três ângulos do `CALIB` não saem de ajuste por silhueta.** A silhueta de um fuzil é alongada e quase não muda quando a câmera gira um grau, então o otimizador da v1.1.1 pôs ruído nos três: roll 1,963° (zerado na v1.6.3) e yaw 1,132° (medido em 0,387 na v1.6.5). Menos de um grau some nas miras de ferro, mas o retículo da luneta atravessa a tela e denuncia. Meça com `tools/medir_mira.py`, que lê o retículo da AWP (linhas de 1 px, ~0,07°) e confere nas outras armas. **A prévia nunca mostra esse tipo de erro**, porque renderiza com a mesma câmera que posiciona a arma — câmera errada dá prévia certa e jogo errado.
+- **Os três ângulos do `CALIB` não saem de ajuste por silhueta.** A silhueta de um fuzil é alongada e quase não muda quando a câmera gira um grau, então o otimizador da v1.1.1 pôs ruído nos três: roll 1,963° (zerado na v1.6.3) e yaw 1,132° (medido em 0,387 na v1.6.5). Menos de um grau some nas miras de ferro, mas o retículo da luneta atravessa a tela e denuncia. Meça com `tools/dominios/armas/medir_mira.py`, que lê o retículo da AWP (linhas de 1 px, ~0,07°) e confere nas outras armas. **A prévia nunca mostra esse tipo de erro**, porque renderiza com a mesma câmera que posiciona a arma — câmera errada dá prévia certa e jogo errado.
 - **Erro de ÂNGULO da câmera e erro de POSIÇÃO (`AGACHADO`) parecem a mesma coisa numa arma só.** O de ângulo desvia todas as armas igual; o de posição desvia proporcionalmente a 1/distância do olho, então a AWP (olho 2,0) erraria quase 4x mais que a AK (olho 7,5). Na v1.6.2 os dois foram confundidos e o `AGACHADO` absorveu um erro que era de ângulo. Meça sempre com duas armas ou mais.
-- Rotação no Bedrock **não** é a convenção matemática comum. Use `tools/bt.py`; não chute sinais.
+- Rotação no Bedrock **não** é a convenção matemática comum. Use `tools/nucleo/bt.py`; não chute sinais.
 - **As prévias não interpretam Molang.** Um osso que só fica certo pela animação (a corda da besta) aparece na prévia do jeito que foi *desenhado*. Por isso `info["ossos"]` tem `repouso`: a pose parada, que as prévias aplicam e que o jogo mostra se a animação falhar. Desenhe sempre uma pose que seja válida sozinha.
 - **Projétil de verdade é território pouco documentado.** `minecraft:projectile` em *item* de add-on não funciona (MCPE-170972); o caminho que funciona é entidade + `spawnEntity` + `getComponent("minecraft:projectile").shoot()` pelo script, com `owner` para o acerto ser creditado. O dardo não usa `stick_in_ground` de propósito: com `runtime_identifier: "minecraft:arrow"`, um projétil cravado no chão pode virar uma flecha na mão de quem passa por cima.
 - **`runtime_identifier` dá a física do projétil, não a orientação dele.** O renderizador não passa a rotação da entidade para o modelo: sem animação, o dardo fica parado no eixo do mundo e voa de lado para toda direção que não seja o norte (v1.7.1). Duas regras, as duas copiadas do `arrow` vanilla (a lógica, não o arquivo):
@@ -281,5 +295,5 @@ Histórico completo no `CHANGELOG.md`. Resumo do que importa para continuar:
 - Comandos do Claude Code: ainda não existem (não há `.claude/commands/`). O equivalente está em:
   - `docs/nova-arma.md`;
   - Fluxo de trabalho, para lançar versão;
-  - `tools/ajuste.py`, para posição.
+  - `tools/dominios/armas/ajuste.py`, para posição.
 - Documentação: https://learn.microsoft.com/minecraft/creator/ · https://wiki.bedrock.dev · arquivos vanilla em https://github.com/Mojang/bedrock-samples

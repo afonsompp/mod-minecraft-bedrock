@@ -1,11 +1,16 @@
 """Calcula a posição da arma em 1ª pessoa para que o cano e a traseira caiam em pontos-alvo da tela.
 
-Uso: python3 tools/ajuste.py   (imprime os valores para colar em PLACE no gerar.py)
+Uso: python3 tools/dominios/armas/ajuste.py   (imprime os valores para colar em PLACE no attachables.py)
 """
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))   # para rodar o arquivo direto
+
 import numpy as np
-import modelos
-from gerar import first_person, PIV, ESCALA, TB, R_BASE, CAM, BC, VFOV
-from bt import vec_bb
+from dominios.armas import modelos
+from dominios.armas.attachables import first_person, PIV, ESCALA, TB, R_BASE, CAM, BC, VFOV
+from nucleo.bt import vec_bb
 from scipy.optimize import minimize
 W,H=1300,600
 fy=(H/2)/np.tan(np.radians(VFOV/2))

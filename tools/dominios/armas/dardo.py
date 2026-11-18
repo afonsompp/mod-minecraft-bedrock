@@ -25,8 +25,8 @@ from pathlib import Path
 from PIL import Image
 import numpy as np
 
-from geometria import build_geometry, render
-from modelos import box
+from nucleo.geometria import build_geometry, render
+from dominios.armas.modelos import box
 
 
 def modelo():

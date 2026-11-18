@@ -1,16 +1,20 @@
-"""Calibra a câmera real de 1ª pessoa (CALIB em gerar.py) a partir de um print do jogo segurando a M4A4.
+"""Calibra a câmera real de 1ª pessoa (CALIB em attachables.py) a partir de um print do jogo segurando a M4A4.
 
-Uso: python tools/calibrar.py print.png BOCA_X BOCA_Y MASSA_X MASSA_Y
+Uso: python tools/dominios/armas/calibrar.py print.png BOCA_X BOCA_Y MASSA_X MASSA_Y
   BOCA = centro da boca do quebra-chama; MASSA = topo da torre da massa de mira (pixels do print).
-O print precisa ser da versão ATUAL (usa o PLACE atual). Imprime o CALIB novo para colar em gerar.py
+O print precisa ser da versão ATUAL (usa o PLACE atual). Imprime o CALIB novo para colar em attachables.py
 e salva <print>.fit.png (vermelho = print, verde = modelo, amarelo = os dois; azul = manga).
 """
-import sys, json
+import json
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))   # para rodar o arquivo direto
 import numpy as np
 from PIL import Image, ImageDraw
-import gerar as G, modelos
-from geometria import cube_face_quads
-from bt import rot_bb
+from dominios.armas import attachables as G, modelos
+from nucleo.geometria import cube_face_quads
+from nucleo.bt import rot_bb
 from scipy.optimize import minimize
 
 SHOT = sys.argv[1]
@@ -61,7 +65,7 @@ def mascara(x, quads):
             d.polygon(pts, fill=255)
     return np.asarray(m) > 0
 
-from bt import vec_bb
+from nucleo.bt import vec_bb
 g = np.array(modelos.m4a4()[1]['grip'])
 a_ = [float(v) for v in sys.argv[2:6]]
 PONTOS = [((0, 4.25, 37), (a_[0], a_[1])), ((0, 10.5, 28.1), (a_[2], a_[3]))]
@@ -89,7 +93,7 @@ r = minimize(perda, x, method='Nelder-Mead', options=dict(maxiter=4000, xatol=1e
 x = r.x if r.fun < melhor[0] else x
 print('FINAL', perda(x), json.dumps([round(float(v), 4) for v in x]))
 cam, BC, fov = camera(x)
-from bt import euler_from_bb
+from nucleo.bt import euler_from_bb
 rot = euler_from_bb(rot_bb(x[3:6]) @ rot_bb(G.CALIB[3:6]))
 novo = list(np.array(G.CALIB[:3]) + x[:3]) + list(rot) + [x[6]]
 print('CALIB =', json.dumps([round(float(v), 3) for v in novo]))
