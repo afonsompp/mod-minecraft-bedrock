@@ -502,9 +502,9 @@ def awp():
 # ---------------------------------------------------------------- Besta de dardos tranquilizantes
 CORDA_Y = 5.9                    # altura da corda: ela corre SOBRE a calha, não dentro do sulco
 DARDO_Y = 5.25                   # o dardo assenta no sulco, com a metade de cima à mostra
-CAM = (11.9, CORDA_Y, 17.2)      # roldana direita, no fim do terceiro trecho do arco (a esquerda é espelhada)
+CAM = (18.3, CORDA_Y, 14.4)      # roldana direita, no fim do terceiro trecho do arco (a esquerda é espelhada)
 SERVING_Z = 0.5                  # corda armada: recuada até a ação
-SERVING_SOLTA_Z = 16.4           # até onde ela corre: a linha das roldanas, onde a corda para
+SERVING_SOLTA_Z = 13.6           # até onde ela corre: a linha das roldanas, onde a corda para
 SERVING_HW = 0.9                 # meia-largura do serving (onde cada meia-corda termina)
 
 
@@ -527,6 +527,19 @@ def trecho_arco(lado, pivo, x0, x1, y0, y1, z0, z1, ry, m):
     dezenas de degraus."""
     xa, xb = sorted((lado * x0, lado * x1))
     return box(xa, xb, y0, y1, z0, z1, m, r=(0, ry * lado, 0), p=pivo)
+
+
+def tirante(a, b, esp, m):
+    """Barra reta entre dois pontos no plano XZ (um cabo da besta, por exemplo).
+
+    Mesma ideia da meia-corda: o cubo é desenhado ao longo de -Z a partir de `a` e a rotação em Y o
+    leva até `b`. Cabo desenhado "paralelo ao arco" fica flutuando no ar; ligando os dois pontos de
+    verdade, ele cai onde cai na besta real."""
+    dx, dz = b[0] - a[0], b[2] - a[2]
+    L = float(np.hypot(dx, dz))
+    ry = -float(np.degrees(np.arctan2(dx, -dz)))
+    return box(a[0] - esp, a[0] + esp, a[1] - esp, a[1] + esp, a[2] - L, a[2], m,
+               r=(0, ry, 0), p=tuple(a))
 
 
 def besta():
@@ -622,41 +635,41 @@ def besta():
     c += dentes_z(9.3, 15.7, lambda z0, z1: sym(1.5, 0.2, 0.5, z0, z1, D), passo=1.6, larg=0.5)
     # ---------------- riser (bloco dos arcos)
     c += [
-        sym(2.5, 2.3, 6.6, 19.0, 23.0, S),
-        sym(2.7, 3.4, 5.9, 19.6, 22.4, D),               # faixa central
-        sym(1.3, 6.6, 7.1, 19.6, 22.4, S),               # topo
-        sym(2.3, 1.1, 2.3, 19.4, 23.2, S),               # base
-        sym(0.6, 7.1, 7.6, 20.3, 21.7, D),               # olhal de montagem
-        box(2.5, 2.85, 3.2, 3.9, 19.9, 22.1, D),         # parafusos laterais
-        box(-2.85, -2.5, 3.2, 3.9, 19.9, 22.1, D),
+        sym(2.8, 2.1, 7.0, 18.6, 23.2, S),
+        sym(3.0, 3.3, 6.1, 19.2, 22.6, D),               # faixa central
+        sym(1.5, 7.0, 7.5, 19.2, 22.6, S),               # topo
+        sym(2.6, 0.9, 2.1, 19.0, 23.4, S),               # base
+        sym(0.7, 7.5, 8.0, 20.0, 21.8, D),               # olhal de montagem
+        box(2.8, 3.2, 3.1, 4.0, 19.6, 22.2, D),          # parafusos laterais
+        box(-3.2, -2.8, 3.1, 4.0, 19.6, 22.2, D),
     ]
     # ---------------- arcos: três trechos por lado, abrindo e avançando (a curva da composta)
     for lado in (1, -1):
-        p1 = (lado * 2.6, 5.0, 21.0)
-        p2 = (lado * 6.6, 5.2, 20.2)
-        p3 = (lado * 10.2, 5.5, 18.6)
+        p1 = (lado * 2.8, 5.0, 21.0)
+        p2 = (lado * 9.1, 5.2, 19.8)
+        p3 = (lado * 14.9, 5.5, 17.2)
         c += [
-            trecho_arco(lado, p1, 2.6, 6.7, 3.5, 6.5, 19.9, 22.1, 11.0, F),    # interno (grosso)
-            trecho_arco(lado, p1, 2.4, 6.9, 4.3, 5.8, 19.6, 22.4, 11.0, F),    # nervura
-            trecho_arco(lado, p1, 2.5, 4.0, 3.1, 6.9, 19.7, 22.3, 11.0, S),    # sapata no riser
-            trecho_arco(lado, p1, 2.7, 3.8, 2.8, 3.2, 20.1, 21.9, 11.0, D),    # parafuso da sapata
-            trecho_arco(lado, p2, 6.5, 10.5, 3.8, 6.3, 19.1, 21.3, 24.0, F),   # trecho do meio
-            trecho_arco(lado, p2, 6.5, 10.7, 4.4, 5.8, 18.8, 21.6, 24.0, F),
-            trecho_arco(lado, p2, 6.4, 7.6, 3.6, 6.5, 19.0, 21.4, 24.0, D),    # luva de emenda
-            trecho_arco(lado, p3, 10.1, 12.4, 4.3, 6.1, 17.5, 19.7, 38.0, F),  # ponta
-            trecho_arco(lado, p3, 10.1, 12.6, 4.8, 5.7, 17.3, 19.9, 38.0, F),
+            trecho_arco(lado, p1, 2.8, 9.2, 3.3, 6.7, 19.8, 22.2, 11.0, F),    # interno (grosso)
+            trecho_arco(lado, p1, 2.6, 9.4, 4.2, 5.9, 19.5, 22.5, 11.0, F),    # nervura
+            trecho_arco(lado, p1, 2.7, 4.5, 2.9, 7.1, 19.6, 22.4, 11.0, S),    # sapata no riser
+            trecho_arco(lado, p1, 3.0, 4.2, 2.6, 3.0, 20.0, 22.0, 11.0, D),    # parafuso da sapata
+            trecho_arco(lado, p2, 9.0, 15.6, 3.6, 6.5, 18.7, 20.9, 24.0, F),   # trecho do meio
+            trecho_arco(lado, p2, 9.0, 15.8, 4.3, 5.9, 18.4, 21.2, 24.0, F),
+            trecho_arco(lado, p2, 8.9, 10.4, 3.4, 6.7, 18.6, 21.0, 24.0, D),   # luva de emenda
+            trecho_arco(lado, p3, 14.8, 19.2, 4.1, 6.3, 16.1, 18.3, 38.0, F),  # ponta
+            trecho_arco(lado, p3, 14.8, 19.4, 4.7, 5.9, 15.9, 18.5, 38.0, F),
+            # cabos: vão da roldana ao riser, por cima e por baixo da linha da corda
+            tirante((lado * CAM[0], CORDA_Y + 2.3, CAM[2]), (lado * 2.2, CORDA_Y + 2.3, 20.6), 0.22, C),
+            tirante((lado * CAM[0], CORDA_Y - 2.3, CAM[2]), (lado * 2.2, CORDA_Y - 2.3, 20.6), 0.22, C),
         ]
         # roldana (cam): disco grosso de dois quadrados cruzados, cubo central, eixo e pino
         cx = lado * CAM[0]
         c += [
-            box(cx - 0.55, cx + 0.55, CORDA_Y - 2.6, CORDA_Y + 2.6, CAM[2] - 1.8, CAM[2] + 1.8, D),
-            box(cx - 0.55, cx + 0.55, CORDA_Y - 1.8, CORDA_Y + 1.8, CAM[2] - 2.6, CAM[2] + 2.6, D),
-            box(cx - 0.9, cx + 0.9, CORDA_Y - 2.0, CORDA_Y + 2.0, CAM[2] - 1.4, CAM[2] + 1.4, D),
-            box(cx - 1.1, cx + 1.1, CORDA_Y - 0.5, CORDA_Y + 0.5, CAM[2] - 0.5, CAM[2] + 0.5, S),
-            box(cx - 0.65, cx + 0.65, CORDA_Y + 0.8, CORDA_Y + 1.4, CAM[2] + 1.8, CAM[2] + 2.4, S),
-            # cabos: ligam a roldana ao riser, acima e abaixo da corda
-            box(cx - 0.22, cx + 0.22, CORDA_Y + 1.8, CORDA_Y + 2.2, CAM[2], 20.6, C),
-            box(cx - 0.22, cx + 0.22, CORDA_Y - 2.2, CORDA_Y - 1.8, CAM[2], 20.6, C),
+            box(cx - 0.6, cx + 0.6, CORDA_Y - 3.0, CORDA_Y + 3.0, CAM[2] - 2.1, CAM[2] + 2.1, D),
+            box(cx - 0.6, cx + 0.6, CORDA_Y - 2.1, CORDA_Y + 2.1, CAM[2] - 3.0, CAM[2] + 3.0, D),
+            box(cx - 1.0, cx + 1.0, CORDA_Y - 2.3, CORDA_Y + 2.3, CAM[2] - 1.6, CAM[2] + 1.6, D),
+            box(cx - 1.2, cx + 1.2, CORDA_Y - 0.55, CORDA_Y + 0.55, CAM[2] - 0.55, CAM[2] + 0.55, S),
+            box(cx - 0.7, cx + 0.7, CORDA_Y + 0.9, CORDA_Y + 1.6, CAM[2] + 2.1, CAM[2] + 2.9, S),
         ]
     # ---------------- estribo em argola, saindo da frente (é onde entra o pé para armar)
     for lado in (1, -1):

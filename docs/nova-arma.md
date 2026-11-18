@@ -117,8 +117,9 @@ Em `trecho_arco()`, isso é `ry` **positivo** para o lado direito (negativo leva
 frente). Como consequência, a corda solta para na linha das roldanas: é por isso que
 `SERVING_SOLTA_Z` fica logo atrás delas, e não num ponto qualquer.
 
-A besta também é larga (~35 cm de ponta a ponta dos arcos contra ~75 cm de comprimento, a proporção
-real). Com a posição de tela dos fuzis, os arcos saíam do quadro em 1ª pessoa, e a besta virava um
+A besta também é **quase tão larga quanto comprida**: 53 cm de ponta a ponta dos arcos contra 76 de
+comprimento (a EK Cobra R9 das fotos é 67 x 58 cm). Com os arcos em metade disso, o João olhou e disse
+na hora que o T estava pequeno — a besta lia como um fuzil com dois apêndices. Com a posição de tela dos fuzis, os arcos saíam do quadro em 1ª pessoa, e a besta virava um
 fuzil com luneta — daí o `yaw` maior no `PLACE`, que cruza a arma no campo de visão em vez de deixá-la
 apontada para longe. **`yaw` menor mostra menos**, não mais: a arma fica de enfiada e só se vê a
 coronha.
