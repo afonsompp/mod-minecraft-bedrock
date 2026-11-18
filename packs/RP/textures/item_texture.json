@@ -17,17 +17,29 @@
   "joao_municao_fuzil": {
    "textures": "textures/items/municao_fuzil"
   },
-  "joao_awp": {
-   "textures": "textures/items/awp"
-  },
   "joao_municao_sniper": {
    "textures": "textures/items/municao_sniper"
+  },
+  "joao_awp": {
+   "textures": "textures/items/awp"
   },
   "joao_besta": {
    "textures": "textures/items/besta"
   },
   "joao_dardo": {
    "textures": "textures/items/dardo"
+  },
+  "joao_fossil": {
+   "textures": "textures/items/fossil"
+  },
+  "joao_ovo_sintetico": {
+   "textures": "textures/items/ovo_sintetico"
+  },
+  "joao_dna_velociraptor": {
+   "textures": "textures/items/dna_velociraptor"
+  },
+  "joao_ovo_velociraptor": {
+   "textures": "textures/items/ovo_velociraptor"
   }
  }
 }

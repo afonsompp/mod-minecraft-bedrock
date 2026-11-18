@@ -1,16 +1,11 @@
 import sys
 import numpy as np
-from PIL import Image, ImageDraw
+from PIL import Image
+
+from nucleo.icones import S, contorno, cyl_shade, faixa, salvar
+
 OUT = sys.argv[1]
 PREV = sys.argv[2] if len(sys.argv) > 2 else None
-S = 512
-
-def cyl_shade(w, base, hi):
-    x = np.linspace(-1, 1, w)
-    l = np.clip(0.55 + 0.45 * np.cos((x + 0.35) * 1.4), 0, 1) ** 1.2
-    spec = np.exp(-((x + 0.45) / 0.12) ** 2) * 0.6
-    base = np.array(base, float); hi = np.array(hi, float)
-    return np.clip(base * (0.35 + 0.65 * l)[:, None] + hi * spec[:, None], 0, 255)
 
 def cartucho(img, cx, top, w, case_h, bullet_h, neck=0.0):
     arr = np.array(img).astype(float)
@@ -78,47 +73,33 @@ def dardo(img, cx, top, w, corpo_h, penacho_h, agulha_h):
     return Image.fromarray(arr.clip(0, 255).astype(np.uint8), "RGBA")
 
 
-def contorno(img):
-    a = np.array(img)
-    alpha = a[..., 3] > 0
-    edge = np.zeros_like(alpha)
-    for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-        edge |= np.roll(np.roll(alpha, dx, 1), dy, 0)
-    out = a.copy()
-    m = edge & ~alpha
-    out[m] = (40, 28, 10, 255)
-    return Image.fromarray(out, "RGBA")
-
 # Munição de pistola: 3 cartuchos 9mm curtos
 p = Image.new("RGBA", (S, S), (0, 0, 0, 0))
 for i, cx in enumerate((150, 256, 362)):
     p = cartucho(p, cx, 150 + (i % 2) * 20, 84, 170, 90)
 p = contorno(p)
-p.resize((64, 64), Image.LANCZOS).save(f"{OUT}/municao_pistola.png")
+salvar(p, f"{OUT}/municao_pistola.png")
 
 # Munição de fuzil: 2 cartuchos longos com pescoço
 r = Image.new("RGBA", (S, S), (0, 0, 0, 0))
 for cx in (195, 317):
     r = cartucho(r, cx, 40, 78, 300, 140, neck=1)
 r = contorno(r)
-r.resize((64, 64), Image.LANCZOS).save(f"{OUT}/municao_fuzil.png")
+salvar(r, f"{OUT}/municao_fuzil.png")
 # Munição de sniper: 2 cartuchos .338 (mais longos e grossos, ogiva comprida)
 sn = Image.new("RGBA", (S, S), (0, 0, 0, 0))
 for cx in (190, 322):
     sn = cartucho(sn, cx, 18, 96, 336, 158, neck=1)
 sn = contorno(sn)
-sn.resize((64, 64), Image.LANCZOS).save(f"{OUT}/municao_sniper.png")
+salvar(sn, f"{OUT}/municao_sniper.png")
 
 # Dardo tranquilizante: 2 dardos (penacho laranja, corpo de alumínio, agulha)
 dt = Image.new("RGBA", (S, S), (0, 0, 0, 0))
 for cx in (190, 322):
     dt = dardo(dt, cx, 40, 76, 230, 70, 120)
 dt = contorno(dt)
-dt.resize((64, 64), Image.LANCZOS).save(f"{OUT}/dardo.png")
+salvar(dt, f"{OUT}/dardo.png")
 
-prev = Image.new("RGBA", (520, 130), (139, 139, 139, 255))
-for i, im in enumerate((p, r, sn, dt)):
-    prev.alpha_composite(im.resize((128, 128), Image.LANCZOS), (i * 130, 1))
 if PREV:
-    prev.save(f"{PREV}/municao.png")
+    faixa((p, r, sn, dt), f"{PREV}/municao.png")
 print("ok")

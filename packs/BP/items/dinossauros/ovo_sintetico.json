@@ -1,0 +1,27 @@
+{
+  "format_version": "1.21.90",
+  "minecraft:item": {
+    "description": {
+      "identifier": "joao:ovo_sintetico",
+      "menu_category": {
+        "category": "items"
+      }
+    },
+    "components": {
+      "minecraft:icon": {
+        "textures": {
+          "default": "joao_ovo_sintetico"
+        }
+      },
+      "minecraft:display_name": {
+        "value": "Ovo Sintético"
+      },
+      "minecraft:max_stack_size": 16,
+      "minecraft:tags": {
+        "tags": [
+          "joao:ovo_sintetico"
+        ]
+      }
+    }
+  }
+}

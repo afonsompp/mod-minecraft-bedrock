@@ -11,6 +11,13 @@ from pathlib import Path
 TOOLS = Path(__file__).resolve().parents[2]
 
 
+# Texturas de item do domínio, na ordem em que entram no atlas. Os PNGs são gerados (attachables.py
+# faz os das armas, municao.py os da munição); aqui só se declara o nome que o JSON do item usa.
+TEXTURAS = {f"joao_{n}": f"textures/items/{n}" for n in
+            ("glock", "ak47", "m4a4", "municao_pistola", "municao_fuzil", "municao_sniper",
+             "awp", "besta", "dardo")}
+
+
 def gerar(rp, bp, previews):
     """Escreve o resource pack das armas. `bp` ainda não é usado: item e receita são escritos à mão."""
     from dominios.armas import dardo
@@ -23,3 +30,4 @@ def gerar(rp, bp, previews):
                    check=True, cwd=TOOLS)
     # pose de mira em 3ª pessoa
     subprocess.run([py, "-m", "dominios.armas.pose"], check=True, cwd=TOOLS)
+    return TEXTURAS

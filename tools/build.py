@@ -32,7 +32,7 @@ PASTAS = {
 }
 
 # domínios do modpack, na ordem em que geram (ver gerar())
-DOMINIOS = ("armas",)
+DOMINIOS = ("armas", "dinossauros")
 
 sys.path.insert(0, str(TOOLS))
 
@@ -80,11 +80,27 @@ def gerar():
     Domínio novo (dinossauros, veículos, armaduras) = uma linha em DOMINIOS e um `gerar(rp, bp,
     previews)` no `__init__.py` dele. Cada um escreve só nas suas pastas."""
     import importlib
+    texturas = {}
     for nome in DOMINIOS:
-        importlib.import_module(f"dominios.{nome}").gerar(PACKS / "RP", PACKS / "BP", PREVIEWS)
+        d = importlib.import_module(f"dominios.{nome}").gerar(PACKS / "RP", PACKS / "BP", PREVIEWS)
+        texturas.update(d or {})
+    atlas_itens(texturas)
     # o ícone do pack monta as prévias laterais das armas, então vem depois dos domínios
     subprocess.run([sys.executable, "-m", "icone", str(PREVIEWS)], check=True, cwd=TOOLS)
     print(f"gerado — confira as prévias em {PREVIEWS}")
+
+
+def atlas_itens(texturas):
+    """Monta o packs/RP/textures/item_texture.json com o que cada domínio declarou.
+
+    Era escrito à mão até a v1.7.1, o que já dava trabalho com nove itens; com dois por espécie de
+    dinossauro, esquecer uma linha aqui (e ver o item virar o quadriculado roxo) seria rotina."""
+    alvo = PACKS / "RP" / "textures" / "item_texture.json"
+    alvo.write_text(json.dumps({
+        "resource_pack_name": "armas_do_joao",
+        "texture_name": "atlas.items",
+        "texture_data": {k: {"textures": v} for k, v in texturas.items()},
+    }, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
 def checar():
