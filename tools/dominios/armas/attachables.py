@@ -78,7 +78,7 @@ ALCA_NA_MIRA = "math.clamp(1.0 - (v.ads - 0.55) * 5.0, 0.0, 1.0)"
 #   então o zoom amplia o mundo e não deve mexer no tamanho do painel.
 # Assim o painel cobre a tela com ou sem zoom. Se um print mostrar a vinheta sumindo quando agacha,
 # é porque o zoom TAMBÉM amplia a arma: aí é só dimensionar por FOV_ZOOM.
-FOV_ZOOM = 30.0             # padrão (AWP): igual ao ARMAS[...].mira.fov do main.js, mínimo que o jogo aceita.
+FOV_ZOOM = 30.0             # padrão (AWP): igual ao mira_fov do JSON do item, mínimo que o jogo aceita.
                             # Arma com outro zoom põe "fov_mira" no PLACE.
 # só na mira completa: durante a aproximação a arma ainda está a caminho e o painel sairia torto
 NA_LUNETA = "(v.ads > 0.995 ? 1.0 : 0.0)"

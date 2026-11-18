@@ -1,6 +1,11 @@
 // Armas de fogo: tiro por raycast instantâneo, rajada, munição e zoom da mira.
+//
+// Nada aqui sabe o nome de nenhuma arma. Os números de cada uma (dano, alcance, cadência, munição,
+// som, dispersão) moram no JSON do item, no componente customizado `joao:arma_fogo`, e chegam a este
+// módulo pelo `params` do componente. Acrescentar uma arma é escrever um item novo — este arquivo não
+// muda. Quem diz "sou arma" e "sou de rajada" são as tags `minecraft:tags` do item.
 import { EntityDamageCause, system } from "@minecraft/server";
-import { COOLDOWN_TIRO } from "../comum/tags.js";
+import { ARMA_FOGO, COOLDOWN_TIRO, RAJADA } from "../comum/tags.js";
 import { contar, ehCriativo, gastar } from "../comum/inventario.js";
 import { particula, ponto, rastro } from "../comum/efeitos.js";
 import { espalhar, tiro } from "../comum/raycast.js";
@@ -8,90 +13,63 @@ import * as hud from "../comum/hud.js";
 import * as mira from "../comum/mira.js";
 
 /**
- * @typedef {Object} Arma
+ * A ficha de uma arma, como está escrita no componente `joao:arma_fogo` do JSON do item.
+ * As chaves são planas de propósito: o `params` de um componente customizado é dado cru, e aninhar
+ * objetos ali é pedir para descobrir um limite do Bedrock no meio do caminho.
+ *
+ * @typedef {Object} Ficha
  * @property {string} nome
- * @property {number} dano        dano por tiro (1 = meio coração)
- * @property {number} alcance     em blocos
- * @property {number} intervalo   ticks entre tiros (20 ticks = 1 segundo)
- * @property {boolean} automatica
- * @property {string} municao     id do item de munição
+ * @property {number} dano             por tiro (1 = meio coração)
+ * @property {number} alcance          em blocos
+ * @property {number} intervalo        ticks entre tiros (20 ticks = 1 segundo)
+ * @property {string} municao          id do item de munição
+ * @property {string} municao_nome     como ela aparece na actionbar
  * @property {string} som
  * @property {number} tom
- * @property {number} dispersao   imprecisão do tiro
- * @property {Mira} mira          mira (agachar): zoom e precisão
- * @property {number} [empurrao]  força do empurrão no alvo (padrão 0.4; sniper empurra mais)
+ * @property {number} dispersao        imprecisão do tiro
+ * @property {number} mira_fov         campo de visão ao mirar, em graus. O jogo só aceita de 30 a
+ *                                     110: fora disso o zoom é recusado e a mira fica sem ampliação
+ * @property {number} mira_dispersao   multiplicador da dispersão ao mirar
+ * @property {number} [empurrao]       força do empurrão no alvo (padrão 0.4; sniper empurra mais)
  */
 
 /**
- * Mira (ADS). A pose da arma na mira fica no resource pack (agachado = mira completa).
- * Fuzil com luneta: fov bem menor (ex.: 20) e dispersão ~0.
- * @typedef {Object} Mira
- * @property {number} fov         campo de visão ao mirar, em graus. O jogo só aceita de 30 a 110:
- *                                fora disso o zoom é recusado e a mira fica sem ampliação.
- * @property {number} dispersao   multiplicador da dispersão ao mirar
+ * Fichas já vistas, por id de item.
+ *
+ * O jogo só entrega o `params` de um componente quando ele **dispara**, e não existe gancho de
+ * "equipou o item". Então a ficha entra aqui no primeiro uso da arma, que é também o primeiro tiro.
+ * Consequência, pequena e de propósito: ao pegar uma arma e agachar **antes** de atirar uma vez, a
+ * mira funciona (a pose vem do resource pack) mas ainda sem ampliação — e o zoom depende de Cheats
+ * de qualquer modo. A partir do primeiro tiro, tudo normal.
+ * @type {Map<string, Ficha>}
  */
-
-/** @type {Record<string, Arma>} */
-const ARMAS = {
-  "joao:glock": {
-    nome: "Glock", dano: 6, alcance: 48, intervalo: 5, automatica: false,
-    municao: "joao:municao_pistola", som: "joao.glock.tiro", tom: 1.0, dispersao: 0.01,
-    mira: { fov: 58, dispersao: 0.4 },
-  },
-  "joao:ak47": {
-    nome: "AK-47", dano: 8, alcance: 64, intervalo: 3, automatica: true,
-    municao: "joao:municao_fuzil", som: "joao.ak47.tiro", tom: 1.0, dispersao: 0.035,
-    mira: { fov: 52, dispersao: 0.3 },
-  },
-  "joao:m4a4": {
-    nome: "M4A4", dano: 7, alcance: 64, intervalo: 3, automatica: true,
-    municao: "joao:municao_fuzil", som: "joao.m4a4.tiro", tom: 1.0, dispersao: 0.02,
-    mira: { fov: 52, dispersao: 0.3 },
-  },
-  // Sniper de ferrolho: 1 tiro por toque, ciclo longo, derruba a maioria dos bichos num tiro.
-  // Sem luneta (de quadril) é muito imprecisa; na luneta vira um laser, como no CS.
-  "joao:awp": {
-    nome: "AWP", dano: 30, alcance: 160, intervalo: 25, automatica: false,
-    municao: "joao:municao_sniper", som: "joao.awp.tiro", tom: 1.0, dispersao: 0.12,
-    mira: { fov: 30, dispersao: 0.04 }, empurrao: 1.0,
-  },
-};
-
-/** @type {Record<string, string>} */
-const NOME_MUNICAO = {
-  "joao:municao_pistola": "Munição de Pistola",
-  "joao:municao_fuzil": "Munição de Fuzil",
-  "joao:municao_sniper": "Munição de Sniper",
-};
+const FICHA = new Map();
 
 /** @type {Map<string, number>} próximo tick em que cada jogador pode atirar */
 const proximoTiro = new Map();
-/** @type {Map<string, string>} jogadores segurando o gatilho de uma arma automática */
+/** @type {Map<string, string>} jogadores segurando o gatilho de uma arma de rajada */
 const atirando = new Map();
+
 /** Mostra arma e munição na actionbar. Mirando, nunca mostra, e limpa o que estiver na tela.
- * @param {import("@minecraft/server").Player} p @param {string} id @param {boolean} [forcar] */
-function mostrarMunicao(p, id, forcar) {
-  const arma = ARMAS[id];
+ * @param {import("@minecraft/server").Player} p @param {Ficha} arma @param {boolean} [forcar] */
+function mostrarMunicao(p, arma, forcar) {
   if (p.isSneaking) {                      // na mira a tela fica limpa
     hud.limpar(p);
     return;
   }
   const qtd = ehCriativo(p) ? "∞" : String(contar(p, arma.municao));
-  hud.barra(p, `§e${arma.nome} §7| §f${NOME_MUNICAO[arma.municao]}: §a${qtd}`, forcar);
+  hud.barra(p, `§e${arma.nome} §7| §f${arma.municao_nome}: §a${qtd}`, forcar);
 }
 
-/** @param {import("@minecraft/server").Player} p @param {string} id */
-function atirar(p, id) {
-  const arma = ARMAS[id];
-  if (!arma) return;
-
+/** @param {import("@minecraft/server").Player} p @param {Ficha} arma */
+function atirar(p, arma) {
   const agora = system.currentTick;
   if ((proximoTiro.get(p.id) ?? 0) > agora) return;
   proximoTiro.set(p.id, agora + arma.intervalo);
 
   if (!ehCriativo(p) && !gastar(p, arma.municao)) {
     p.playSound("joao.vazio");
-    p.onScreenDisplay.setActionBar(`§cSem ${NOME_MUNICAO[arma.municao]}! Faça mais na bancada.`);
+    p.onScreenDisplay.setActionBar(`§cSem ${arma.municao_nome}! Faça mais na bancada.`);
     atirando.delete(p.id);
     return;
   }
@@ -104,7 +82,7 @@ function atirar(p, id) {
 
   const dim = p.dimension;
   const origem = p.getHeadLocation();
-  const dir = espalhar(p.getViewDirection(), arma.dispersao * (p.isSneaking ? arma.mira.dispersao : 1));
+  const dir = espalhar(p.getViewDirection(), arma.dispersao * (p.isSneaking ? arma.mira_dispersao : 1));
   const { distancia, alvo, bloco } = tiro(dim, origem, dir, arma.alcance, p.id);
 
   if (alvo) {
@@ -125,28 +103,35 @@ function atirar(p, id) {
   dim.playSound(arma.som, origem, { volume: 1, pitch: arma.tom * (0.95 + Math.random() * 0.1) });
   rastro(dim, origem, dir, distancia);
 
-  mostrarMunicao(p, id, true);
+  mostrarMunicao(p, arma, true);
 }
 
 /** Agachado com arma na mão = FOV da arma; senão, FOV normal.
- * @param {import("@minecraft/server").Player} p @param {string | undefined} id */
-function atualizarMira(p, id) {
-  const arma = id ? ARMAS[id] : undefined;
-  mira.zoom(p, arma && p.isSneaking ? arma.mira.fov : undefined, "armas");
+ * @param {import("@minecraft/server").Player} p @param {Ficha | undefined} arma */
+function atualizarMira(p, arma) {
+  mira.zoom(p, arma && p.isSneaking ? arma.mira_fov : undefined, "armas");
 }
 
 /** @type {import("../comum/dominio.js").Dominio} */
 export const dominio = {
   nome: "armas",
 
-  // Toque/clique: um tiro (vale para todas, inclusive as automáticas)
-  aoUsar(p, item) {
-    if (ARMAS[item.typeId]) atirar(p, item.typeId);
+  // O tiro é o próprio componente do item: toque/clique chama onUse, e é dali que vêm os números.
+  // Vale para todas as armas, inclusive as de rajada — é também o caminho de reserva se segurar
+  // para atirar não funcionar no celular.
+  componentes(ev) {
+    ev.itemComponentRegistry.registerCustomComponent(ARMA_FOGO, {
+      onUse({ source, itemStack }, { params }) {
+        const arma = /** @type {Ficha} */ (params);
+        if (itemStack) FICHA.set(itemStack.typeId, arma);
+        atirar(source, arma);
+      },
+    });
   },
 
-  // Segurar: rajada nas automáticas
+  // Segurar: rajada em quem declara a tag
   aoComecarUso(p, item) {
-    if (item && ARMAS[item.typeId]?.automatica) atirando.set(p.id, item.typeId);
+    if (item?.hasTag(RAJADA)) atirando.set(p.id, item.typeId);
   },
 
   aoSoltarUso(p) {
@@ -155,14 +140,15 @@ export const dominio = {
 
   // rajada, zoom da mira e (a cada 10 ticks) contador de munição
   aCadaTick(p, id) {
-    const arma = atirando.get(p.id);
-    if (arma) {
-      if (id === arma) atirar(p, arma);
+    const arma = id ? FICHA.get(id) : undefined;
+    const emRajada = atirando.get(p.id);
+    if (emRajada) {
+      if (id === emRajada && arma) atirar(p, arma);
       else atirando.delete(p.id);
     }
-    atualizarMira(p, id);
+    atualizarMira(p, arma);
     const mostrar = system.currentTick % 10 === 0;
-    if (mostrar && id && ARMAS[id] && !atirando.has(p.id)) mostrarMunicao(p, id);
+    if (mostrar && arma && !atirando.has(p.id)) mostrarMunicao(p, arma);
     else if (mostrar && !id) hud.esquecer(p.id);   // guardou a arma: próxima vez mostra de novo
   },
 

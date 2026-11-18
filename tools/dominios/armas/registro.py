@@ -37,7 +37,7 @@ class Arma:
     `olho` é a distância do olho ao ponto de trás da linha de visada na pose de mira (em unidades de
     câmera, 1/16 de bloco); numa luneta, é o alívio de olho. `atirando` é a fração do caminho
     quadril → mira que a arma percorre ao atirar em pé. `intervalo` e `fov_mira` **têm de bater** com
-    a tabela do `packs/BP/scripts/armas/index.js`."""
+    o componente `joao:arma_fogo` do JSON do item, que é de onde o script lê os mesmos números."""
 
     traseira: float
     """Onde a traseira da arma deve cair na tela — só o `ajuste.py` usa, para resolver o `place`."""

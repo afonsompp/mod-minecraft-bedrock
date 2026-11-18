@@ -12,6 +12,11 @@ import { dominio as sedativo } from "./sedativo/index.js";
 /** @type {import("./comum/dominio.js").Dominio[]} */
 const DOMINIOS = [armas, sedativo];
 
+// Componentes customizados só podem ser registrados aqui, e antes de qualquer item ser carregado.
+system.beforeEvents.startup.subscribe((ev) => {
+  for (const d of DOMINIOS) d.componentes?.(ev);
+});
+
 for (const d of DOMINIOS) d.iniciar?.();
 
 world.afterEvents.itemUse.subscribe(({ source, itemStack }) => {

@@ -29,9 +29,12 @@ para fazer à mão são os arquivos que **não** derivam dela:
    - `visada`: (ponto de trás, ponto da frente) da linha de mira (veja as regras abaixo);
 2. **`tools/dominios/armas/registro.py`: uma linha em `ARMAS`** — id, nome, tipo, a função do modelo, o `place` (valores na tabela abaixo), o alvo da traseira para o `ajuste.py` e a ordem no site. Daqui saem sozinhos o laço da geração, os nomes na tela, a pose de 3ª pessoa e o suporte de armas do site.
 3. `tools/dominios/armas/sons.py`: 3 variações de tiro. Também `packs/RP/sounds/sound_definitions.json` (`joao.<nome>.tiro`).
-4. `packs/BP/items/<nome>.json`: copie de uma arma do mesmo tipo. Mantenha `minecraft:use_modifiers` (sem isso, "segurar para atirar" não funciona no celular). Faça também `packs/BP/recipes/<nome>.json`.
-5. `packs/BP/scripts/armas/index.js`: entrada em `ARMAS` com `dano`, `alcance`, `intervalo` (igual ao do `place`), `automatica`, `municao`, `som`, `dispersao` e `mira: { fov, dispersao }`.
-6. `packs/RP/textures/item_texture.json`: `joao_<nome>` → `textures/items/<nome>` (o ícone é gerado).
+4. **`packs/BP/items/<nome>.json`: é aqui que a arma ganha os números.** Copie de uma arma do mesmo tipo e preencha:
+   - `minecraft:tags`: `joao:arma_fogo` mais `joao:disparo_rajada` **ou** `joao:disparo_semi`;
+   - o componente `joao:arma_fogo`: `nome`, `dano`, `alcance`, `intervalo` (igual ao do `place`), `municao`, `municao_nome`, `som`, `tom`, `dispersao`, `mira_fov`, `mira_dispersao` e, se empurrar mais que o normal, `empurrao`.
+
+   Mantenha `minecraft:use_modifiers` (sem isso, "segurar para atirar" não funciona no celular). Faça também `packs/BP/recipes/<nome>.json`. **Nenhum script muda**: `packs/BP/scripts/armas/index.js` não conhece arma nenhuma pelo nome desde a v1.7.2.
+5. `packs/RP/textures/item_texture.json`: `joao_<nome>` → `textures/items/<nome>` (o ícone é gerado).
 
 ## Valores de referência
 

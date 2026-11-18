@@ -21,6 +21,26 @@
       "minecraft:use_modifiers": {
         "use_duration": 3600,
         "movement_modifier": 0.6
+      },
+      "minecraft:tags": {
+        "tags": [
+          "joao:arma_fogo",
+          "joao:disparo_semi"
+        ]
+      },
+      "joao:arma_fogo": {
+        "nome": "AWP",
+        "dano": 30,
+        "alcance": 160,
+        "intervalo": 25,
+        "municao": "joao:municao_sniper",
+        "som": "joao.awp.tiro",
+        "tom": 1.0,
+        "dispersao": 0.12,
+        "mira_fov": 30,
+        "mira_dispersao": 0.04,
+        "empurrao": 1.0,
+        "municao_nome": "Munição de Sniper"
       }
     }
   }

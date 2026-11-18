@@ -14,6 +14,18 @@
  */
 export const COOLDOWN_TIRO = "joao_tiro";
 
+/**
+ * Tags que os itens declaram em `minecraft:tags`, no JSON deles.
+ *
+ * ARMA_FOGO é também o nome do **componente customizado** que carrega os números da arma (dano,
+ * alcance, cadência, munição, som). O nome registrado no script e o nome no JSON do item têm de ser
+ * idênticos: se não forem, o Bedrock não avisa — o item simplesmente some do inventário.
+ */
+export const ARMA_FOGO = "joao:arma_fogo";
+export const RAJADA = "joao:disparo_rajada";
+export const SEMI = "joao:disparo_semi";
+export const MUNICAO = "joao:municao";
+
 /** Entidades que um tiro atravessa: não são alvo. */
 export const ATRAVESSA = new Set([
   "minecraft:item",

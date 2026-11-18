@@ -162,9 +162,8 @@ a função. Foi por isso que o montador das armas virou `attachables.py`.
 
 - **Feito na v1.7.0**: o script está modular (`main.js` só roteia; `comum/`, `armas/`, `sedativo/`), em commit próprio e sem mudar comportamento.
 - **Feito na v1.7.2**: os geradores em Python estão em `nucleo/` + `dominios/armas/`, e o `build.py` varre a tupla `DOMINIOS`. A lista de armas, que se repetia em sete lugares, virou `dominios/armas/registro.py` — uma entrada por arma, de onde saem o laço da geração, os nomes, o `PLACE`, a pose de 3ª pessoa, a ordem do site e os alvos do `ajuste.py`. As duas mudanças são movimentação pura: `--gerar` saiu byte-idêntico (só os `.ogg` mudam, porque o sintetizador não os reproduz bit a bit).
-- **Falta**: trocar a tabela `ARMAS` de `armas/index.js` por `minecraft:tags` + o componente customizado `joao:arma_fogo` registrado em `system.beforeEvents.startup`. Isso mexe nos JSONs dos itens, e no Bedrock um erro ali faz o item **sumir sem mensagem** — por isso é um commit só dele, com teste no aparelho.
-- **Como**: migração em commit próprio, **sem mudar comportamento**. Verifique que `--gerar` produz arquivos idênticos aos de antes (exceto `.ogg`) e que `npm run check` passa. Só então comece o conteúdo novo.
-- Na migração das armas para `joao:arma_fogo` + tags, **mantenha os IDs dos itens** (`joao:glock`, `joao:ak47`, `joao:m4a4`, munições). Mudar ID apaga os itens do inventário do João.
+- **Feito na v1.7.2**: as armas são `minecraft:tags` + o componente customizado `joao:arma_fogo`, registrado em `system.beforeEvents.startup`. Os números (dano, alcance, cadência, munição, som, dispersão, mira) estão no JSON de cada item e chegam ao script pelo `params`; `armas/index.js` não conhece nenhuma arma pelo nome. Os IDs não mudaram. **Ainda não foi visto no aparelho** — erro aqui faz o item sumir sem mensagem.
+- **Consequência conhecida**: o jogo só entrega o `params` quando o componente dispara, e não há gancho de "equipou". A ficha da arma entra em cache no primeiro uso, então pegar uma arma e agachar **antes** de atirar mira sem ampliação (a pose vem do resource pack e funciona; o zoom depende de Cheats de qualquer jeito). Do primeiro tiro em diante, normal.
 
 ## Convenções
 

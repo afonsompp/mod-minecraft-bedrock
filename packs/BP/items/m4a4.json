@@ -21,6 +21,25 @@
       "minecraft:use_modifiers": {
         "use_duration": 3600,
         "movement_modifier": 0.7
+      },
+      "minecraft:tags": {
+        "tags": [
+          "joao:arma_fogo",
+          "joao:disparo_rajada"
+        ]
+      },
+      "joao:arma_fogo": {
+        "nome": "M4A4",
+        "dano": 7,
+        "alcance": 64,
+        "intervalo": 3,
+        "municao": "joao:municao_fuzil",
+        "som": "joao.m4a4.tiro",
+        "tom": 1.0,
+        "dispersao": 0.02,
+        "mira_fov": 52,
+        "mira_dispersao": 0.3,
+        "municao_nome": "Munição de Fuzil"
       }
     }
   }

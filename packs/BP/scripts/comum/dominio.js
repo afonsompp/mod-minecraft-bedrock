@@ -10,6 +10,9 @@
  * @typedef {Object} Dominio
  * @property {string} nome
  * @property {() => void} [iniciar]            laços e assinaturas próprias (no máximo um runInterval)
+ * @property {(ev: import("@minecraft/server").StartupEvent) => void} [componentes]
+ *            registra componentes customizados de item e de bloco. Só pode acontecer no
+ *            `system.beforeEvents.startup`, e o nome tem de bater com o do JSON (ver comum/tags.js)
  * @property {(p: Jogador, item: Item) => void} [aoUsar]                toque/clique com o item na mão
  * @property {(p: Jogador, item: Item | undefined) => void} [aoComecarUso]  começou a segurar
  * @property {(p: Jogador) => void} [aoSoltarUso]                       soltou

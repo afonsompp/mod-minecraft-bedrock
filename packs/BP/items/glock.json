@@ -21,6 +21,25 @@
       "minecraft:use_modifiers": {
         "use_duration": 3600,
         "movement_modifier": 0.7
+      },
+      "minecraft:tags": {
+        "tags": [
+          "joao:arma_fogo",
+          "joao:disparo_semi"
+        ]
+      },
+      "joao:arma_fogo": {
+        "nome": "Glock",
+        "dano": 6,
+        "alcance": 48,
+        "intervalo": 5,
+        "municao": "joao:municao_pistola",
+        "som": "joao.glock.tiro",
+        "tom": 1.0,
+        "dispersao": 0.01,
+        "mira_fov": 58,
+        "mira_dispersao": 0.4,
+        "municao_nome": "Munição de Pistola"
       }
     }
   }
