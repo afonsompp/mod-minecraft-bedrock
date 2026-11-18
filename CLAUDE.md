@@ -124,6 +124,8 @@ scripts/
     index.js              # extrator e incubadora: componente de BLOCO, estado em dynamic property
   dinossauros/
     especies.js           # GERADO do especies.py — a lista de espécies e o sorteio
+  paleontologia/
+    index.js              # o fóssil ao minerar (por script, não por feature_rules)
   dinossauros/            # comportamento que o JSON não cobre (ex.: rugido, montaria especial)
   veiculos/               # controle, física, combustível
   armaduras/              # efeitos de conjunto completo etc.
@@ -268,7 +270,7 @@ Detalhamento (helpers de `modelos.py`, atlas, pintura 3D, recuo, clarão, mira e
 
   Se um dia o dardo girar **demais** (duas vezes o ângulo), é porque esse runtime passou a aplicar a rotação também: aí a animação sai. Se continuar preso, troque `target_*` por `body_*`. Nada disso aparece na prévia — ela desenha o modelo, não o voo.
 
-## Estado (v1.7.1)
+## Estado (v1.8.0)
 
 Histórico completo no `CHANGELOG.md`. Resumo do que importa para continuar:
 
@@ -279,6 +281,8 @@ Histórico completo no `CHANGELOG.md`. Resumo do que importa para continuar:
   - câmera calibrada (`CALIB` + `AGACHADO`, encaixe ~0 na v1.3.1);
   - `v.ads` persiste e `q.is_sneaking` funciona no attachable.
 - **Entregue e ainda não visto no aparelho:**
+  - **todo o laboratório da v1.8.0** (fóssil ao minerar, extrator, incubadora, os quatro itens). Os blocos são os primeiros do projeto: se um deles aparecer como o quadriculado roxo ou sumir, é o JSON do bloco ou o `terrain_texture.json`;
+  - **falta o Velociraptor**: o ovo é produzido mas não choca. É a próxima entrega, e é ela que estreia a família `joao:sedavel` (o dardo da besta já sabe fazer dormir quem a declarar);
   - **tudo da v1.7.0 e da v1.7.1** (besta, dardo, sono) — só o voo do dardo foi visto, e estava de lado;
   - a mira no centro e a animação presa ao tiro real (v1.6.5);
   - as cinco armas no padrão novo, peça por peça: M4A4 com 142 cubos, AK com 88, Glock com 55, AWP com 89 + 74 do painel da luneta, besta com 130;

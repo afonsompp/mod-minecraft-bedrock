@@ -8,10 +8,11 @@ import { itemNaMao } from "./comum/inventario.js";
 import * as hud from "./comum/hud.js";
 import { dominio as armas } from "./armas/index.js";
 import { dominio as laboratorio } from "./laboratorio/index.js";
+import { dominio as paleontologia } from "./paleontologia/index.js";
 import { dominio as sedativo } from "./sedativo/index.js";
 
 /** @type {import("./comum/dominio.js").Dominio[]} */
-const DOMINIOS = [armas, sedativo, laboratorio];
+const DOMINIOS = [armas, sedativo, laboratorio, paleontologia];
 
 // Componentes customizados só podem ser registrados aqui, e antes de qualquer item ser carregado.
 system.beforeEvents.startup.subscribe((ev) => {

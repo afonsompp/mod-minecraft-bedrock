@@ -2,6 +2,15 @@
 
 Formato: versão — data — o que mudou. Marque **[testado no celular]** quando o Afonso confirmar no aparelho do João.
 
+## 1.8.0 — 2026-11-18
+- **O laboratório de dinossauros.** O caminho do filme, do osso ao ovo:
+  - **cave fundo e você acha Fósseis.** Quebrando pedra, pedregulho, ardósia, cascalho ou argila abaixo do nível 24, de vez em quando sai um. Quanto mais fundo, mais aparecem;
+  - o **Extrator de DNA** (ferro, vidro e um bloco de redstone) mói o fóssil e descobre **de qual dinossauro** aquele osso era. Isso é sorteado na hora: dois fósseis iguais podem dar bichos diferentes;
+  - a **Incubadora** (ferro, vidro e uma lanterna) recebe o DNA e um **Ovo Sintético** (argila e slime, na bancada) e choca. O ovo fica **à vista no ninho**, embaixo da lâmpada, até você recolher;
+  - no fim, você tem um **Ovo de Velociraptor**.
+- **Ainda não dá para chocar o ovo** — o Velociraptor em si é a próxima entrega. Por enquanto o ovo é a prova de que o laboratório inteiro funciona, de ponta a ponta.
+- Por dentro: acrescentar um dinossauro novo passou a ser **uma linha** num arquivo. Os itens, os ícones, as receitas e a tabela que o jogo lê saem todos dali.
+
 ## 1.7.1 — 2026-11-18
 - Corrigido: **o dardo voava atravessado**, de lado, em vez de seguir reto na direção do tiro. Faltavam as duas coisas que a flecha do jogo faz e que ninguém vê: o dardo era desenhado apontando para trás, e nada girava o modelo durante o voo — ele ficava parado no eixo do mundo enquanto a trajetória ia para outro lado. Agora a agulha vai na frente e o dardo acompanha a subida e a descida do tiro.
 
