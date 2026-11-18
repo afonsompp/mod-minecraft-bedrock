@@ -3,7 +3,7 @@
 Ponto de entrada do domínio para o `build.py --gerar`. Tudo o que ele escreve sai de
 `especies.py` — acrescentar um dinossauro é uma linha lá.
 """
-from dominios.dinossauros import blocos, dados, especies, icones, itens
+from dominios.dinossauros import blocos, dados, entidade, especies, icones, itens
 
 
 def gerar(rp, bp, previews):
@@ -14,5 +14,8 @@ def gerar(rp, bp, previews):
     itens.gerar(bp, especies.ESPECIES)
     blocos.gerar(rp, bp, previews)
     dados.gerar(bp, especies.ESPECIES)      # a tabela de espécies que o script lê
+    for e in especies.ESPECIES:
+        if e.modelo:
+            entidade.gerar(rp, bp, previews, e, e.modelo())
     print(f"dinossauros ok — {len(especies.ESPECIES)} espécie(s)")
     return nomes

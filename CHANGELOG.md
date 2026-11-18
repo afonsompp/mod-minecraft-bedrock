@@ -2,6 +2,13 @@
 
 Formato: versão — data — o que mudou. Marque **[testado no celular]** quando o Afonso confirmar no aparelho do João.
 
+## 1.9.0 — 2026-11-18
+- **O Velociraptor.** O ovo agora choca: use o Ovo de Velociraptor mirando no chão e nasce um **filhote**, que cresce sozinho. No criativo também dá para pegar o ovo de spawn dele direto.
+  - cabeça com **olho de pupila em fenda**, garra em foice no pé, faixa escura no flanco e barriga clara;
+  - anda, corre, caça, entra em pânico e **dorme de verdade** quando leva dardo da Besta Tranquilizante — deitado, de olhos fechados, não só parado no lugar. Era isso que a besta prometia desde a v1.7.0;
+  - o filhote segue o adulto e aceita carne.
+- Agora cada fóssil que você mói pode virar o DNA dele — e, quando houver mais espécies, a surpresa fica maior.
+
 ## 1.8.0 — 2026-11-18
 - **O laboratório de dinossauros.** O caminho do filme, do osso ao ovo:
   - **cave fundo e você acha Fósseis.** Quebrando pedra, pedregulho, ardósia, cascalho ou argila abaixo do nível 24, de vez em quando sai um. Quanto mais fundo, mais aparecem;

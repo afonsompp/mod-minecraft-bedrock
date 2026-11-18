@@ -1,0 +1,37 @@
+{
+ "format_version": "1.10.0",
+ "minecraft:client_entity": {
+  "description": {
+   "identifier": "joao:velociraptor",
+   "materials": {
+    "default": "entity_alphatest"
+   },
+   "textures": {
+    "default": "textures/entity/joao/velociraptor"
+   },
+   "geometry": {
+    "default": "geometry.joao.velociraptor"
+   },
+   "animations": {
+    "parado": "animation.joao.velociraptor.parado",
+    "andar": "animation.joao.velociraptor.andar",
+    "correr": "animation.joao.velociraptor.correr",
+    "atacar": "animation.joao.velociraptor.atacar",
+    "dormir": "animation.joao.velociraptor.dormir",
+    "controlador": "controller.animation.joao_velociraptor"
+   },
+   "scripts": {
+    "animate": [
+     "controlador"
+    ]
+   },
+   "spawn_egg": {
+    "base_color": "#6f7a4a",
+    "overlay_color": "#b9b489"
+   },
+   "render_controllers": [
+    "controller.render.joao_velociraptor"
+   ]
+  }
+ }
+}

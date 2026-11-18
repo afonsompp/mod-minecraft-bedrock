@@ -30,6 +30,8 @@ export const MUNICAO = "joao:municao";
 export const FOSSIL = "joao:fossil";
 export const OVO_SINTETICO = "joao:ovo_sintetico";
 export const MAQUINA = "joao:maquina";
+/** Ovo fecundado: usar no chão choca o bicho. */
+export const OVO_DINO = "joao:ovo_dino";
 /** Estado de bloco das máquinas: 0 parada · 1 trabalhando · 2 pronta (gerado por blocos.py). */
 export const ESTADO_FASE = "joao:fase";
 

@@ -1,0 +1,68 @@
+{
+ "format_version": "1.10.0",
+ "animation_controllers": {
+  "controller.animation.joao_velociraptor": {
+   "initial_state": "parado",
+   "states": {
+    "parado": {
+     "animations": [
+      "parado"
+     ],
+     "transitions": [
+      {
+       "dormindo": "q.is_sleeping"
+      },
+      {
+       "correndo": "q.modified_move_speed > 0.62"
+      },
+      {
+       "andando": "q.modified_move_speed > 0.04"
+      }
+     ]
+    },
+    "andando": {
+     "animations": [
+      "andar"
+     ],
+     "blend_transition": 0.2,
+     "transitions": [
+      {
+       "dormindo": "q.is_sleeping"
+      },
+      {
+       "correndo": "q.modified_move_speed > 0.62"
+      },
+      {
+       "parado": "q.modified_move_speed <= 0.04"
+      }
+     ]
+    },
+    "correndo": {
+     "animations": [
+      "correr"
+     ],
+     "blend_transition": 0.2,
+     "transitions": [
+      {
+       "dormindo": "q.is_sleeping"
+      },
+      {
+       "andando": "q.modified_move_speed <= 0.62"
+      }
+     ]
+    },
+    "dormindo": {
+     "animations": [
+      "dormir"
+     ],
+     "blend_transition": 0.6,
+     "transitions": [
+      {
+       "parado": "!q.is_sleeping"
+      }
+     ]
+    }
+   }
+  }
+ }
+}

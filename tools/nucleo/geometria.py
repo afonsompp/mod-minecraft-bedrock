@@ -60,7 +60,32 @@ class Ruido3D:
         return s / tot
 
 
+class Celulas3D:
+    """Distância ao ponto de rede mais próximo (Worley). É o que faz escama e ruga.
+
+    Ruído de valor não serve: escama é **célula**, com uma borda em volta. Em compensação a escama
+    nunca é pintada uma a uma — a célula tem de ter 3 ou 4 texels, senão vira o chuvisco que o
+    estilo da casa proíbe, porque o jogo desenha textura sem suavização."""
+
+    def __init__(self, seed, n=32):
+        self.n = n
+        self.p = np.random.default_rng(seed).random((n, n, n, 3))
+
+    def __call__(self, q):
+        q = np.asarray(q, float)
+        base = np.floor(q).astype(int)
+        melhor = np.full(q.shape[:-1], 9.0)
+        for dx in (-1, 0, 1):
+            for dy in (-1, 0, 1):
+                for dz in (-1, 0, 1):
+                    cel = base + np.array([dx, dy, dz])
+                    jit = self.p[cel[..., 0] % self.n, cel[..., 1] % self.n, cel[..., 2] % self.n]
+                    melhor = np.minimum(melhor, np.linalg.norm(cel + jit - q, axis=-1))
+        return melhor
+
+
 RUIDO = Ruido3D(11)
+CELULAS = Celulas3D(23)
 
 
 def _esticado(P, eixo, ao_longo, atraves):
@@ -91,8 +116,12 @@ def sdf_cubos(P, caixas):
     return d
 
 
-def contexto_face(c, f, w, h, caixas):
-    """Ponto 3D, normal, distância à borda e oclusão ambiente de cada texel da face (h, w)."""
+def contexto_face(c, f, w, h, caixas, faixa_y=None):
+    """Ponto 3D, normal, distância à borda e oclusão ambiente de cada texel da face (h, w).
+
+    `faixa_y` é (mínimo, máximo) de Y do **modelo inteiro**, e dá `y_modelo` em 0..1. Não dá para
+    usar `alt` no lugar: aquele é a altura dentro do *cubo*, então um cubo do dorso e um da barriga
+    recebem ambos 0→1, e a contra-sombra do bicho sairia errada."""
     q = cube_face_quads(c)[f]
     a = (np.arange(w) + 0.5) / w
     b = (np.arange(h) + 0.5) / h
@@ -122,7 +151,12 @@ def contexto_face(c, f, w, h, caixas):
     todos = np.concatenate(list(cube_face_quads(c).values()))
     ymin, ymax = todos[:, 1].min(), todos[:, 1].max()
     alt_rel = np.clip((P[..., 1] - ymin) / max(ymax - ymin, 1e-6), 0, 1)
-    return dict(P=P, n=n, E=E, ao=ao, eixo=eixo, fw=fw, fh=fh, alt=alt_rel,
+    if faixa_y is None:
+        y_modelo = np.full(P.shape[:2], 0.5)
+    else:
+        y0, y1 = faixa_y
+        y_modelo = np.clip((P[..., 1] - y0) / max(y1 - y0, 1e-6), 0, 1)
+    return dict(P=P, n=n, E=E, ao=ao, eixo=eixo, fw=fw, fh=fh, alt=alt_rel, y_modelo=y_modelo,
                 d_topo=ymax - P[..., 1], d_base=P[..., 1] - ymin)
 
 
@@ -142,6 +176,20 @@ POLIMEROS = {"polimero": "#3a3c3f", "polimero_grip": "#36383b", "borracha": "#2b
              "cabo": "#8e8878",     # corda e cabos da besta (poliéster claro: tem que destacar do corpo)
              "fluor": "#c85a1e"}    # penacho do dardo. Cor viva de propósito, fora da paleta cinza:
                                     # é por ela que se acha o dardo no mato e no bicho.
+
+
+# Pele, couro e queratina do primeiro bicho. `tipo` escolhe o padrão; `cor` é o tom base — um dino
+# novo com outra cor é uma entrada a mais, não código novo.
+ORGANICOS = {
+    "pele_dorso": dict(cor="#6f7a4a", tipo="escama", escala=1.7),
+    "pele_flanco": dict(cor="#7d8757", tipo="escama", escala=1.5),
+    "pele_ventre": dict(cor="#b9b489", tipo="couro", escala=2.6),
+    "pele_faixa": dict(cor="#4a4e30", tipo="escama", escala=1.6),
+    "pele_focinho": dict(cor="#8a8f63", tipo="couro", escala=2.0),
+    "garra": dict(cor="#2f2a26", tipo="queratina", escala=1.0),
+    "dente": dict(cor="#cfc6ad", tipo="queratina", escala=1.0),
+    "olho": dict(cor="#c8a632", tipo="olho", escala=1.0),
+}
 
 
 def base_3d(mat, cx):
@@ -191,6 +239,28 @@ def base_3d(mat, cx):
         img = np.ones((h, w, 3)) * hexrgb("#4d5233")
         img += np.multiply.outer(RUIDO.fbm(P / 4.0 + 80), np.array([7.0, 7.0, 4.0]))   # manchas do tecido
         return img
+    if mat in ORGANICOS:
+        cfg = ORGANICOS[mat]
+        img = np.ones((h, w, 3)) * hexrgb(cfg["cor"])
+        esc = cfg["escala"]
+        if cfg["tipo"] == "escama":
+            # fileiras de escama correm AO LONGO do corpo, como num réptil de verdade
+            d = CELULAS(_esticado(P, eixo, 0.62, 1.0) / esc)
+            img += (np.clip(1.0 - d * 1.6, -1, 1) * 9.0)[..., None]
+            img += np.multiply.outer(RUIDO.fbm(P / 7.0 + 31), np.array([12.0, 10.0, 5.0]))  # camuflagem
+        elif cfg["tipo"] == "couro":
+            # ruga é vinco: ruído em crista, esticado ATRAVÉS do membro (o inverso do escovado)
+            r = 1.0 - np.abs(RUIDO.fbm(_esticado(P, eixo, 0.10, 1.25) / esc))
+            img += ((r - 0.6) * 17.0)[..., None]
+            img += (2.5 * RUIDO.fbm(P / 9.0 + 51))[..., None]
+        elif cfg["tipo"] == "queratina":
+            t = np.clip((P @ eixo - (P @ eixo).min()) / max(1e-6, np.ptp(P @ eixo)), 0, 1)
+            alvo = hexrgb("#6b6258") if mat == "garra" else hexrgb("#9d9170")
+            img = img + np.multiply.outer(t, alvo - hexrgb(cfg["cor"])) * 0.75   # clareia na ponta
+            img += (1.2 * RUIDO(_esticado(P, eixo, 0.05, 3.0) + 77))[..., None]  # estria fina
+        else:                                                                     # olho
+            img = np.ones((h, w, 3)) * hexrgb("#d9d2bd")
+        return img
     if mat == "boca":
         return np.ones((h, w, 3)) * 9 + (1.5 * RUIDO(P * 3 + 5))[..., None]
     raise ValueError(mat)
@@ -198,6 +268,23 @@ def base_3d(mat, cx):
 
 def detalhes_2d(mat, img):
     """Padrões usinados/moldados da face (fendas, serrilha, nervuras, trama), no referencial da face."""
+    if mat == "olho":
+        # Um ponto preto chapado lê como brinquedo; o que dá cara de animal é a pupila em FENDA com
+        # um aro claro. É desenhado (não procedural) porque depende da posição na face, e por isso
+        # o cubo do olho precisa de uns 8 texels de lado — menos que isso não cabe.
+        h, w = img.shape[:2]
+        yy, xx = np.mgrid[0:h, 0:w]
+        u = (xx + 0.5) / w * 2 - 1
+        v = (yy + 0.5) / h * 2 - 1
+        r = np.sqrt(u ** 2 + v ** 2)
+        img = img.copy()
+        img[r < 0.82] = hexrgb("#c8a632")                        # íris âmbar
+        img[r < 0.74] = hexrgb("#9c7a1e")
+        fenda = (np.abs(u) < 0.20) & (np.abs(v) < 0.66)
+        img[fenda] = hexrgb("#141008")                           # pupila
+        img[(r >= 0.82) & (r < 0.95)] = hexrgb("#efe9d6")        # aro claro
+        return img
+
     h, w = img.shape[:2]
     long_u = w >= h
     L = w if long_u else h
@@ -250,6 +337,7 @@ def acabamento(mat, img, cx):
     - desgaste só em quina exposta, em manchas; sombra de contato leve (muita sombra deixava tudo opaco)."""
     P, n, E, ao = cx["P"], cx["n"], cx["E"], cx["ao"]
     metal, poli = mat in METAIS, mat in POLIMEROS
+    org = mat in ORGANICOS
     exposto = ao ** 2
     if abs(n[1]) < 0.5:                                                     # face lateral
         t = cx["alt"]
@@ -276,11 +364,16 @@ def acabamento(mat, img, cx):
         img = img + (hexrgb("#b07a4f") - img) * gasto * 0.3
     elif poli or mat in ("luva", "manga"):
         img = img + 8 * gasto
+    # orgânico NÃO se desgasta: aço nu aparecendo não tem equivalente numa pele. O que ele ganha é
+    # countershading — dorso escuro, barriga clara —, que é o sinal nº 1 de bicho de verdade.
+    if org:
+        img = img * (0.90 + 0.20 * (1 - cx["y_modelo"]))[..., None]
     # sombra de contato leve
     sujo = (1 - ao)[..., None]
     if metal or poli:
         img = img + (hexrgb("#2a2620") - img) * sujo * 0.12
-    img = img * (0.78 + 0.22 * ao)[..., None]
+    # pele é fosca: 22% de sombra de contato lê como borrão nela, então entra mais leve
+    img = img * ((0.88 + 0.12 * ao) if org else (0.78 + 0.22 * ao))[..., None]
     return img
 
 
@@ -291,7 +384,8 @@ def paint(mat, w, h, cx=None):
                   n=np.array([0.0, 0.0, 1.0]), E=np.full((h, w), 9.0), ao=np.ones((h, w)),
                   eixo=np.array([1.0, 0, 0]) if w >= h else np.array([0, 1.0, 0]),
                   alt=np.repeat(1 - (np.arange(h) + 0.5)[:, None] / h, w, axis=1),
-                  d_topo=np.full((h, w), 9.0), d_base=np.full((h, w), 9.0))
+                  d_topo=np.full((h, w), 9.0), d_base=np.full((h, w), 9.0),
+                  y_modelo=np.full((h, w), 0.5))
     img = base_3d(mat, cx)
     img = detalhes_2d(mat, img)
     img = acabamento(mat, img, cx)
@@ -388,24 +482,51 @@ class Atlas:
         return Image.fromarray(out, "RGBA")
 
 
-def build_geometry(identifier, bones_cubes, atlas_width=1024, flash_at=None, scope=None, binding=True):
-    """bones_cubes: lista de (nome_osso, pai, pivô, cubos). Retorna (geo_json, atlas_img, faces_render)."""
+def build_geometry(identifier, bones_cubes, atlas_width=1024, flash_at=None, scope=None, binding=True,
+                   oclusao=None, limites=None):
+    """bones_cubes: lista de (nome_osso, pai, pivô, cubos) — ou de `Osso`, que é a mesma tupla com
+    campos a mais. Retorna (geo_json, atlas_img, faces_render).
+
+    `oclusao="vizinhos"` faz cada osso ser sombreado só por si, pelo pai, pelos filhos e pelos
+    irmãos. Num bicho isso é obrigatório: sem o teste, as duas coxas ficam a 5 unidades uma da outra
+    no quadril e **uma escurece a outra atravessando o corpo**. De quebra, derruba o custo da
+    geração, porque cada face passa a comparar com uma dúzia de caixas em vez de todas.
+
+    `limites` é (largura, altura, offset) da caixa visível. O padrão 4/4 serve para uma arma na mão
+    e corta um bicho grande do campo de visão quando ele sai parcialmente da tela — e a prévia nunca
+    mostra isso, porque não tem frustum."""
     atlas = Atlas(atlas_width)
     render_faces = []   # para o renderizador: (bone, cube, face, img)
     bones = []
     pend_uv = []        # (dict do uv, face, índice no atlas) — resolvido depois de empacotar
     # oclusão: as peças da arma (todos os ossos menos "maos") sombreiam umas às outras; as mãos só a si mesmas,
     # porque somem fora da 1ª pessoa
-    caixas_arma = [_caixa(c) for name, _, _, cs in bones_cubes if name != "maos" for c in cs]
-    for name, parent, pivot, cubes in bones_cubes:
+    bones_cubes = [b if isinstance(b, tuple) else tuple(b) for b in bones_cubes]
+    caixas_arma = [_caixa(c) for name, _, _, cs, *_ in bones_cubes if name != "maos" for c in cs]
+    por_nome = {b[0]: b for b in bones_cubes}
+    todos_pts = [p for _, _, _, cs, *_ in bones_cubes for c in cs
+                 for p in (c["o"][1], c["o"][1] + c["s"][1])]
+    faixa_y = (min(todos_pts), max(todos_pts)) if todos_pts else None
+
+    def vizinhos(nome):
+        """O osso, o pai, os filhos e os irmãos — quem de fato se toca."""
+        pai = por_nome[nome][1]
+        perto = {nome} | ({pai} if pai else set())
+        perto |= {n for n, b in por_nome.items() if b[1] == nome or (pai and b[1] == pai)}
+        return [_caixa(c) for n in perto for c in por_nome[n][3]]
+
+    for name, parent, pivot, cubes, *_ in bones_cubes:
         jcubes = []
-        caixas = [_caixa(c) for c in cubes] if name == "maos" else caixas_arma
+        if oclusao == "vizinhos":
+            caixas = vizinhos(name)
+        else:
+            caixas = [_caixa(c) for c in cubes] if name == "maos" else caixas_arma
         for c in cubes:
             uv = {}
             for f in FACES:
                 fw, fh = face_dims(c["s"], f)
                 pw, ph = max(1, int(round(fw * R))), max(1, int(round(fh * R)))
-                img = paint(c["m"], pw, ph, contexto_face(c, f, pw, ph, caixas))
+                img = paint(c["m"], pw, ph, contexto_face(c, f, pw, ph, caixas, faixa_y))
                 uv[f] = {"uv": None, "uv_size": [fw, fh]}
                 pend_uv.append((uv, f, atlas.add(img)))
                 render_faces.append((name, c, f, img))
@@ -468,9 +589,9 @@ def build_geometry(identifier, bones_cubes, atlas_width=1024, flash_at=None, sco
                 "identifier": identifier,
                 "texture_width": img.width / R,
                 "texture_height": img.height / R,
-                "visible_bounds_width": 4,
-                "visible_bounds_height": 4,
-                "visible_bounds_offset": [0, 1.5, 0],
+                "visible_bounds_width": limites[0] if limites else 4,
+                "visible_bounds_height": limites[1] if limites else 4,
+                "visible_bounds_offset": limites[2] if limites else [0, 1.5, 0],
             },
             "bones": bones,
         }],

@@ -14,6 +14,7 @@ Híbrido é uma espécie como qualquer outra — modelo próprio, animações pr
 `genes`: a incubadora, ao receber dois DNAs, procura a espécie cujo `genes` casa com o par.
 """
 from dataclasses import dataclass, field
+from typing import Callable
 
 
 @dataclass(frozen=True)
@@ -56,9 +57,19 @@ class Especie:
     """Vazio = espécie natural, e o DNA dela sai do extrator. Preenchido = **híbrido**: não aparece no
     sorteio, e o ovo só sai misturando na incubadora os DNAs listados aqui."""
 
+    modelo: Callable | None = None
+    """A função que devolve a lista de `Osso` do bicho. Sem ela, a espécie existe só como DNA e ovo
+    — foi assim que o Velociraptor passou a v1.8.0 inteira, enquanto o laboratório era construído."""
+
     doses: int = field(default=0)
     """Dardos tranquilizantes para apagar o bicho. 0 = calcula pela vida (um a cada 10, de 1 a 5),
     que é a mesma conta que o módulo do sedativo já faz com os bichos do jogo."""
+
+
+def _raptor():
+    # import tardio: o módulo do modelo importa o núcleo, e o registro é lido por quem só quer a lista
+    from dominios.dinossauros import raptor
+    return raptor
 
 
 ESPECIES = (
@@ -66,7 +77,7 @@ ESPECIES = (
     # é o filme. Carnívoro rápido, caça em bando.
     Especie("velociraptor", "Velociraptor", "carnivoro", raridade=8,
             vida=30, dano=6, velocidade=0.42, altura=1.8, comprimento=3.5,
-            cor=(0x6f, 0x7a, 0x4a), incubacao=90),
+            cor=(0x6f, 0x7a, 0x4a), incubacao=90, modelo=lambda: _raptor().modelo()),
 )
 
 POR_ID = {e.id: e for e in ESPECIES}
