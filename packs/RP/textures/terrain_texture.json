@@ -1,0 +1,17 @@
+{
+ "resource_pack_name": "armas_do_joao",
+ "texture_name": "atlas.terrain",
+ "padding": 8,
+ "num_mip_levels": 4,
+ "texture_data": {
+  "joao_extrator_dna": {
+   "textures": "textures/blocks/extrator_dna"
+  },
+  "joao_incubadora_cheia": {
+   "textures": "textures/blocks/incubadora_cheia"
+  },
+  "joao_incubadora": {
+   "textures": "textures/blocks/incubadora"
+  }
+ }
+}

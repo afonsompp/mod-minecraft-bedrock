@@ -1,0 +1,82 @@
+{
+  "format_version": "1.21.90",
+  "minecraft:block": {
+    "description": {
+      "identifier": "joao:extrator_dna",
+      "menu_category": {
+        "category": "items"
+      },
+      "states": {
+        "joao:fase": [
+          0,
+          1,
+          2
+        ]
+      }
+    },
+    "components": {
+      "minecraft:display_name": "Extrator de DNA",
+      "minecraft:geometry": "geometry.joao.extrator_dna",
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "joao_extrator_dna",
+          "render_method": "opaque"
+        }
+      },
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 3.5
+      },
+      "minecraft:destructible_by_explosion": {
+        "explosion_resistance": 15
+      },
+      "minecraft:map_color": "#7e838a",
+      "minecraft:collision_box": {
+        "origin": [
+          -8,
+          0,
+          -8
+        ],
+        "size": [
+          16,
+          16,
+          16
+        ]
+      },
+      "minecraft:selection_box": {
+        "origin": [
+          -8,
+          0,
+          -8
+        ],
+        "size": [
+          16,
+          16,
+          16
+        ]
+      },
+      "joao:maquina": {
+        "tipo": "extrator_dna"
+      }
+    },
+    "permutations": [
+      {
+        "condition": "q.block_state('joao:fase') == 0",
+        "components": {
+          "minecraft:light_emission": 0
+        }
+      },
+      {
+        "condition": "q.block_state('joao:fase') == 1",
+        "components": {
+          "minecraft:light_emission": 9
+        }
+      },
+      {
+        "condition": "q.block_state('joao:fase') == 2",
+        "components": {
+          "minecraft:light_emission": 5
+        }
+      }
+    ]
+  }
+}

@@ -64,7 +64,7 @@ As prévias não têm a iluminação do jogo, e o FOV do celular varia. Quando m
 
 - **Editado à mão**: `packs/BP/**` **exceto as subpastas `dinossauros/`** (itens, receitas, scripts), `packs/RP/manifest.json`, `packs/RP/sounds/sound_definitions.json`, tudo em `tools/`.
 - **Gerado por `build.py`**: `packs/RP/textures/item_texture.json`, montado com o que cada domínio declara (`TEXTURAS` nas armas, os ícones no de dinossauros). Era escrito à mão até a v1.7.1.
-- **Gerado por `tools/dominios/dinossauros/`**: `packs/BP/items/dinossauros/*`, `packs/BP/recipes/dinossauros/*` e os ícones de fóssil, ovo e DNA. Tudo sai de `especies.py` — **acrescentar um dinossauro é uma linha lá**. O gerado mora em subpasta própria (o Bedrock varre subpastas) para nunca se misturar com o que é escrito à mão; marcar o arquivo com uma chave de comentário não serve, porque uma chave a mais num JSON de item faz o item sumir sem erro.
+- **Gerado por `tools/dominios/dinossauros/`**: `packs/BP/items/dinossauros/*`, `packs/BP/recipes/dinossauros/*`, `packs/BP/blocks/dinossauros/*`, os modelos e texturas de bloco (`packs/RP/models/blocks/`, `textures/blocks/`, `terrain_texture.json`, `blocks.json`), os ícones de fóssil, ovo e DNA, e **`packs/BP/scripts/dinossauros/especies.js`** — a tabela que o script lê, escrita a partir do `especies.py` para a lista não existir em dois lugares. Tudo sai de `especies.py` — **acrescentar um dinossauro é uma linha lá**. O gerado mora em subpasta própria (o Bedrock varre subpastas) para nunca se misturar com o que é escrito à mão; marcar o arquivo com uma chave de comentário não serve, porque uma chave a mais num JSON de item faz o item sumir sem erro.
 - **Gerado por `tools/dominios/armas/attachables.py` (não editar direto)**: `packs/RP/models/entity/joao/*`, `packs/RP/textures/entity/joao/*`, `packs/RP/attachables/*`, `packs/RP/animations/joao_armas.animation.json`, `packs/RP/render_controllers/*`, `packs/RP/textures/items/{glock,ak47,m4a4}.png`.
 - Site de downloads: modelo em `tools/site/modelo.html` (editado à mão), gerador `tools/site_joao.py`; a pasta `site/` é gerada (não editar).
 - Gerado por `sons.py` → `packs/RP/sounds/joao/*.ogg`; `municao.py` → ícones de munição; `icone.py` → `pack_icon.png`; `pose.py` → `packs/RP/entity/player.entity.json` e `animations/joao_mira.animation.json`; `dardo.py` → entidade do dardo em voo (`models/entity/joao/dardo.geo.json`, `entity/dardo.entity.json`, `render_controllers/joao_dardo.*`, `textures/particle/joao_sono.png`).
@@ -94,6 +94,11 @@ Domínios previstos: `armas`, `dinossauros`, `veiculos`, `armaduras`, `animais`,
 | `joao:animal` | entidade (family) | animais do modpack |
 | `joao:veiculo`, `joao:veiculo_terrestre`, `joao:veiculo_aereo`, `joao:veiculo_aquatico` | entidade (family) | veículos |
 | `joao:dardo` | entidade (family) | dardo tranquilizante em voo (`joao:dardo_voo`) |
+| `joao:fossil` | item | o osso que sai de minerar fundo; vira DNA no extrator |
+| `joao:dna` / `joao:ovo_dino` | item | tubo de DNA e ovo fecundado, um par por espécie |
+| `joao:ovo_sintetico` | item | a casca vazia, da bancada |
+| `joao:maquina` | **bloco** | componente customizado do extrator e da incubadora, com `{"tipo": ...}` |
+| `joao:fase` | estado de bloco | 0 parada · 1 trabalhando · 2 pronta. É o que acende a luz e põe o ovo no ninho |
 | `joao:sedavel` | entidade (family) | **dorme de verdade** com o dardo: o script dispara nela os eventos `joao:dormir` / `joao:acordar`, que o JSON do bicho tem de declarar (deitar, calar, desligar os `behavior.*`). Sem essa família, o script só congela o bicho com lentidão e fraqueza, que é o máximo que dá num mob do jogo |
 | `joao:dormindo` | entidade (tag de runtime) | **estado**, não classificação: quem está adormecido agora |
 
@@ -115,6 +120,10 @@ scripts/
     index.js              # registra o componente joao:arma_fogo; tiro, rajada, munição
   sedativo/
     index.js              # besta: lança o dardo (entidade), doses e sono
+  laboratorio/
+    index.js              # extrator e incubadora: componente de BLOCO, estado em dynamic property
+  dinossauros/
+    especies.js           # GERADO do especies.py — a lista de espécies e o sorteio
   dinossauros/            # comportamento que o JSON não cobre (ex.: rugido, montaria especial)
   veiculos/               # controle, física, combustível
   armaduras/              # efeitos de conjunto completo etc.
@@ -246,6 +255,10 @@ Detalhamento (helpers de `modelos.py`, atlas, pintura 3D, recuo, clarão, mira e
 - No attachable, `q.*` são as queries do **jogador** e `v.*` são variáveis do próprio attachable, que persistem entre quadros. Variável do jogador só é legível se for pública (`c.owning_entity->v.joao_mira`).
 - **Os três ângulos do `CALIB` não saem de ajuste por silhueta.** A silhueta de um fuzil é alongada e quase não muda quando a câmera gira um grau, então o otimizador da v1.1.1 pôs ruído nos três: roll 1,963° (zerado na v1.6.3) e yaw 1,132° (medido em 0,387 na v1.6.5). Menos de um grau some nas miras de ferro, mas o retículo da luneta atravessa a tela e denuncia. Meça com `tools/dominios/armas/medir_mira.py`, que lê o retículo da AWP (linhas de 1 px, ~0,07°) e confere nas outras armas. **A prévia nunca mostra esse tipo de erro**, porque renderiza com a mesma câmera que posiciona a arma — câmera errada dá prévia certa e jogo errado.
 - **Erro de ÂNGULO da câmera e erro de POSIÇÃO (`AGACHADO`) parecem a mesma coisa numa arma só.** O de ângulo desvia todas as armas igual; o de posição desvia proporcionalmente a 1/distância do olho, então a AWP (olho 2,0) erraria quase 4x mais que a AK (olho 7,5). Na v1.6.2 os dois foram confundidos e o `AGACHADO` absorveu um erro que era de ângulo. Meça sempre com duas armas ou mais.
+- **Peça saliente tem de ENTRAR na peça de trás, nunca encostar.** Duas faces no mesmo plano brigam pelo z-buffer e o jogo pisca entre elas; na prévia aparece como serrilha preta na borda. 0,15 de sobreposição resolve. Foi o que os painéis e visores dos blocos do laboratório ensinaram.
+- **"Vidro" aqui é opaco.** O material `boca` é cinza quase preto: serve de visor pequeno e não serve de cúpula — numa superfície grande vira um buraco preto. A primeira incubadora tinha uma redoma de vidro e parecia uma caixa fechada. Equipamento de laboratório de verdade é metal com janela, e um **furo** no bloco (moldura de quatro peças) mostra o que está dentro muito melhor que qualquer vidro.
+- **Furo em bloco se faz com moldura**, e em todas as camadas: deixar o furo só no tampo não adianta se o gabinete por baixo é um cubo inteiro — ele tapa o fundo e de cima vê-se uma chapa lisa.
+- **O referencial de câmera do renderizador de prévias é espelhado** (a direita da tela é −X do espaço bb). Uma câmera nova escrita com a convenção destra passa no teste de visibilidade ao contrário e mostra o objeto **por dentro**: faces de cima escuras, interiores à mostra.
 - Rotação no Bedrock **não** é a convenção matemática comum. Use `tools/nucleo/bt.py`; não chute sinais.
 - **As prévias não interpretam Molang.** Um osso que só fica certo pela animação (a corda da besta) aparece na prévia do jeito que foi *desenhado*. Por isso `info["ossos"]` tem `repouso`: a pose parada, que as prévias aplicam e que o jogo mostra se a animação falhar. Desenhe sempre uma pose que seja válida sozinha.
 - **Projétil de verdade é território pouco documentado.** `minecraft:projectile` em *item* de add-on não funciona (MCPE-170972); o caminho que funciona é entidade + `spawnEntity` + `getComponent("minecraft:projectile").shoot()` pelo script, com `owner` para o acerto ser creditado. O dardo não usa `stick_in_ground` de propósito: com `runtime_identifier: "minecraft:arrow"`, um projétil cravado no chão pode virar uma flecha na mão de quem passa por cima.

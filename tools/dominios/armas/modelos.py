@@ -6,18 +6,7 @@ Cada cubo: dict(o=(x0,y0,z0), s=(sx,sy,sz), m=material, r=(rx,ry,rz) opcional, p
 """
 import numpy as np
 from nucleo.bt import rot_bb, euler_from_bb
-
-
-def box(x0, x1, y0, y1, z0, z1, m, r=None, p=None):
-    c = dict(o=(x0, y0, z0), s=(x1 - x0, y1 - y0, z1 - z0), m=m)
-    if r is not None:
-        c["r"] = tuple(r)
-        c["p"] = tuple(p)
-    return c
-
-
-def sym(hw, y0, y1, z0, z1, m, **kw):
-    return box(-hw, hw, y0, y1, z0, z1, m, **kw)
+from nucleo.formas import box, sym
 
 
 def chain(top, length, width_x, depth_z, angles, m, seg_names=None):

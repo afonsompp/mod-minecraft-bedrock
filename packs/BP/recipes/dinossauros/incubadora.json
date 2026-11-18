@@ -1,0 +1,36 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "joao:incubadora"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "IVI",
+      "VLV",
+      "III"
+    ],
+    "key": {
+      "I": {
+        "item": "minecraft:iron_ingot"
+      },
+      "V": {
+        "item": "minecraft:glass"
+      },
+      "L": {
+        "item": "minecraft:lantern"
+      }
+    },
+    "unlock": [
+      {
+        "item": "joao:fossil"
+      }
+    ],
+    "result": {
+      "item": "joao:incubadora",
+      "count": 1
+    }
+  }
+}

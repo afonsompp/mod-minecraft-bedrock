@@ -26,7 +26,7 @@ from PIL import Image
 import numpy as np
 
 from nucleo.geometria import build_geometry, render
-from dominios.armas.modelos import box
+from nucleo.formas import box
 
 
 def modelo():
