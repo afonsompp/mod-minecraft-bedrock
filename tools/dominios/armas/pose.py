@@ -3,7 +3,7 @@
 Quando o Minecraft atualizar, baixe o arquivo novo de
 https://github.com/Mojang/bedrock-samples (resource_pack/entity/player.entity.json)
 e rode:
-  python3 tools/pose.py caminho/para/player.entity.json
+  python3 tools/dominios/armas/pose.py caminho/para/player.entity.json
 
 Sem argumento, ele reaproveita o player.entity.json que já está no RP como base. É idempotente:
 tira o que uma geração anterior pôs antes de pôr de novo. É assim que o `build.py --gerar` o chama, para
@@ -12,6 +12,7 @@ a lista de armas da pose de 3ª pessoa não ficar atrasada (na v1.6.3 a AWP não
 import json
 import sys
 from pathlib import Path
+from dominios.armas import registro
 from nucleo.jsonc import load
 
 # Até a v1.6.3 isso era um pack separado (POSE_RP), para poder desligar só a pose. Na v1.6.4 virou parte
@@ -37,9 +38,14 @@ def main(vanilla=None):
     desc["animations"]["joao_mira_fuzil"] = "animation.joao.mira_fuzil"
     desc["animations"]["joao_mira_pistola"] = "animation.joao.mira_pistola"
     cond = "!variable.is_first_person && query.is_item_name_any('slot.weapon.mainhand', 0, {})"
+    # a lista sai do registro do domínio: arma nova entra aqui sozinha (na v1.6.3 a AWP ficou de fora
+    # porque a lista era escrita à mão)
+    def ids(*tipos):
+        return ", ".join(f"'joao:{i}'" for i in registro.do_tipo(*tipos))
+
     sc["animate"] += [
-        {"joao_mira_fuzil": cond.format("'joao:ak47', 'joao:m4a4', 'joao:awp', 'joao:besta'")},
-        {"joao_mira_pistola": cond.format("'joao:glock'")},
+        {"joao_mira_fuzil": cond.format(ids("fuzil", "sniper", "besta"))},
+        {"joao_mira_pistola": cond.format(ids("pistola"))},
     ]
     (POSE / "entity").mkdir(parents=True, exist_ok=True)
     (POSE / "entity/player.entity.json").write_text(json.dumps(d, indent=2))

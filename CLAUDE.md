@@ -161,7 +161,7 @@ a função. Foi por isso que o montador das armas virou `attachables.py`.
 ### Estado atual × alvo (migração)
 
 - **Feito na v1.7.0**: o script está modular (`main.js` só roteia; `comum/`, `armas/`, `sedativo/`), em commit próprio e sem mudar comportamento.
-- **Feito na v1.7.2**: os geradores em Python estão em `nucleo/` + `dominios/armas/`, e o `build.py` varre a tupla `DOMINIOS`. Movimentação pura: `--gerar` saiu byte-idêntico (só os `.ogg` mudam, porque o sintetizador não os reproduz bit a bit).
+- **Feito na v1.7.2**: os geradores em Python estão em `nucleo/` + `dominios/armas/`, e o `build.py` varre a tupla `DOMINIOS`. A lista de armas, que se repetia em sete lugares, virou `dominios/armas/registro.py` — uma entrada por arma, de onde saem o laço da geração, os nomes, o `PLACE`, a pose de 3ª pessoa, a ordem do site e os alvos do `ajuste.py`. As duas mudanças são movimentação pura: `--gerar` saiu byte-idêntico (só os `.ogg` mudam, porque o sintetizador não os reproduz bit a bit).
 - **Falta**: trocar a tabela `ARMAS` de `armas/index.js` por `minecraft:tags` + o componente customizado `joao:arma_fogo` registrado em `system.beforeEvents.startup`. Isso mexe nos JSONs dos itens, e no Bedrock um erro ali faz o item **sumir sem mensagem** — por isso é um commit só dele, com teste no aparelho.
 - **Como**: migração em commit próprio, **sem mudar comportamento**. Verifique que `--gerar` produz arquivos idênticos aos de antes (exceto `.ogg`) e que `npm run check` passa. Só então comece o conteúdo novo.
 - Na migração das armas para `joao:arma_fogo` + tags, **mantenha os IDs dos itens** (`joao:glock`, `joao:ak47`, `joao:m4a4`, munições). Mudar ID apaga os itens do inventário do João.
@@ -172,7 +172,7 @@ a função. Foi por isso que o montador das armas virou `attachables.py`.
 - Script API `@minecraft/server` **2.0.0** (jogo ≥ 1.21.90). `min_engine_version` [1,21,90] no BP e no RP.
 - Tiro = raycast instantâneo (`getBlockFromRay` + `getEntitiesFromRay`) a partir da cabeça; dano via `applyDamage` creditado ao jogador. Rajada: `itemStartUse`/`itemStopUse` + `runInterval`; o `itemUse` sempre dá 1 tiro (fallback se a rajada não funcionar no celular). Itens têm `minecraft:use_modifiers` (use_duration 3600) para permitir segurar.
 - Para adicionar uma arma, siga **`docs/nova-arma.md`**. Ele traz:
-  - os 9 lugares onde a lista de armas se repete;
+  - a entrada no `registro.py` e os poucos arquivos que ainda se escrevem à mão;
   - os valores de referência de `olho`, `atirando`, `fov` e pose;
   - as regras de desenho da mira;
   - a validação.

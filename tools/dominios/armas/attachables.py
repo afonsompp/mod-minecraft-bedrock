@@ -9,7 +9,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 from nucleo.bt import rot_bb, vec_bb, euler_from_bb, bone_matrix, Ry
-from dominios.armas import modelos
+from dominios.armas import modelos, registro
 from nucleo.geometria import build_geometry, render
 
 TOOLS = Path(__file__).resolve().parents[2]
@@ -55,22 +55,9 @@ AGACHADO = np.array([1.187, -1.283, 1.521])
 ARM_PIV = np.array([5.0, 22.0, 0.0])
 ITEM_REL = np.array([1.0, -7.0, 1.0])
 
-# posição desejada na tela (direita, cima, profundidade) do punho e "toe-in" (graus).
-# olho = distância (unidades de câmera, 1/16 de bloco) do olho ao ponto de trás da linha de visada na pose
-# de mira. Fuzil com luneta: o ponto de trás é a ocular e "olho" é o alívio de olho.
-PLACE = {
-    "ak47": dict(grip=(8.19, -6.12, 7.30), yaw=5.7, pitch=1.0, roll=-4, intervalo=3, olho=7.5, atirando=0.45),
-    "m4a4": dict(grip=(7.77, -6.09, 6.82), yaw=5.7, pitch=1.0, roll=-4, intervalo=3, olho=3.5, atirando=0.45),
-    "glock": dict(grip=(4.70, -3.93, 5.42), yaw=5.8, pitch=1.0, roll=-3, intervalo=5, olho=2.5, atirando=0.3),
-    "awp": dict(grip=(8.19, -6.12, 7.30), yaw=5.7, pitch=1.0, roll=-4, intervalo=25, olho=2.0, atirando=0.3),
-    # Besta: ciclo de 0,75 s (a corda volta nesse tempo) e luneta de média distância, com zoom moderado
-    # e furo mais largo que o da AWP. fov_mira tem que ser igual ao ARMAS[...].mira.fov do main.js.
-    # A besta é larga (34 cm de ponta a ponta dos arcos): com a posição dos fuzis, os arcos — que são
-    # a cara dela — ficavam fora da tela. Fica mais ao centro, mais longe e quase sem toe-in, de modo
-    # que os dois lados caibam no quadro.
-    "besta": dict(grip=(6.40, -5.50, 6.40), yaw=12.0, pitch=1.0, roll=-4, intervalo=15, olho=2.0,
-                  atirando=0.3, fov_mira=40.0),
-}
+# Posição na tela, cadência e mira de cada arma vivem no registro (dominios/armas/registro.py),
+# que é a fonte única da lista. Aqui só a vista por id, que o resto do arquivo usa.
+PLACE = {a.id: a.place for a in registro.ARMAS}
 # Mira (ADS): agachado = mira completa. Atirando em pé, a arma é puxada parte do caminho para o centro
 # (PLACE[...]["atirando"]: fração do caminho quadril -> mira; menor na Glock, que perto do olho ocupa a tela).
 # Ela continua puxada por SOLTA_COMBATE segundos depois de soltar, para não ir e voltar a cada toque.
@@ -121,7 +108,7 @@ COMPENSA_RESPIRACAO = True
 COMPENSA_CAMINHADA = True
 RECUO_MIRA = 0.4            # recuo na mira, relativo ao recuo do quadril
 QUADROS_MIRA = 8            # segmentos do caminho quadril -> mira (quadros-chave dirigidos por v.ads)
-NOMES = {"ak47": "AK-47", "m4a4": "M4A4", "glock": "Glock", "awp": "AWP", "besta": "Besta"}
+NOMES = {a.id: a.nome for a in registro.ARMAS}
 
 
 def rot_axis(axis, ang):
@@ -317,8 +304,8 @@ def main(RP, PREV):
         pass
 
     previews = []
-    for nome in ("glock", "ak47", "m4a4", "awp", "besta"):
-        corpo, maos, info, tipo = modelos.build(nome)
+    for nome in registro.IDS:
+        corpo, maos, info, tipo = registro.build(nome)
         cfg = cfg0 = PLACE[nome]
         corpo = offset(corpo, PIV)
         maos = offset(maos, PIV)

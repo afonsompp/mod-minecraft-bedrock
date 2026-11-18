@@ -14,9 +14,10 @@ Fluxo atual (antes da migração para `joao:arma_fogo` + tags). Detalhes técnic
 
 ## Onde mexer
 
-A lista de armas está repetida em vários lugares, então siga a lista inteira:
+Desde a v1.7.2 a lista de armas mora num lugar só — `tools/dominios/armas/registro.py`. O que sobrou
+para fazer à mão são os arquivos que **não** derivam dela:
 
-1. `tools/dominios/armas/modelos.py`: função do modelo (`def nome()`) e entrada em `ARMAS` com o tipo (`"pistola"` ou `"fuzil"`). Modele **peça por peça**, sem teto de cubos: a M4A4 da v1.4 (~150 cubos) é a referência de nível. Ajudantes:
+1. `tools/dominios/armas/modelos.py`: a função do modelo (`def nome()`). Modele **peça por peça**, sem teto de cubos: a M4A4 da v1.4 (~150 cubos) é a referência de nível. Ajudantes:
    - `dentes_z()`: trilhos Picatinny;
    - `chain()` + `nervuras_carregador()` + `base_carregador()`: carregador curvo completo;
    - dois cubos cruzados: peças "redondas" (tubos);
@@ -26,17 +27,11 @@ A lista de armas está repetida em vários lugares, então siga a lista inteira:
    - `grip`: ponto do punho;
    - `muzzle`: boca do cano;
    - `visada`: (ponto de trás, ponto da frente) da linha de mira (veja as regras abaixo);
-2. `tools/dominios/armas/attachables.py`:
-   - `PLACE[nome]`: `grip`, `yaw`, `pitch`, `roll`, `intervalo`, `olho` e `atirando` (valores na tabela abaixo);
-   - `NOMES`;
-   - a tupla do laço em `main()`.
-3. `tools/dominios/armas/ajuste.py`: entrada no laço, se for usar o ajuste automático de posição no quadril.
-4. `tools/dominios/armas/sons.py`: 3 variações de tiro. Também `packs/RP/sounds/sound_definitions.json` (`joao.<nome>.tiro`).
-5. `tools/dominios/armas/pose.py`: o item entra na condição `joao_mira_fuzil` ou `joao_mira_pistola` (pose de 3ª pessoa). O `--gerar` chama o `pose.py`, então basta editar a lista — até a v1.6.3 ele ficava fora do `--gerar` e a AWP não entrou na pose.
-6. `tools/site_joao.py`: `ARMAS` (suporte de armas do site).
-7. `packs/BP/items/<nome>.json`: copie de uma arma do mesmo tipo. Mantenha `minecraft:use_modifiers` (sem isso, "segurar para atirar" não funciona no celular). Faça também `packs/BP/recipes/<nome>.json`.
-8. `packs/BP/scripts/main.js`: entrada em `ARMAS` com `dano`, `alcance`, `intervalo` (igual ao do `PLACE`), `automatica`, `municao`, `som`, `dispersao` e `mira: { fov, dispersao }`.
-9. `packs/RP/textures/item_texture.json`: `joao_<nome>` → `textures/items/<nome>` (o ícone é gerado).
+2. **`tools/dominios/armas/registro.py`: uma linha em `ARMAS`** — id, nome, tipo, a função do modelo, o `place` (valores na tabela abaixo), o alvo da traseira para o `ajuste.py` e a ordem no site. Daqui saem sozinhos o laço da geração, os nomes na tela, a pose de 3ª pessoa e o suporte de armas do site.
+3. `tools/dominios/armas/sons.py`: 3 variações de tiro. Também `packs/RP/sounds/sound_definitions.json` (`joao.<nome>.tiro`).
+4. `packs/BP/items/<nome>.json`: copie de uma arma do mesmo tipo. Mantenha `minecraft:use_modifiers` (sem isso, "segurar para atirar" não funciona no celular). Faça também `packs/BP/recipes/<nome>.json`.
+5. `packs/BP/scripts/armas/index.js`: entrada em `ARMAS` com `dano`, `alcance`, `intervalo` (igual ao do `place`), `automatica`, `municao`, `som`, `dispersao` e `mira: { fov, dispersao }`.
+6. `packs/RP/textures/item_texture.json`: `joao_<nome>` → `textures/items/<nome>` (o ícone é gerado).
 
 ## Valores de referência
 
@@ -73,9 +68,10 @@ alvos de tela próprios para o tipo `"besta"`.
 | `"sniper"` | igual ao fuzil | bem maior |
 | `"besta"` | igual ao fuzil | bem menor (tranco, não coice) |
 
-Um tipo novo tem de ser registrado nos **quatro** lugares onde o tipo é testado, e não há outros:
-`maos()` em `modelos.py`, o dicionário do recuo em `attachables.py`, os alvos de tela em `ajuste.py` e a
-lista de `pose.py`. Esquecer `pose.py` é o erro que deixou a AWP sem pose de 3ª pessoa até a v1.6.3.
+Um tipo novo tem de ser registrado nos **três** lugares onde o tipo é testado, e não há outros:
+`maos()` em `modelos.py`, o dicionário do recuo em `attachables.py` e os alvos de tela em `ajuste.py`.
+A pose de 3ª pessoa saiu dessa lista na v1.7.2: ela agora lê `registro.do_tipo(...)`. Era justamente
+ali que a AWP ficava de fora até a v1.6.3, por ser uma lista escrita à mão.
 
 A **animação de disparo é igual para todos** desde a v1.6.5: um ciclo por tiro de verdade, disparado pelo cooldown `joao_tiro` que o `main.js` liga ao atirar. Quem decide se a arma solta rajada é o `automatica` no `main.js`, não o tipo.
 

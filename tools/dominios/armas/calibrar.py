@@ -12,7 +12,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))   # para rodar o arquivo direto
 import numpy as np
 from PIL import Image, ImageDraw
-from dominios.armas import attachables as G, modelos
+from dominios.armas import attachables as G, registro
 from nucleo.geometria import cube_face_quads
 from nucleo.bt import rot_bb
 from scipy.optimize import minimize
@@ -37,7 +37,7 @@ alvo &= (xx > 0.6*w) & (yy > 0.45*h)
 alvo &= cuidado
 Image.fromarray((alvo*255).astype(np.uint8)).save(SHOT + '.mask.png')
 
-corpo, maos, info, tipo = modelos.build('m4a4')
+corpo, maos, info, tipo = registro.build('m4a4')
 cubos = [c for c in G.offset(corpo, G.PIV)] + [c for c in G.offset(maos, G.PIV) if c['m'] == 'luva']
 mangas = [c for c in G.offset(maos, G.PIV) if c['m'] == 'manga']
 fp = G.first_person(G.PLACE['m4a4'])

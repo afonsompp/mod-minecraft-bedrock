@@ -32,14 +32,14 @@ from scipy.optimize import minimize
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from dominios.armas import attachables as G
-from dominios.armas import modelos
+from dominios.armas import registro
 from nucleo.bt import rot_bb
 from nucleo.geometria import cube_face_quads
 
 
 def pose_de_mira(arma):
     """A pose que o jogo está usando hoje na mira completa (agachado), e o info do modelo."""
-    corpo, maos, info, _ = modelos.build(arma)
+    corpo, maos, info, _ = registro.build(arma)
     cfg = G.PLACE[arma]
     cm = G.pose_mira(cfg, info)
     c = dict(cm)
@@ -168,7 +168,7 @@ def main(args):
         fy = (h / 2) / np.tan(np.radians(G.VFOV / 2))
         fy_ref = fy
         cx, cy = centro_da_tela(a)
-        _, _, info, _ = modelos.build(arma)
+        _, _, info, _ = registro.build(arma)
         print(f"\n{arma} — {Path(caminho).name} ({w}x{h}); centro da tela em ({cx:.0f},{cy:.0f})")
         conf = conferir_reticulo(a)
         if conf and max(abs(conf[0] - cx), abs(conf[1] - cy)) > 12:

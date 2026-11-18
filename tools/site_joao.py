@@ -16,9 +16,8 @@ SITE = RAIZ / "site"
 MODELO = Path(__file__).resolve().parent / "site" / "modelo.html"
 MESES = "jan fev mar abr mai jun jul ago set out nov dez".split()
 
-# armas mostradas no topo (imagem gerada por gerar.py em previews/lado_t_<id>.png)
-ARMAS = [("besta", "Besta"), ("awp", "AWP"), ("m4a4", "M4A4"), ("ak47", "AK-47"),
-         ("glock", "Glock")]
+# As armas mostradas no topo saem do registro do domínio (tools/dominios/armas/registro.py), na
+# ordem do campo `site`. A imagem de cada uma é previews/lado_t_<id>.png, gerada por attachables.py.
 
 VERCEL = {
     "cleanUrls": True,
@@ -38,10 +37,11 @@ def comprimentos():
     """Comprimento de cada arma no modelo (extensão em Z dos cubos), para mostrar na escala certa."""
     import sys
     sys.path.insert(0, str(Path(__file__).resolve().parent))
-    from dominios.armas import modelos
+    from dominios.armas import registro
     out = {}
-    for id_, _ in ARMAS:
-        corpo = modelos.ARMAS[id_][0]()[0]
+    for arma in registro.por_site():
+        id_ = arma.id
+        corpo = arma.modelo()[0]
         zs = [c["o"][2] for c in corpo] + [c["o"][2] + c["s"][2] for c in corpo]
         out[id_] = max(zs) - min(zs)
     return out
@@ -96,7 +96,11 @@ def gerar_site():
     armeiro = []
     comp = comprimentos()
     maior = max(comp.values())
-    for id_, nome in ARMAS:
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from dominios.armas import registro
+    for arma in registro.por_site():
+        id_, nome = arma.id, arma.nome
         img = RAIZ / "previews" / f"lado_t_{id_}.png"
         if not img.exists():
             continue

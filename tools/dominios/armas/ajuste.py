@@ -8,7 +8,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))   # para rodar o arquivo direto
 
 import numpy as np
-from dominios.armas import modelos
+from dominios.armas import registro
 from dominios.armas.attachables import first_person, PIV, ESCALA, TB, R_BASE, CAM, BC, VFOV
 from nucleo.bt import vec_bb
 from scipy.optimize import minimize
@@ -16,7 +16,7 @@ W,H=1300,600
 fy=(H/2)/np.tan(np.radians(VFOV/2))
 def screen(nome, x):
     gx,gy,gz,yaw,pitch=x
-    corpo, maos, info, tipo = modelos.build(nome)
+    corpo, maos, info, tipo = registro.build(nome)
     fp=first_person(dict(grip=(gx,gy,gz),yaw=yaw,pitch=pitch,roll=-4))
     def cam(p_bed):
         q=vec_bb(np.array(p_bed)+PIV)[None,:]
@@ -38,9 +38,10 @@ def solve(nome, tm, tr, rear_z, x0):
 
 
 if __name__ == "__main__":
-    for nome, rear in (("ak47", -6), ("m4a4", -6), ("glock", -3), ("awp", -6), ("besta", -6)):
-        corpo, maos, info, tipo = modelos.build(nome)
-        rear_rel = rear - modelos.ARMAS[nome][0]()[1]["grip"][2]
+    for arma in registro.ARMAS:
+        nome, rear = arma.id, arma.traseira
+        corpo, maos, info, tipo = registro.build(nome)
+        rear_rel = rear - arma.modelo()[1]["grip"][2]
         if tipo == "besta":
             # a besta é larga: a frente entra mais na tela, senão os arcos (a cara dela) ficam de fora
             tm = np.array([0.56 * W, 0.60 * H]); tr = np.array([0.92 * W, 0.95 * H])
