@@ -29,6 +29,7 @@ export const MUNICAO = "joao:municao";
 /** Itens e blocos do laboratório. O nome do componente de bloco tem de bater com o JSON, como nas armas. */
 export const FOSSIL = "joao:fossil";
 export const OVO_SINTETICO = "joao:ovo_sintetico";
+export const DNA = "joao:dna";
 export const MAQUINA = "joao:maquina";
 /** Ovo fecundado: usar no chão choca o bicho. */
 export const OVO_DINO = "joao:ovo_dino";

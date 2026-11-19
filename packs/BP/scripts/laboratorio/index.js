@@ -12,7 +12,7 @@
  * ovo no ninho.
  */
 import { ItemStack, system, world } from "@minecraft/server";
-import { FOSSIL, OVO_SINTETICO, MAQUINA, ESTADO_FASE } from "../comum/tags.js";
+import { FOSSIL, OVO_SINTETICO, DNA, MAQUINA, ESTADO_FASE } from "../comum/tags.js";
 import { contar, itemNaMao } from "../comum/inventario.js";
 import { particula } from "../comum/efeitos.js";
 import * as hud from "../comum/hud.js";
@@ -174,6 +174,22 @@ export const dominio = {
         else if (tipo === INCUBADORA) usarIncubadora(player, block);
       },
     });
+  },
+
+  /**
+   * Ingrediente do laboratório usado longe de uma máquina: diz para que ele serve, em vez de
+   * simplesmente não reagir: item que não responde é indistinguível de item quebrado, e sem um
+   * retorno não dá para saber se o add-on não entendeu o toque ou se o item é que não era aquele.
+   */
+  aoUsarEmBloco(p, item, bloco) {
+    if (bloco.typeId.startsWith("joao:")) return; // é uma máquina: quem responde é o componente
+    if (item.hasTag(FOSSIL)) {
+      hud.barra(p, "§7Fóssil: moa no §fExtrator de DNA§7.", true);
+    } else if (item.hasTag(DNA)) {
+      hud.barra(p, "§7DNA: leve à §fIncubadora§7, junto com um Ovo Sintético.", true);
+    } else if (item.hasTag(OVO_SINTETICO)) {
+      hud.barra(p, "§7Esta casca está vazia. Na §fIncubadora§7, com um DNA, ela vira um ovo de verdade.", true);
+    }
   },
 
   iniciar() {

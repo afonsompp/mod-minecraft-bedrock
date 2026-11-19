@@ -2,6 +2,10 @@
 
 Formato: versão — data — o que mudou. Marque **[testado no celular]** quando o Afonso confirmar no aparelho do João.
 
+## 1.9.2 — 2026-11-19
+- **Os ovos agora se distinguem de relance.** O Ovo de Velociraptor ficou com a casca verde-oliva e manchas fortes da cor do bicho; o Ovo Sintético continua branco e liso. No hotbar, com 16 pixels, os dois eram o mesmo oval claro — e com mais espécies a cor é o único sinal que o ícone tem.
+- Fóssil, DNA ou Ovo Sintético usado longe de uma máquina agora **diz para que serve**, em vez de não reagir: "moa no Extrator de DNA", "leve à Incubadora". Item que não responde parece item quebrado.
+
 ## 1.9.1 — 2026-11-19
 - Corrigido: **o Ovo de Velociraptor não fazia nada** quando o João clicava com ele na mão. O item estava certo, o bicho estava certo — faltava dizer ao jogo que o ovo é um item que *se usa*. Sem isso o Minecraft trata o toque como "mexer no bloco" e o add-on nunca é avisado. Agora o ovo choca tanto mirando o chão quanto apontando para o ar à frente, e tocar o Extrator ou a Incubadora com o ovo na mão continua mexendo na máquina, como se espera.
 

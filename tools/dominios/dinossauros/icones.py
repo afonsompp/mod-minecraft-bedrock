@@ -79,21 +79,32 @@ def ovo_sintetico():
 
 
 def ovo(cor):
-    """Ovo de dinossauro: a casca puxa para a cor da espécie e ganha manchas dela, mais escuras."""
+    """Ovo de dinossauro: a casca puxa para a cor da espécie e ganha manchas dela, mais escuras.
+
+    **O contraste aqui não é enfeite.** No hotbar o ícone tem 16 px, e até a v1.9.1 este ovo e o
+    sintético eram os dois um oval quase branco — ao ponto de nem dar para dizer qual era qual num
+    vídeo do jogo. Casca tingida de verdade e manchas escuras são o que distingue um do outro de
+    relance e, com mais espécies, o que distingue uma espécie da outra: a cor é o único sinal que o
+    ícone tem.
+    """
     base = np.array(cor, float)
     arr = np.zeros((S, S, 4), float)
     cx, cy, rx, ry = 256, 272, 128, 182
     m = mascara_ovo(cx, cy, rx, ry)
-    _por(arr, m, esfera(cx, cy, rx, ry, tuple(np.clip(base * 0.42 + 176, 0, 255)),
-                        (255, 252, 244), claro=0.34))
+    _por(arr, m, esfera(cx, cy, rx, ry, tuple(np.clip(base * 0.45 + 126, 0, 255)),
+                        tuple(np.clip(base * 0.22 + 206, 0, 255)), claro=0.34))
 
     rng = np.random.default_rng(11)
     yy, xx = np.mgrid[0:S, 0:S]
-    for _ in range(16):
-        mx = rng.integers(cx - 96, cx + 96)
-        my = rng.integers(cy - 140, cy + 140)
-        mancha = mascara_elipse(S, S, mx, my, rng.integers(15, 38), rng.integers(13, 32)) & m
-        arr[..., :3][mancha] = arr[..., :3][mancha] * 0.74 + base * 0.17
+    # Menos manchas e maiores: a 16 px, muita mancha pequena vira uma textura cinza uniforme. E
+    # nenhuma encosta no contorno (`dentro`): mancha escura na borda apaga um pedaço da silhueta, e
+    # a 16 px a silhueta de ovo é metade do que faz o ícone ser reconhecido.
+    dentro = mascara_ovo(cx, cy, rx - 16, ry - 20)
+    for _ in range(11):
+        mx = rng.integers(cx - 92, cx + 92)
+        my = rng.integers(cy - 136, cy + 136)
+        mancha = mascara_elipse(S, S, mx, my, rng.integers(26, 54), rng.integers(22, 46)) & dentro
+        arr[..., :3][mancha] = arr[..., :3][mancha] * 0.34 + base * 0.58
     # casca: ondulação larga. Ruído fino vira sujeira ao reduzir para 64 px.
     arr[..., :3][m] += (np.sin(xx / 23.0) * np.cos(yy / 19.0) * 5.0)[m][:, None]
     return _imagem(arr)

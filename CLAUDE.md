@@ -271,7 +271,7 @@ Detalhamento (helpers de `modelos.py`, atlas, pintura 3D, recuo, clarão, mira e
 
   Se um dia o dardo girar **demais** (duas vezes o ângulo), é porque esse runtime passou a aplicar a rotação também: aí a animação sai. Se continuar preso, troque `target_*` por `body_*`. Nada disso aparece na prévia — ela desenha o modelo, não o voo.
 
-## Estado (v1.9.1)
+## Estado (v1.9.2)
 
 Histórico completo no `CHANGELOG.md`. Resumo do que importa para continuar:
 
