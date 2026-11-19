@@ -56,7 +56,8 @@ Depois de mudar qualquer coisa que o jogador vê: rode `--gerar` e **olhe as ima
 4. `python tools/build.py --deploy`: o Afonso testa no PC.
    - mudou só o script: `/reload` no jogo;
    - mudou modelo, textura, som, item ou entidade: sair e entrar no mundo.
-5. Para o celular: `--versao X.Y.Z` e depois `--publicar`. O João baixa pelo site; a versão mais nova do CHANGELOG com `.mcaddon` em `dist/` vira o botão principal. Ao confirmar no aparelho, marque **[testado no celular]** no CHANGELOG e publique de novo: o site mostra o selo.
+5. **Toda entrega termina publicada, sem precisar pedir**: `--versao X.Y.Z` e depois `--publicar`. O Afonso testa baixando pelo site, no celular — então mudança que fica só em `dist/` ou só no `--deploy` do PC é mudança que ninguém vai ver. Rode também o `git push`. O João baixa pelo site; a versão mais nova do CHANGELOG com `.mcaddon` em `dist/` vira o botão principal. Ao confirmar no aparelho, marque **[testado no celular]** no CHANGELOG e publique de novo: o site mostra o selo.
+   - O `--publicar` exige credencial da Vercel na máquina (`npx vercel login`, uma vez só). Sem ela o comando gera o site e falha no envio — se isso acontecer, **diga logo**, porque é o passo que separa "pronto" de "no celular do João".
 
 As prévias não têm a iluminação do jogo, e o FOV do celular varia. Quando mexer em posição, tamanho ou animação, **peça print ou vídeo do jogo** antes de dar como resolvido. No Windows, use `python` ou `py` no PowerShell. Os sons precisam de `ffmpeg` no PATH (`winget install Gyan.FFmpeg`).
 
