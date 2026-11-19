@@ -76,6 +76,12 @@ def gerar(bp, especies):
         # incubação, e vê-lo ocupando um slot inteiro ajuda a sentir isso.
         _escrever(itens / f"ovo_{e.id}.json",
                   _item(f"joao:ovo_{e.id}", f"Ovo de {e.nome}", f"joao_ovo_{e.id}", 8,
-                        ["joao:ovo_dino"]))
+                        ["joao:ovo_dino"],
+                        # **Sem isto o ovo não faz nada ao ser usado** (o bug da v1.9.0): no Bedrock,
+                        # item sem componente de uso não "usa" — `itemUse` não dispara, e um toque
+                        # mirando o chão vira interação com bloco. É o mesmo componente de que as
+                        # cinco armas já dependiam. Duração curta: o ovo não é para segurar.
+                        extra={"minecraft:use_modifiers": {"use_duration": 0.5,
+                                                           "movement_modifier": 1.0}}))
         ids += [f"joao:dna_{e.id}", f"joao:ovo_{e.id}"]
     return ids

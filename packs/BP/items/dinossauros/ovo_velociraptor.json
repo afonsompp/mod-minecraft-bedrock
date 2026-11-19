@@ -21,6 +21,10 @@
         "tags": [
           "joao:ovo_dino"
         ]
+      },
+      "minecraft:use_modifiers": {
+        "use_duration": 0.5,
+        "movement_modifier": 1.0
       }
     }
   }

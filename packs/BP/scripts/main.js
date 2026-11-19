@@ -26,6 +26,16 @@ world.afterEvents.itemUse.subscribe(({ source, itemStack }) => {
   for (const d of DOMINIOS) d.aoUsar?.(source, itemStack);
 });
 
+// Tocar um **bloco** com o item na mão não passa por `itemUse`, e `itemUseOn` deixou de existir na
+// API 2.0 — virou este evento. Sem ele, item que se usa mirando o chão (o ovo de dinossauro) não
+// chegaria a domínio nenhum, por mais certo que o resto estivesse.
+world.afterEvents.playerInteractWithBlock.subscribe((ev) => {
+  if (!ev.isFirstEvent) return; // segurar o toque repete o evento a cada tick
+  const item = ev.beforeItemStack ?? ev.itemStack;
+  if (!item) return;
+  for (const d of DOMINIOS) d.aoUsarEmBloco?.(ev.player, item, ev.block);
+});
+
 world.afterEvents.itemStartUse.subscribe(({ source, itemStack }) => {
   for (const d of DOMINIOS) d.aoComecarUso?.(source, itemStack);
 });

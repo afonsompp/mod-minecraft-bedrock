@@ -14,6 +14,9 @@
  *            registra componentes customizados de item e de bloco. Só pode acontecer no
  *            `system.beforeEvents.startup`, e o nome tem de bater com o do JSON (ver comum/tags.js)
  * @property {(p: Jogador, item: Item) => void} [aoUsar]                toque/clique com o item na mão
+ * @property {(p: Jogador, item: Item, bloco: import("@minecraft/server").Block) => void} [aoUsarEmBloco]
+ *            o mesmo toque, mas mirando um bloco — que **não** passa por `aoUsar`. Um toque pode
+ *            chegar pelos dois ganchos no mesmo tick: quem age nos dois precisa de guarda
  * @property {(p: Jogador, item: Item | undefined) => void} [aoComecarUso]  começou a segurar
  * @property {(p: Jogador) => void} [aoSoltarUso]                       soltou
  * @property {(p: Jogador, id: string | undefined) => void} [aCadaTick] uma vez por tick, por jogador

@@ -246,7 +246,8 @@ Detalhamento (helpers de `modelos.py`, atlas, pintura 3D, recuo, clarão, mira e
 
 - **Erros de Molang e JSON costumam ser silenciosos**: o item ou a entidade some ou fica invisível. Peça ao Afonso para ativar o **Content Log** nas configurações de Criador do jogo.
 - Em `@minecraft/server` 2.x, callbacks `beforeEvents` são somente leitura. Mudanças de mundo vão em `afterEvents` ou `system.run`. Componentes customizados só podem ser registrados em `system.beforeEvents.startup`.
-- No celular, "segurar para usar" só funciona porque os itens têm `minecraft:use_modifiers`. Não remova isso das armas.
+- **Item sem componente de uso não "usa".** `minecraft:use_modifiers` não serve só para segurar no celular: sem ele (ou outro componente de uso), `itemUse` **não dispara** e o item parece inerte — foi o que aconteceu com o Ovo de Velociraptor na v1.9.0, com o item, a tag e a entidade todos corretos. Não remova isso das armas, e dê a todo item que faz algo ao ser usado.
+- **`itemUseOn` não existe mais na API 2.0**: virou `world.afterEvents.playerInteractWithBlock`. Tocar um **bloco** com um item na mão não passa por `itemUse`, e mirar o chão é o gesto natural no celular — então item que se usa no chão precisa dos **dois** eventos (`aoUsar` + `aoUsarEmBloco` no `main.js`). Os dois podem disparar no mesmo tick, então quem atende os dois precisa de guarda por tick, senão um toque gasta dois itens. Filtre `isFirstEvent`: segurar o toque repete o evento.
 - Em 1ª pessoa, o braço do jogador some quando ele segura um item. Por isso as mãos fazem parte do modelo da arma (osso `maos`).
 - Importar uma versão nova (mesmo UUID, versão maior) **não substitui** a antiga no aparelho: o Minecraft guarda as duas. Por isso o `--versao` põe `vX.Y.Z` no **nome** dos packs, logo depois de "Armas do João", e o site explica como apagar a antiga em Configurações > Armazenamento. Não tente resolver trocando UUID: isso desliga o pack dos mundos do João.
 - O jogo aplica **balanços no item em 1ª pessoa** (`player_firstperson.animation.json`):
@@ -270,7 +271,7 @@ Detalhamento (helpers de `modelos.py`, atlas, pintura 3D, recuo, clarão, mira e
 
   Se um dia o dardo girar **demais** (duas vezes o ângulo), é porque esse runtime passou a aplicar a rotação também: aí a animação sai. Se continuar preso, troque `target_*` por `body_*`. Nada disso aparece na prévia — ela desenha o modelo, não o voo.
 
-## Estado (v1.9.0)
+## Estado (v1.9.1)
 
 Histórico completo no `CHANGELOG.md`. Resumo do que importa para continuar:
 
@@ -282,7 +283,7 @@ Histórico completo no `CHANGELOG.md`. Resumo do que importa para continuar:
   - `v.ads` persiste e `q.is_sneaking` funciona no attachable.
 - **Entregue e ainda não visto no aparelho:**
   - **todo o laboratório da v1.8.0** (fóssil ao minerar, extrator, incubadora, os quatro itens). Os blocos são os primeiros do projeto: se um deles aparecer como o quadriculado roxo ou sumir, é o JSON do bloco ou o `terrain_texture.json`;
-  - **o Velociraptor da v1.9.0**: 20 ossos, 85 cubos, 1,96 x 3,93 blocos, atlas 512. É a primeira entidade com comportamento e o primeiro esqueleto articulado (5 níveis). Estreia a família `joao:sedavel` — e o `minecraft:is_sleeping` do grupo do sono existe **para o cliente**, porque o script marca tag de runtime e Molang não lê tag;
+  - **o Velociraptor da v1.9.0** (e o ovo que o choca, que só passou a reagir ao toque na v1.9.1): 20 ossos, 85 cubos, 1,96 x 3,93 blocos, atlas 512. É a primeira entidade com comportamento e o primeiro esqueleto articulado (5 níveis). Estreia a família `joao:sedavel` — e o `minecraft:is_sleeping` do grupo do sono existe **para o cliente**, porque o script marca tag de runtime e Molang não lê tag;
   - **tudo da v1.7.0 e da v1.7.1** (besta, dardo, sono) — só o voo do dardo foi visto, e estava de lado;
   - a mira no centro e a animação presa ao tiro real (v1.6.5);
   - as cinco armas no padrão novo, peça por peça: M4A4 com 142 cubos, AK com 88, Glock com 55, AWP com 89 + 74 do painel da luneta, besta com 130;

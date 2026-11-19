@@ -2,6 +2,9 @@
 
 Formato: versão — data — o que mudou. Marque **[testado no celular]** quando o Afonso confirmar no aparelho do João.
 
+## 1.9.1 — 2026-11-19
+- Corrigido: **o Ovo de Velociraptor não fazia nada** quando o João clicava com ele na mão. O item estava certo, o bicho estava certo — faltava dizer ao jogo que o ovo é um item que *se usa*. Sem isso o Minecraft trata o toque como "mexer no bloco" e o add-on nunca é avisado. Agora o ovo choca tanto mirando o chão quanto apontando para o ar à frente, e tocar o Extrator ou a Incubadora com o ovo na mão continua mexendo na máquina, como se espera.
+
 ## 1.9.0 — 2026-11-18
 - **O Velociraptor.** O ovo agora choca: use o Ovo de Velociraptor mirando no chão e nasce um **filhote**, que cresce sozinho. No criativo também dá para pegar o ovo de spawn dele direto.
   - cabeça com **olho de pupila em fenda**, garra em foice no pé, faixa escura no flanco e barriga clara;
