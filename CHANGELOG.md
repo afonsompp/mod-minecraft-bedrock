@@ -2,6 +2,11 @@
 
 Formato: versão — data — o que mudou. Marque **[testado no celular]** quando o Afonso confirmar no aparelho do João.
 
+## 1.9.3 — 2026-11-19
+- **O ovo agora é um ovo de spawn de verdade.** Usar o Ovo de Velociraptor no chão põe o bicho ali — e quem faz isso passou a ser o próprio Minecraft, pelo mesmo componente que o ovo de spawn do jogo usa, em vez de depender do script do add-on. Nas versões anteriores o ovo dependia só de script e simplesmente não reagia ao toque.
+- **O add-on agora diz que está vivo.** Ao entrar no mundo aparece no chat: `Modpack do João v1.9.3 ativo — 5 domínios`. Se alguma parte não tiver carregado, o nome dela vem junto, em vermelho. Serve para saber, de dentro do jogo, qual versão o aparelho carregou — o Minecraft guarda as antigas, e um pack velho rodando parece um recurso quebrado.
+- Por dentro: uma peça que falhe ao carregar não derruba mais o add-on inteiro. Antes, um único evento indisponível no aparelho levava junto as armas, o laboratório e tudo o mais, sem mensagem nenhuma.
+
 ## 1.9.2 — 2026-11-19
 - **Os ovos agora se distinguem de relance.** O Ovo de Velociraptor ficou com a casca verde-oliva e manchas fortes da cor do bicho; o Ovo Sintético continua branco e liso. No hotbar, com 16 pixels, os dois eram o mesmo oval claro — e com mais espécies a cor é o único sinal que o ícone tem.
 - Fóssil, DNA ou Ovo Sintético usado longe de uma máquina agora **diz para que serve**, em vez de não reagir: "moa no Extrator de DNA", "leve à Incubadora". Item que não responde parece item quebrado.

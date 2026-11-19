@@ -71,6 +71,13 @@ def subir_versao(nova):
             if dep.get("uuid") in uuids:      # dependências entre os nossos packs
                 dep["version"] = v
         p.write_text(json.dumps(m, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+    # A versão também vai para o script: ao entrar no mundo o add-on a anuncia no chat. É o único
+    # jeito de saber, de dentro do jogo, QUAL versão o aparelho carregou — o Minecraft guarda as
+    # antigas, e um pack velho rodando é indistinguível de um recurso quebrado.
+    (PACKS / "BP" / "scripts" / "comum" / "versao.js").write_text(
+        "// GERADO por tools/build.py --versao — não edite à mão.\n"
+        f'export const VERSAO = "{nova}";\n', encoding="utf-8")
     print(f"versão -> {nova}")
 
 

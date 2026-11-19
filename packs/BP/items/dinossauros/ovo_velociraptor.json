@@ -22,9 +22,8 @@
           "joao:ovo_dino"
         ]
       },
-      "minecraft:use_modifiers": {
-        "use_duration": 0.5,
-        "movement_modifier": 1.0
+      "minecraft:entity_placer": {
+        "entity": "joao:velociraptor"
       }
     }
   }

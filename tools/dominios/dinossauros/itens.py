@@ -77,11 +77,13 @@ def gerar(bp, especies):
         _escrever(itens / f"ovo_{e.id}.json",
                   _item(f"joao:ovo_{e.id}", f"Ovo de {e.nome}", f"joao_ovo_{e.id}", 8,
                         ["joao:ovo_dino"],
-                        # **Sem isto o ovo não faz nada ao ser usado** (o bug da v1.9.0): no Bedrock,
-                        # item sem componente de uso não "usa" — `itemUse` não dispara, e um toque
-                        # mirando o chão vira interação com bloco. É o mesmo componente de que as
-                        # cinco armas já dependiam. Duração curta: o ovo não é para segurar.
-                        extra={"minecraft:use_modifiers": {"use_duration": 0.5,
-                                                           "movement_modifier": 1.0}}))
+                        # **Quem coloca o bicho é o jogo, não o script.** `entity_placer` é o
+                        # componente nativo do ovo de spawn do próprio Minecraft: usar no chão
+                        # coloca a entidade e consome um item, sem depender de evento de script
+                        # nenhum. Nas v1.9.0–1.9.2 isto era feito só por script, por três caminhos
+                        # que não dispararam no aparelho — e um item que não reage é indistinguível
+                        # de um item quebrado. O script continua ouvindo, mas só como reserva: ele
+                        # confere se nasceu alguém e, se não nasceu, coloca ele mesmo.
+                        extra={"minecraft:entity_placer": {"entity": f"joao:{e.id}"}}))
         ids += [f"joao:dna_{e.id}", f"joao:ovo_{e.id}"]
     return ids

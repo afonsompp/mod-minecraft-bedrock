@@ -1,17 +1,20 @@
 /**
  * Os dinossauros: o que o JSON da entidade não cobre.
  *
- * Hoje é uma coisa só — **chocar o ovo**. O resto do comportamento (andar, caçar, entrar em pânico,
- * crescer, dormir) é componente nativo no behavior pack, como o `CLAUDE.md` manda: script entra só
- * onde o JSON não chega.
+ * Hoje é uma coisa só — **chocar o ovo**, e mesmo isso só como reserva. Quem coloca o bicho é o
+ * componente nativo `minecraft:entity_placer` do próprio ovo, o mesmo que o ovo de spawn do jogo
+ * usa: ele não depende de evento de script nenhum. Este módulo confere, dois ticks depois do toque,
+ * se nasceu alguém ali — e só coloca o bicho se não nasceu.
  *
- * O sono do dardo tranquilizante também não precisa de nada aqui: o bicho declara a família
- * `joao:sedavel` e os eventos `joao:dormir` / `joao:acordar`, e o módulo `sedativo/` já os dispara
- * desde a v1.7.0.
+ * **Por que a reserva existe.** Entre a v1.9.0 e a v1.9.2 o ovo dependia só de script, por três
+ * caminhos diferentes (`itemUse`, componente de uso, interação com bloco), e nenhum chegou a
+ * disparar no aparelho. Um item que não reage é indistinguível de um item quebrado, então agora o
+ * caminho principal é nativo e o script é o cinto de segurança — nunca o contrário.
  *
- * **Por que dois ganchos para um toque.** O gesto natural é mirar o chão e tocar — e isso no Bedrock
- * é *interação com bloco*, que não passa por `itemUse`. Então o ovo é atendido pelos dois ganchos, e
- * `primeiroNoTick` garante que um toque só choque um ovo mesmo quando os dois disparam juntos.
+ * O resto do comportamento (andar, caçar, entrar em pânico, crescer, dormir) é componente nativo no
+ * behavior pack, como o `CLAUDE.md` manda. O sono do dardo tranquilizante também não precisa de nada
+ * aqui: o bicho declara a família `joao:sedavel` e os eventos `joao:dormir` / `joao:acordar`, e o
+ * módulo `sedativo/` já os dispara desde a v1.7.0.
  */
 import { system } from "@minecraft/server";
 import { OVO_DINO } from "../comum/tags.js";
@@ -31,6 +34,19 @@ function primeiroNoTick(p) {
 }
 
 /**
+ * @param {import("@minecraft/server").Dimension} dim
+ * @param {import("@minecraft/server").Vector3} onde
+ * @param {string} tipo
+ */
+function quantosPerto(dim, onde, tipo) {
+  try {
+    return dim.getEntities({ location: onde, maxDistance: 6, type: tipo }).length;
+  } catch {
+    return 0;             // área descarregada: trata como "não nasceu ninguém"
+  }
+}
+
+/**
  * @param {import("@minecraft/server").Player} p
  * @param {import("@minecraft/server").ItemStack} item
  * @param {import("@minecraft/server").Block} [bloco] o bloco tocado, quando veio por interação
@@ -39,8 +55,9 @@ function chocar(p, item, bloco) {
   const id = item.typeId.slice("joao:ovo_".length);
   const especie = POR_ID[id];
   if (!especie) return;
+  if (!primeiroNoTick(p)) return;
 
-  // onde ele apontou. Sem bloco à vista, nasce logo à frente dele.
+  const dim = p.dimension;
   let onde;
   try {
     const alvo = bloco ?? p.getBlockFromViewDirection({ maxDistance: 6 })?.block;
@@ -54,18 +71,26 @@ function chocar(p, item, bloco) {
     return;
   }
 
-  if (!primeiroNoTick(p)) return;
+  const tipo = `joao:${id}`;
+  const antes = quantosPerto(dim, onde, tipo);
 
-  try {
-    const bicho = p.dimension.spawnEntity(`joao:${id}`, onde);
-    bicho.triggerEvent("joao:nascer");          // nasce filhote e cresce sozinho
-    if (!gastar(p, item.typeId)) { /* criativo: o ovo não se gasta */ }
-    p.dimension.playSound("mob.turtle.egg_crack", onde, { pitch: 0.9, volume: 1 });
-    particula(p.dimension, "minecraft:egg_destroy_emitter", onde);
+  // dois ticks de espera: é o que o componente nativo leva para colocar o bicho, se for ele a agir
+  system.runTimeout(() => {
+    if (quantosPerto(dim, onde, tipo) <= antes) {
+      try {
+        dim.spawnEntity(tipo, onde);
+      } catch {
+        hud.barra(p, "§7Aqui não dá. Mire no chão, num lugar aberto.", true);
+        return;
+      }
+      gastar(p, item.typeId);   // no caminho nativo o jogo já consumiu; aqui, consumimos nós
+    }
+    try {
+      dim.playSound("mob.turtle.egg_crack", onde, { pitch: 0.9, volume: 1 });
+      particula(dim, "minecraft:egg_destroy_emitter", onde);
+    } catch { /* área descarregada */ }
     hud.barra(p, `§aNasceu um §f${especie.nome}§a!`, true);
-  } catch {
-    hud.barra(p, "§7Aqui não dá. Mire no chão, num lugar aberto.", true);
-  }
+  }, 2);
 }
 
 /** @type {import("../comum/dominio.js").Dominio} */
