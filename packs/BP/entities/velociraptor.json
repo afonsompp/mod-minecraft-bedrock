@@ -76,7 +76,9 @@
         }
       },
       "joao:dormindo": {
-        "minecraft:is_sleeping": {},
+        "minecraft:mark_variant": {
+          "value": 1
+        },
         "minecraft:movement": {
           "value": 0.0
         },

@@ -100,7 +100,7 @@ Domínios previstos: `armas`, `dinossauros`, `veiculos`, `armaduras`, `animais`,
 | `joao:ovo_sintetico` | item | a casca vazia, da bancada |
 | `joao:maquina` | **bloco** | componente customizado do extrator e da incubadora, com `{"tipo": ...}` |
 | `joao:fase` | estado de bloco | 0 parada · 1 trabalhando · 2 pronta. É o que acende a luz e põe o ovo no ninho |
-| `joao:sedavel` | entidade (family) | **dorme de verdade** com o dardo: o script dispara nela os eventos `joao:dormir` / `joao:acordar`, que o JSON do bicho tem de declarar (deitar, calar, desligar os `behavior.*`). Sem essa família, o script só congela o bicho com lentidão e fraqueza, que é o máximo que dá num mob do jogo |
+| `joao:sedavel` | entidade (family) | **dorme de verdade** com o dardo: o script dispara nela os eventos `joao:dormir` / `joao:acordar`, que o JSON do bicho tem de declarar (deitar, calar, desligar os `behavior.*`), mais um `minecraft:mark_variant` no grupo do sono para o cliente escolher o clipe. Sem essa família, o script só congela o bicho com lentidão e fraqueza, que é o máximo que dá num mob do jogo |
 | `joao:dormindo` | entidade (tag de runtime) | **estado**, não classificação: quem está adormecido agora |
 
 ### Script API modular (`packs/BP/scripts/`)
@@ -259,6 +259,9 @@ Detalhamento (helpers de `modelos.py`, atlas, pintura 3D, recuo, clarão, mira e
 - No attachable, `q.*` são as queries do **jogador** e `v.*` são variáveis do próprio attachable, que persistem entre quadros. Variável do jogador só é legível se for pública (`c.owning_entity->v.joao_mira`).
 - **Os três ângulos do `CALIB` não saem de ajuste por silhueta.** A silhueta de um fuzil é alongada e quase não muda quando a câmera gira um grau, então o otimizador da v1.1.1 pôs ruído nos três: roll 1,963° (zerado na v1.6.3) e yaw 1,132° (medido em 0,387 na v1.6.5). Menos de um grau some nas miras de ferro, mas o retículo da luneta atravessa a tela e denuncia. Meça com `tools/dominios/armas/medir_mira.py`, que lê o retículo da AWP (linhas de 1 px, ~0,07°) e confere nas outras armas. **A prévia nunca mostra esse tipo de erro**, porque renderiza com a mesma câmera que posiciona a arma — câmera errada dá prévia certa e jogo errado.
 - **Erro de ÂNGULO da câmera e erro de POSIÇÃO (`AGACHADO`) parecem a mesma coisa numa arma só.** O de ângulo desvia todas as armas igual; o de posição desvia proporcionalmente a 1/distância do olho, então a AWP (olho 2,0) erraria quase 4x mais que a AK (olho 7,5). Na v1.6.2 os dois foram confundidos e o `AGACHADO` absorveu um erro que era de ângulo. Meça sempre com duas armas ou mais.
+- **Componente inventado derruba a entidade inteira, em silêncio.** Um nome que não existe em `components`/`component_groups` **não é ignorado**: a entidade não registra, e aí nada consegue pô-la no mundo — nem ovo de spawn, nem `/summon`, nem `spawnEntity` do script. Foi o `minecraft:is_sleeping` do Velociraptor, suposto e inexistente, que manteve o bicho fora do jogo da v1.9.0 à v1.9.3; o que existe com esse nome é o **filtro** `is_sleeping` e a query Molang, não um componente. Antes de usar um componente que você não viu num arquivo vanilla, confira na lista oficial (`https://mojang.github.io/bedrock-samples/Entities.html`). Para marcar um estado que o cliente precisa ler, use **`minecraft:mark_variant`**.
+- **Entidade fica na RAIZ de `packs/BP/entities/`.** Subpasta é confirmada em `items/` (os itens do laboratório aparecem), mas a documentação oficial diz que arquivos de entidade ficam na pasta `entities`, e o dardo — a única entidade que comprovadamente carrega — está na raiz. Não vale arriscar num arquivo cujo erro é invisível.
+- **Entidade que não carrega é indistinguível de item quebrado.** Quando um item que coloca entidade "não faz nada", suspeite da entidade antes do item: o sintoma aparece no item, a causa está do outro lado. O sinal que separa os dois é a **animação de uso**: se o braço anima e nada nasce, o item está funcionando e quem falhou foi a entidade.
 - **Peça saliente tem de ENTRAR na peça de trás, nunca encostar.** Duas faces no mesmo plano brigam pelo z-buffer e o jogo pisca entre elas; na prévia aparece como serrilha preta na borda. 0,15 de sobreposição resolve. Foi o que os painéis e visores dos blocos do laboratório ensinaram.
 - **"Vidro" aqui é opaco.** O material `boca` é cinza quase preto: serve de visor pequeno e não serve de cúpula — numa superfície grande vira um buraco preto. A primeira incubadora tinha uma redoma de vidro e parecia uma caixa fechada. Equipamento de laboratório de verdade é metal com janela, e um **furo** no bloco (moldura de quatro peças) mostra o que está dentro muito melhor que qualquer vidro.
 - **Furo em bloco se faz com moldura**, e em todas as camadas: deixar o furo só no tampo não adianta se o gabinete por baixo é um cubo inteiro — ele tapa o fundo e de cima vê-se uma chapa lisa.
@@ -272,7 +275,7 @@ Detalhamento (helpers de `modelos.py`, atlas, pintura 3D, recuo, clarão, mira e
 
   Se um dia o dardo girar **demais** (duas vezes o ângulo), é porque esse runtime passou a aplicar a rotação também: aí a animação sai. Se continuar preso, troque `target_*` por `body_*`. Nada disso aparece na prévia — ela desenha o modelo, não o voo.
 
-## Estado (v1.9.3)
+## Estado (v1.9.4)
 
 Histórico completo no `CHANGELOG.md`. Resumo do que importa para continuar:
 
@@ -284,7 +287,7 @@ Histórico completo no `CHANGELOG.md`. Resumo do que importa para continuar:
   - `v.ads` persiste e `q.is_sneaking` funciona no attachable.
 - **Entregue e ainda não visto no aparelho:**
   - **todo o laboratório da v1.8.0** (fóssil ao minerar, extrator, incubadora, os quatro itens). Os blocos são os primeiros do projeto: se um deles aparecer como o quadriculado roxo ou sumir, é o JSON do bloco ou o `terrain_texture.json`;
-  - **o Velociraptor da v1.9.0** (e o ovo que o choca, que só passou a reagir ao toque na v1.9.1): 20 ossos, 85 cubos, 1,96 x 3,93 blocos, atlas 512. É a primeira entidade com comportamento e o primeiro esqueleto articulado (5 níveis). Estreia a família `joao:sedavel` — e o `minecraft:is_sleeping` do grupo do sono existe **para o cliente**, porque o script marca tag de runtime e Molang não lê tag;
+  - **o Velociraptor da v1.9.0** (e o ovo que o choca, que só passou a reagir ao toque na v1.9.1): 20 ossos, 85 cubos, 1,96 x 3,93 blocos, atlas 512. É a primeira entidade com comportamento e o primeiro esqueleto articulado (5 níveis). Estreia a família `joao:sedavel` — e o `minecraft:mark_variant` do grupo do sono existe **para o cliente**, porque o script marca tag de runtime e Molang não lê tag;
   - **tudo da v1.7.0 e da v1.7.1** (besta, dardo, sono) — só o voo do dardo foi visto, e estava de lado;
   - a mira no centro e a animação presa ao tiro real (v1.6.5);
   - as cinco armas no padrão novo, peça por peça: M4A4 com 142 cubos, AK com 88, Glock com 55, AWP com 89 + 74 do painel da luneta, besta com 130;

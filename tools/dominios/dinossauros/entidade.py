@@ -88,18 +88,18 @@ def gerar(rp, bp, previews, especie, modelo):
             "initial_state": "parado",
             "states": {
                 "parado": {"animations": ["parado"], "transitions": [
-                    {"dormindo": "q.is_sleeping"},
+                    {"dormindo": "q.mark_variant == 1"},
                     {"correndo": "q.modified_move_speed > 0.62"},
                     {"andando": "q.modified_move_speed > 0.04"}]},
                 "andando": {"animations": ["andar"], "blend_transition": 0.2, "transitions": [
-                    {"dormindo": "q.is_sleeping"},
+                    {"dormindo": "q.mark_variant == 1"},
                     {"correndo": "q.modified_move_speed > 0.62"},
                     {"parado": "q.modified_move_speed <= 0.04"}]},
                 "correndo": {"animations": ["correr"], "blend_transition": 0.2, "transitions": [
-                    {"dormindo": "q.is_sleeping"},
+                    {"dormindo": "q.mark_variant == 1"},
                     {"andando": "q.modified_move_speed <= 0.62"}]},
                 "dormindo": {"animations": ["dormir"], "blend_transition": 0.6, "transitions": [
-                    {"parado": "!q.is_sleeping"}]},
+                    {"parado": "q.mark_variant != 1"}]},
             }}}}, indent=1))
 
     (rp / f"render_controllers/joao_{ident}.render_controllers.json").write_text(json.dumps({
@@ -122,8 +122,11 @@ def gerar(rp, bp, previews, especie, modelo):
             "spawn_egg": {"base_color": "#6f7a4a", "overlay_color": "#b9b489"},
             "render_controllers": [f"controller.render.joao_{ident}"]}}}, indent=1))
 
-    (bp / "entities" / "dinossauros").mkdir(parents=True, exist_ok=True)
-    (bp / f"entities/dinossauros/{ident}.json").write_text(
+    # A entidade vai na RAIZ de `entities/`, não numa subpasta: a documentação oficial diz que é
+    # onde o jogo procura, e o dardo — a única entidade nossa que comprovadamente carrega — está lá.
+    # Subpasta é confirmada em `items/`; aqui não há garantia, e um bicho que não carrega não dá erro.
+    (bp / "entities").mkdir(parents=True, exist_ok=True)
+    (bp / f"entities/{ident}.json").write_text(
         json.dumps(_behavior(especie, largura, altura), indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8")
 
@@ -173,10 +176,14 @@ def _behavior(e, largura, altura):
                                 {"test": "is_family", "subject": "other", "value": "mob"}]},
                                 "max_dist": 24}]}} if carnivoro else {}),
                 },
-                # O sono do dardo tranquilizante. `is_sleeping` existe para o CLIENTE: o script marca
-                # uma tag de runtime, e Molang não lê tag — sem isto o bicho não deitaria na tela.
+                # O sono do dardo tranquilizante. O `mark_variant` existe para o CLIENTE: o script
+                # marca uma tag de runtime, e Molang não lê tag — sem isto o bicho não deitaria na
+                # tela. **Tem de ser `mark_variant`**: até a v1.9.3 isto era um `minecraft:is_sleeping`
+                # que eu supus existir e não existe. Componente desconhecido não é ignorado — ele
+                # derruba a entidade inteira na carga, sem erro visível, e o bicho simplesmente não
+                # pode ser colocado no mundo por nada (nem ovo, nem /summon).
                 "joao:dormindo": {
-                    "minecraft:is_sleeping": {},
+                    "minecraft:mark_variant": {"value": 1},
                     "minecraft:movement": {"value": 0.0},
                     "minecraft:knockback_resistance": {"value": 1.0},
                 },

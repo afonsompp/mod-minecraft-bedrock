@@ -10,7 +10,7 @@
      ],
      "transitions": [
       {
-       "dormindo": "q.is_sleeping"
+       "dormindo": "q.mark_variant == 1"
       },
       {
        "correndo": "q.modified_move_speed > 0.62"
@@ -27,7 +27,7 @@
      "blend_transition": 0.2,
      "transitions": [
       {
-       "dormindo": "q.is_sleeping"
+       "dormindo": "q.mark_variant == 1"
       },
       {
        "correndo": "q.modified_move_speed > 0.62"
@@ -44,7 +44,7 @@
      "blend_transition": 0.2,
      "transitions": [
       {
-       "dormindo": "q.is_sleeping"
+       "dormindo": "q.mark_variant == 1"
       },
       {
        "andando": "q.modified_move_speed <= 0.62"
@@ -58,7 +58,7 @@
      "blend_transition": 0.6,
      "transitions": [
       {
-       "parado": "!q.is_sleeping"
+       "parado": "q.mark_variant != 1"
       }
      ]
     }

@@ -2,6 +2,11 @@
 
 Formato: versão — data — o que mudou. Marque **[testado no celular]** quando o Afonso confirmar no aparelho do João.
 
+## 1.9.4 — 2026-11-23
+- **O Velociraptor finalmente existe no jogo.** Ele nunca chegou a existir: o behavior dele usava um componente que eu supus existir e que o Minecraft não tem (`minecraft:is_sleeping`, do estado de sono). Um nome desconhecido não é ignorado — ele invalida a criatura inteira na carga, sem erro visível. Com a criatura inválida, **nada** conseguia colocá-la: nem o ovo, nem o ovo de spawn do criativo, nem o `/summon`. Daí o ovo "fazer a animação e não acontecer nada": o ovo estava certo desde a v1.9.3; quem não existia era o bicho.
+- O sono do dardo tranquilizante passou a usar `mark_variant`, que existe e faz a mesma coisa: o bicho deita na tela de verdade.
+- A criatura saiu da subpasta e foi para a pasta `entities` principal, que é onde a documentação diz que o jogo procura.
+
 ## 1.9.3 — 2026-11-19
 - **O ovo agora é um ovo de spawn de verdade.** Usar o Ovo de Velociraptor no chão põe o bicho ali — e quem faz isso passou a ser o próprio Minecraft, pelo mesmo componente que o ovo de spawn do jogo usa, em vez de depender do script do add-on. Nas versões anteriores o ovo dependia só de script e simplesmente não reagia ao toque.
 - **O add-on agora diz que está vivo.** Ao entrar no mundo aparece no chat: `Modpack do João v1.9.3 ativo — 5 domínios`. Se alguma parte não tiver carregado, o nome dela vem junto, em vermelho. Serve para saber, de dentro do jogo, qual versão o aparelho carregou — o Minecraft guarda as antigas, e um pack velho rodando parece um recurso quebrado.
